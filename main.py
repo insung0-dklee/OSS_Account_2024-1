@@ -63,7 +63,7 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        show_calendar()
+    
         break
 
     elif func == "2":
