@@ -38,7 +38,9 @@ while not b_is_exit:
 
     elif func == "?":
         print("도움말 입력.")
-
+    elif func == "q":
+        b_is_exit = 1
+        print("가계부를 종료합니다.")
         break
 
     else:
