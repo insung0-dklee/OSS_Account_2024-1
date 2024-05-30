@@ -98,6 +98,9 @@ def calculator():
 # 가계부 데이터 저장 변수
 ledger = []
 
+# 목표 설정 및 추적을 위한 리스트
+goals = []
+
 # 도움말 출력 함수
 def print_help():
     print("""
@@ -244,6 +247,44 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 목표 설정 및 추적 기능 추가
+
+# 사용자가 새로운 목표를 설정하고 목표를 추적할 수 있도록 하는 함수
+def set_goal():
+    # 목표 정보 입력 받기
+    name = input("목표의 이름을 입력하세요: ")  # 목표의 이름을 사용자로부터 입력 받음
+    amount = float(input("목표 금액을 입력하세요: "))  # 목표 금액을 사용자로부터 입력 받음
+    deadline = input("목표 기한을 입력하세요 (YYYY-MM-DD): ")  # 목표 기한을 사용자로부터 입력 받음
+
+    # 사용자의 목표 정보 저장
+    goal = {  # 목표 정보를 딕셔너리 형태로 저장
+        'name': name,  # 목표의 이름
+        'amount': amount,  # 목표 금액
+        'deadline': deadline,  # 목표 기한
+        'progress': 0  # 초기 진행 상황은 0으로 설정
+    }
+
+    # 목표 정보 출력
+    print("\n새로운 목표가 설정되었습니다:")  # 새로운 목표 설정 완료 메시지 출력
+    print(f"이름: {goal['name']}")  # 목표의 이름 출력
+    print(f"금액: {goal['amount']}")  # 목표의 금액 출력
+    print(f"기한: {goal['deadline']}")  # 목표의 기한 출력
+    print(f"진행 상황: {goal['progress']}/{goal['amount']}\n")  # 목표의 현재 진행 상황 출력
+
+    # 설정된 목표를 목표 리스트에 추가
+    goals.append(goal)  # 설정된 목표를 목표 리스트에 추가
+
+# 현재 설정된 목표 상태를 출력하는 함수
+def view_goals():
+    if not goals:  # 설정된 목표가 없는 경우
+        print("설정된 목표가 없습니다.")  # 설정된 목표가 없다는 메시지 출력
+    else:
+        print("\n설정된 목표 목록:")  # 설정된 목표 목록 출력 시작
+        for idx, goal in enumerate(goals, start=1):  # 목표 리스트를 순회하면서
+            print(f"{idx}. {goal['name']} - {goal['progress']}/{goal['amount']} (기한: {goal['deadline']})")  # 각 목표의 정보 출력
+        print()  # 설정된 목표 목록 출력 종료
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -261,6 +302,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        set_goal()  # 목표 설정 기능
+    elif func == "7":
+        view_goals()  # 현재 목표 상태 출력 기능
     elif func == "?":
         print_help()
     elif func == "exit":
