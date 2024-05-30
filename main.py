@@ -3,13 +3,35 @@ import os
 import json
 from datetime import datetime
 import pickle
+import getpass 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+    # login.txt 파일이 없으면 생성
+    if not os.path.exists('login.txt'):
+        open('login.txt', 'w').close()
+
+    # 이미 존재하는 아이디인지 확인
+    with open('login.txt', 'r', encoding='UTF-8') as fr:
+        users = fr.readlines()
+        for user in users:
+            saved_id, _ = user.strip().split(' : ')
+            if saved_id == id:
+                print("이미 존재하는 아이디입니다. 다른 아이디를 사용해 주세요.")
+                return
+
+    # 비밀번호 입력시 보이지 않게 하기 위해 getPass 모듈 사용 및 비밀번호 확인 과정 추가
+    while True:
+        pw = getpass.getpass("password 입력: ")  # 비밀번호 입력 시 보이지 않게 함
+        pw_confirm = getpass.getpass("password 확인: ")  # 비밀번호 확인
+
+        if pw != pw_confirm:
+            print("비밀번호가 일치하지 않습니다. 다시 시도해 주세요.")
+        else:
+            break
 
     h = hashlib.sha256() #hashlib 모듈의 sha256 사용
     h.update(pw.encode()) #sha256으로 암호화
@@ -23,6 +45,7 @@ def user_reg() : #회원가입
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
+6
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
@@ -261,6 +284,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        user_reg()
     elif func == "?":
         print_help()
     elif func == "exit":
