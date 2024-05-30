@@ -1,23 +1,18 @@
-import hashlib #hashlib 사용
+import hashlib
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+userdata = {}
 
-def user_reg() : #회원가입
-    id = input("id 입력: " ) #회원가입 시의 id 입력
-
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
-
-    h = hashlib.sha256() #hashlib 모듈의 sha256 사용
-    h.update(pw.encode()) #sha256으로 암호화
-    pw_data = h.hexdigest() #16진수로 변환
-
-    f = open('login.txt', 'wb') #login 파일 오픈
-
-    userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
-
-    with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-        for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+def user_reg():
+    id = input("id 입력: ")
+    pw = input("password 입력: ")
+    h = hashlib.sha256()
+    h.update(pw.encode())
+    pw_data = h.hexdigest()
+    f = open('login.txt', 'wb')
+    userdata[id] = pw_data
+    with open('login.txt', 'a', encoding='UTF-8') as fw:
+        for user_id, user_pw in userdata.items():
+            fw.write(f'{user_id} : {user_pw}\n')
 
 b_is_exit = 0
 
@@ -25,24 +20,34 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
+        expense_records = {}  # 지출 기록을 저장할 딕셔너리
 
-        break
+        def record_expense():#지출 기록
+            expense_amount = float(input("지출 금액을 입력하세요: "))#지출 금액 입력칸
+            expense_item = input("지출 품목을 입력하세요: ")#지출 품목 입력칸
+            expense_reason = input("지출 이유를 입력하세요: ")#지출 이유 입력칸
+
+            # 지출 기록을 딕셔너리에 저장
+            expense_records[expense_item] = {
+                "amount": expense_amount,
+                "reason": expense_reason
+            }
+
+            print("지출 기록이 성공적으로 추가되었습니다.")
+
+        record_expense()  # 지출 기록 함수 호출
 
     elif func == "2":
-
         break
 
     elif func == "3":
-
         break
 
     elif func == "?":
-        print("도움말 입력.")
-        print("1:지출 기록")#?입력시  
-        print("2:수입 기록")#어떤기능이 있는지
-        print("3:기록 조회")#알려주는 부분
-        break
-
+         print("도움말 입력.")
+         print("1: 지출 기록") #?입력시
+         print("2: 수입 기록") #어떤기능이 있는지
+         print("3: 기록 조회") #알려주는 부분
     else:
         b_is_exit = not b_is_exit
 
