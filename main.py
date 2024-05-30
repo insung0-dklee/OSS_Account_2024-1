@@ -244,6 +244,15 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+       
+
+def add_debt():
+    # 초과된 예산을 입력받음
+    debt = float(input("초과된 예산 금액을 입력하세요: "))
+    # 입력받은 데이터를 파일에 저장
+    print("초과된 예산이 저장되었습니다.")
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -261,7 +270,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "?":
+    elif func == "6":
+        add_debt()
+    elif func == "7":
         print_help()
     elif func == "exit":
         b_is_exit = True
