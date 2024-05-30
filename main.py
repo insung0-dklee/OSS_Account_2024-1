@@ -1,4 +1,10 @@
 # 가계부 기능 
+import matplotlib.pyplot as plt
+
+
+# Matplotlib에서 한글 폰트를 사용할 수 있도록 설정
+# 사용할 한글 폰트 설정
+plt.rcParams['font.family'] = 'NanumGothic'  
 # 프로그램 종료 여부를 나타내는 변수
 b_is_exit = 0
 # 지출 내역을 저장하는 리스트
@@ -80,11 +86,38 @@ def calculate_statistics():
         else:
             statistics[item] = amount
 
+ # 지출 내역이 비어 있는지 확인하고 있으면 메시지를 출력하고 함수 종료
+def visualize_statistics():
+    if not spending_list:
+        print("지출 내역이 없습니다.")
+       
+    else:
+         # 통계 데이터에서 항목과 금액을 가져와서 리스트로 변환
+         # items : 통계 데이터의 항목
+          # amounts : 통계 데이터의 금액
+        items = list(statistics.keys())
+        amounts = list(statistics.values())
+         
+         # items와 amounst를 요소로 가지는 막대 그래프 생성 
+         # x축 레이블: 항목, y축 레이블: 금액, 그래프 제목: 지출 내역 통계
+        plt.bar(items, amounts, color='skyblue')
+        plt.xlabel('항목')
+        plt.ylabel('금액')
+        plt.title('지출 내역 통계')
+
+        # x축 레이블 회전, 레이아웃 조정
+        plt.xticks(rotation=45)  
+        plt.tight_layout()  
+        # 그래프 표시
+        plt.show()
+
+
 # 사용자로부터 기능을 입력받고 해당 기능을 실행
 # 0 : 프로그램 종료
 # 1 : 지출 금액 입력
 # 2 : 전체 지출 금액 확인
 # 3 : 통계 기능 실행
+# ? : 도움말 표시
 # 그외의 숫자값: 기능 재 입력
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
@@ -103,6 +136,7 @@ while not b_is_exit:
         
         calculate_statistics()
         display_statistics()
+        visualize_statistics()
 
     elif func == "?":
         display_help()
