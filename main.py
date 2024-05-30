@@ -7,20 +7,20 @@ while not b_is_exit:
 
     if func == "1":
 
-        break
+        
 
     elif func == "2":
 
-        break
+        
 
     elif func == "3":
 
-        break
+        
 
     elif func == "?":
         print("도움말 입력.")
 
-        break
+        
 
     else:
         b_is_exit = not b_is_exit
