@@ -127,8 +127,12 @@ def add_entry():
 
 # 항목 조회 함수
 def view_entries():
-    for entry in ledger:
-        print(entry)
+    for entry in ledger: 
+        print(f"날짜    : {entry['date']}")
+        print(f"카테고리: {entry['category']}")
+        print(f"내용    : {entry['description']}")
+        print(f"금액    : {entry['amount']}원")
+        print()
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
