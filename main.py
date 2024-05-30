@@ -19,7 +19,26 @@ def user_reg() : #회원가입
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
+def user_login():  # 로그인 함수
+    id = input("id 입력: ")  # 로그인 시 id 입력
+    pw = input("password 입력: ")  # 로그인 시 pw 입력
+
+    h = hashlib.sha256()
+    h.update(pw.encode())
+    pw_data = h.hexdigest()
+
+    if id in userdata and userdata[id] == pw_data:
+        print("로그인 성공")
+        return True
+    else:
+        print("로그인 실패")
+        return False
+
+def user_logout():  # 로그아웃 함수
+    print("로그아웃 되었습니다.")
+
 b_is_exit = 0
+is_logged_in = False  # 로그인 상태를 저장하는 변수
 
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
