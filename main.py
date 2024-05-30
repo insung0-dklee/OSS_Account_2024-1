@@ -267,7 +267,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        open_kospi_site()
+        open_kospisite()
     elif func == "?":
         print_help()
     elif func == "exit":
