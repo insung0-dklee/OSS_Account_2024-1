@@ -34,20 +34,39 @@ def is_number(s):
     
 # 지출 내역을 추가하는 함수
 def add_spending():
-    # 사용자로부터 지출 항목 입력 받기
-    # 지출 항목에 숫자가 포함되어 있는지 확인
-    item = input("지출 항목: ")
-    if any(char.isdigit() for char in item):
-        print("지출 항목에 숫자는 포함될 수 없습니다. 다시 입력해주세요.")
-        return
-    # 사용자로부터 지출 금액 입력 받기
-     # 지출 금액에 소수점이나 숫자가 아닌 문자가 포함되어 있는지 확인
-    amount = input("지출 금액: ")
-    if not amount.isdigit():  
-        print("지출 금액에는 소수점이 포함될 수 없습니다. 다시 입력해주세요.")
-        return
-    spending_list.append({'item': item, 'amount': int(amount)}) 
-    print("지출 기록이 추가되었습니다.")
+    while True:
+        # 사용자로부터 지출 항목 입력 받기
+        item = input("지출 항목: ")
+
+        # 숫자가 포함되어 있는지 확인
+        if any(char.isdigit() for char in item):
+            confirm = input("지출 항목에 숫자가 포함되어 있습니다. 계속하시겠습니까? (Y/N): ")
+            if confirm.lower() != 'y':
+                return
+
+        # 사용자로부터 지출 금액 입력 받기
+        # 입력된 값이 숫자인지 확인
+        while True:
+            amount = input("지출 금액: ")
+            if not amount.replace('.', '').isdigit():
+                print("지출 금액에는 숫자만 입력 가능합니다. 다시 입력해주세요.")
+                continue
+            
+            # 입력된 값이 소수점을 포함하는 실수인지 확인
+            try:
+                float_amount = float(amount)
+                if float_amount <= 0:
+                    print("지출 금액은 양의 실수여야 합니다. 다시 입력해주세요.")
+                    continue
+            except ValueError:
+                print("지출 금액에는 소수점을 포함하는 실수만 입력 가능합니다. 다시 입력해주세요.")
+                continue
+
+            spending_list.append({'item': item, 'amount': float_amount}) 
+            print("지출 기록이 추가되었습니다.")
+            break
+        
+        break
 
 # 전체 지출 내역을 출력하는 함수
 def display_spending():
