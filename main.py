@@ -26,8 +26,8 @@ while not b_is_exit:
 
         break
 
-    elif func == "?":
-        print("도움말 입력.")
+    elif func == "?": # '?' 입력시 안내문 나오도록 함수 추가
+        print_help()
 
         break
 
