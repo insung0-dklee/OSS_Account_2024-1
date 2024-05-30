@@ -1,27 +1,44 @@
+import tkinter as tk
+from tkinter import messagebox
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
-b_is_exit = 0
+def submit():   
+# 입력 상자의 내용을 가져옵니다.
+    name = name_entry.get()
+    money = money_entry.get()
+    if not is_number(money):
+        messagebox.showerror("error", "숫자가 아님이다！")
+        return
+    print(f"상품: {name}, 가격: {money}")
+    root.destroy()
+# GUI
+def create_window():
+    global name_entry, money_entry, root
 
-while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")
+    root = tk.Tk()
+    root.title("제품정보")
+    root.geometry("300x200")
 
-    if func == "1":
+    name_label = tk.Label(root, text="가격정보:")
+    name_label.pack(pady=5)
+    name_entry = tk.Entry(root)
+    name_entry.pack(pady=5)
 
-        break
+    money_label = tk.Label(root, text="제품:")
+    money_label.pack(pady=5)
+    money_entry = tk.Entry(root)
+    money_entry.pack(pady=5)
 
-    elif func == "2":
+    submit_button = tk.Button(root, text="제출", command=submit)
+    submit_button.pack(pady=20)
 
-        break
+    root.mainloop()
 
-    elif func == "3":
-
-        break
-
-    elif func == "?":
-        print("도움말 입력.")
-
-        break
-
-    else:
-        b_is_exit = not b_is_exit
-
+if __name__ == "__main__":
+    create_window()
