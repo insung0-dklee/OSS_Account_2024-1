@@ -106,6 +106,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 예산 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -139,15 +140,24 @@ def generate_monthly_report():
             monthly_total += entry["amount"]
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
-
+budget = None #전역변수 budget의 기본값 설정
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    budget = float(input("예산 설정 (원): "))
+    global budget 
+    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
     current_total = sum(entry["amount"] for entry in ledger)
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
     else:
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+# 예산 확인 함수
+def check_budget():
+    global budget
+    if budget is None:
+        print("예산이 지정되지 않았습니다.")
+    else:
+        current_total = sum(entry["amount"] for entry in ledger)
+        print(f"설정된 예산은 {budget}원이고, 남은 예산은 {budget - current_total} 원입니다.")
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
@@ -261,6 +271,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+      check_budget()
     elif func == "?":
         print_help()
     elif func == "exit":
