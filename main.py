@@ -1,27 +1,67 @@
+# °¡°èºÎ ÇÁ·Î±×·¥
+# 1¹ø¿¡ ¼ÒºñºĞ¾ß¿Í ÁöÃâ±İ¾×À» ÀúÀåÇÏ´Â ±â´É ±¸Çö
 
+class HouseholdAccountBook:
+    def __init__(self):
+        self.entries = []
 
-b_is_exit = 0
+    def add_entry(self, category, amount):
+        self.entries.append({'category': category, 'amount': amount})
 
-while not b_is_exit:
-    func = input("ê¸°ëŠ¥ ì…ë ¥ (? ì…ë ¥ì‹œ ë„ì›€ë§) : ")
+    def show_entries(self):
+        if not self.entries:
+            print("ÀÔ·ÂµÈ ³»¿ªÀÌ ¾ø½À´Ï´Ù.")
+        else:
+            print("°¡°èºÎ ³»¿ª:")
+            total = 0
+            for entry in self.entries:
+                print(f"ºĞ¾ß: {entry['category']}, ±İ¾×: {entry['amount']}¿ø")
+                total += entry['amount']
+            print(f"ÃÑ ÁöÃâ: {total}¿ø")
 
-    if func == "1":
+def run_account_book():
+    account_book = HouseholdAccountBook()
+    categories = ["½Äºñ", "±³Åëºñ", "»ıÈ°ºñ", "ÀÇ·áºñ", "±³À°ºñ", "±âÅ¸"]
 
-        break
+    while True:
+        print("\n¼ÒºñºĞ¾ß¸¦ ¼±ÅÃÇÏ¼¼¿ä:")
+        for idx, category in enumerate(categories, 1):
+            print(f"{idx}. {category}")
+        print("0. Á¾·á")
 
-    elif func == "2":
+        try:
+            choice = int(input("¼±ÅÃ: "))
+            if choice == 0:
+                break
+            elif 1 <= choice <= len(categories):
+                category = categories[choice - 1]
+                amount = int(input(f"{category} ±İ¾×À» ÀÔ·ÂÇÏ¼¼¿ä: "))
+                account_book.add_entry(category, amount)
+            else:
+                print("Àß¸øµÈ ¼±ÅÃÀÔ´Ï´Ù. ´Ù½Ã ¼±ÅÃÇÏ¼¼¿ä.")
+        except ValueError:
+            print("À¯È¿ÇÑ ¼ıÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.")
 
-        break
+    account_book.show_entries()
 
-    elif func == "3":
+def main():
+    b_is_exit = False
 
-        break
+    while not b_is_exit:
+        func = input("±â´É ÀÔ·Â (? ÀÔ·Â½Ã µµ¿ò¸») : ")
 
-    elif func == "?":
-        print("ë„ì›€ë§ ì…ë ¥.")
+        if func == "1":
+            run_account_book()
+        elif func == "2":
+            print("±â´É 2°¡ ¾ÆÁ÷ ±¸ÇöµÇÁö ¾Ê¾Ò½À´Ï´Ù.")
+        elif func == "3":
+            print("±â´É 3°¡ ¾ÆÁ÷ ±¸ÇöµÇÁö ¾Ê¾Ò½À´Ï´Ù.")
+        elif func == "?":
+            print("µµ¿ò¸»: \n1. °¡°èºÎ ÀÔ·Â\n2. ±â´É 2\n3. ±â´É 3\n0. Á¾·á")
+        elif func == "0":
+            b_is_exit = True
+        else:
+            print("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.")
 
-        break
-
-    else:
-        b_is_exit = not b_is_exit
-
+if __name__ == "__main__":
+    main()
