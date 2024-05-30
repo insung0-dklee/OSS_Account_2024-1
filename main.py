@@ -108,6 +108,8 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 지출 내역 수정
+    7: 지출 내역 삭제
+    8: 메모
     ?: 도움말 출력
     exit: 종료
     """)
@@ -115,6 +117,7 @@ def print_help():
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
+    
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액: "))
@@ -162,7 +165,7 @@ def analyze_categories():
         category = entry["category"]
         if category not in category_totals:
             category_totals[category] = 0
-        category_totals[category] += entry["amount"]
+        category_totals[category] += float(entry["amount"])
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
@@ -229,26 +232,33 @@ def input_expense():
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
-# 지출 내역 삭제
+# 지출 내역 삭제 함수
 def delete_expense():
-    # 삭제할 지출 항목의 인덱스를 입력받음
+    # 저장된 지출 내역이 없는 경우
+    if not ledger:
+        print("저장된 지출 내역이 없습니다.")
+        return
+    
+    # 저장된 지출 내역을 출력하여 사용자가 선택할 수 있도록 함
+    print("저장된 지출 내역:")
+    for idx, expense in enumerate(ledger, start=1):
+        print(f"{idx}. 날짜: {expense['date']}, 카테고리: {expense['category']}, 설명: {expense['description']}, 금액: {expense['amount']}원")
+    
+    # 사용자로부터 삭제할 지출 항목의 번호를 입력받음
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
 
-    # 저장된 지출 내역을 불러옴
-    with open(expenses_file, 'r') as file:
-        data = json.load(file)
-    # 입력받은 인덱스가 유효한지 확인하고 삭제
     try:
         index = int(index)
-        if 1 <= index <= len(data):
-            deleted_expense = data.pop(index - 1)
-            with open(expenses_file, 'w') as file:
-                json.dump(data, file, ensure_ascii=False, indent=4)
+        # 입력받은 인덱스가 유효한지 확인하고 삭제
+        if 1 <= index <= len(ledger):
+            deleted_expense = ledger.pop(index - 1)
             print(f"다음 내역이 삭제되었습니다: {deleted_expense}")
         else:
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+
+
 
 
 from datetime import datetime
@@ -347,6 +357,10 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         modify_expense()
+    elif func == "7":
+        delete_expense()
+    elif func =="8":
+        add_memo()
     elif func == "?":
         print_help()
     elif func == "exit":
