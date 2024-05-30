@@ -3,8 +3,47 @@ import os
 import json
 from datetime import datetime
 import pickle
+import requests
+from bs4 import BeautifulSoup
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+
+def article():# article 크롤링
+    # URL 설정
+    url = 'https://www.mk.co.kr/news/economy/'
+
+    # 페이지 요청
+    response = requests.get(url)
+    response.raise_for_status()  # 요청이 성공했는지 확인
+
+    # HTML 파싱
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # 첫 번째 기사 찾기
+    first_article = soup.find('div', class_='txt_area')
+    if first_article is None:
+        print("Couldn't find the article area on the page.") #첫 번째 기사가 없는 경우
+    else:
+        title_tag = first_article.find('h3') #html 코드 내 h3태그 찾기
+        if title_tag is None: # h3 태그 존재 X
+            print("Couldn't find the article title.")
+        else: #존재한다면 title get
+            title = title_tag.get_text(strip=True)
+            print(f"Top Article Title: {title}")
+
+    # 모든 <li class="col col_4 news_node"> 내의 <div class="txt_area">의 h3 태그 제목 찾기
+    articles = soup.find_all('li', class_='col col_4 news_node')
+    if not articles: # 위에 해당하는 제목 존재하지 않을 때
+        print("Couldn't find any articles.")
+        return
+
+    for article in articles: #articles 배열 반복문 돌면서 title 설정
+        txt_area = article.find('div', class_='txt_area')
+        if txt_area: # txt_area div가 존재한다면
+            title_tag = txt_area.find('h3') #h3태그 찾기
+            if title_tag:
+                title = title_tag.get_text(strip=True) #title 설정
+                print(f"Article Title: {title}") #title 출력
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
@@ -267,6 +306,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "article":
+        article()
     else:
         b_is_exit = not b_is_exit
 
