@@ -6,6 +6,7 @@ class HouseholdAccountBook:
     def show_balance(self):
         print(f"현재 잔액: {self.balance}")
 
+
 def main():
     book = HouseholdAccountBook()
     b_is_exit = 0
