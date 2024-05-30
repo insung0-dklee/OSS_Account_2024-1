@@ -18,6 +18,21 @@ def user_reg() : #회원가입
     with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+"""
+add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
+@Parm
+    None
+@Return
+    None
+"""
+def add_memo():
+    print("메모장 제목: ")
+    str_title = input()
+    new_f = open(str_title,"w",encoding="utf8")
+    print("내용 입력: ")
+    str_memo = input()
+    new_f.write(str_memo)
+    new_f.close()
 
 b_is_exit = 0
 
@@ -35,7 +50,9 @@ while not b_is_exit:
     elif func == "3":
 
         break
-
+    elif func == "메모장":
+        add_memo()
+        break
     elif func == "?":
         print("도움말 입력.")
 
