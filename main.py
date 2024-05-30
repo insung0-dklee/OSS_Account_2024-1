@@ -8,8 +8,27 @@ userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
+    """
+     if id in userdata:
+        print("이미 존재하는 아이디입니다.")
+        return
+        - 입력한 아이디가 userdata에 존재한다면 경고창을 출력하고 함수를 종료.
+    """
+    if id in userdata:
+        print("이미 존재하는 아이디입니다.")
+        return
 
     pw = input("password 입력: ") #회원가입 시의 pw 입력
+    pw_confirm = input("password 확인 입력: ")  # 올바른 비밀번호 확인 유무 파악을 위한 입력
+    """
+    if pw != pw_confirm:
+        print("입력한 비밀번호들이 일치하지 않습니다.")
+        return
+        - 입력한 비밀번호들이 서로 일치 하지 않는다면 경고창을 출력 후 함수를 종료.
+    """
+    if pw != pw_confirm:
+        print("입력한 비밀번호들이 일치하지 않습니다.")
+        return
 
     h = hashlib.sha256() #hashlib 모듈의 sha256 사용
     h.update(pw.encode()) #sha256으로 암호화
@@ -106,6 +125,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 회원가입
     ?: 도움말 출력
     exit: 종료
     """)
@@ -261,12 +281,15 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        user_reg()
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+
     else:
         b_is_exit = not b_is_exit
 
