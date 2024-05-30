@@ -127,8 +127,9 @@ def add_entry():
 
 # 항목 조회 함수
 def view_entries():
-    for entry in ledger:
-        print(entry)
+    for entry in ledger: # 금액을 셀 때 편하도록 amount를 0이 3개 나올때 마다 ,로 끊어서 출력 ex) 1,000,000,000
+         print("/'date/' : /'{}/', /'category/': /'{}/', /'description/' : /'{}/', /'amount/' : {:,}" \
+        .format(entry["date"],entry["category"],entry["description"],entry["amount"]))
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
