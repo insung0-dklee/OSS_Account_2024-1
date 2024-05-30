@@ -1,27 +1,27 @@
-
+import Account
 
 b_is_exit = 0
 
+account_book = Account.account_book("목돈")
+
 while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")
-
+    func = input("기능 입력 '?' 입력시 도움말) : ")
+   
     if func == "1":
-
-        break
+        account_book.income()
+        continue
 
     elif func == "2":
-
-        break
+        account_book.expendse()
+        continue
 
     elif func == "3":
-
-        break
+        account_book.show_balance()
+        continue
 
     elif func == "?":
-        print("도움말 입력.")
-
-        break
+        print("1: 수입, 2: 지출, 3: 잔고확인")
+        continue
 
     else:
         b_is_exit = not b_is_exit
-
