@@ -106,6 +106,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 카테고리별 항목 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -159,6 +160,13 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+
+# 카테고리별 항목 조회 함수
+def view_entries_by_category():
+    category = input("조회할 카테고리: ")
+    for entry in ledger:
+        if entry["category"] == category:
+            print(entry)
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -261,6 +269,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        view_entries_by_category()
     elif func == "?":
         print_help()
     elif func == "exit":
