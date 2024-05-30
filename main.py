@@ -1,3 +1,5 @@
+import tkinter as tk #tkinter 사용
+from tkinter import messagebox
 import hashlib #hashlib 사용
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -20,27 +22,46 @@ def user_reg() : #회원가입
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
 b_is_exit = 0
+#숫자 여부를 판단하다
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
-while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")
+def submit():   
+# 입력 상자의 내용을 가져옵니다.
+    name = name_entry.get()
+    money = money_entry.get()
+    if not is_number(money):
+        messagebox.showerror("error", "숫자가 아님이다！")
+        return
+    print(f"상품: {name}, 가격: {money}")
+    root.quit()
+# GUI
+def create_window():
+    global name_entry, money_entry, root
+# logo
+    root = tk.Tk()
+    root.title("제품정보")
+    root.geometry("300x200")
+# 입력
+    name_label = tk.Label(root, text="제품")
+    name_label.pack(pady=5)
+    name_entry = tk.Entry(root)
+    name_entry.pack(pady=5)
+# 입력
+    money_label = tk.Label(root, text="가격")
+    money_label.pack(pady=5)
+    money_entry = tk.Entry(root)
+    money_entry.pack(pady=5)
+# 제출button
+    submit_button = tk.Button(root, text="제출", command=submit)
+    submit_button.pack(pady=20)
 
-    if func == "1":
+    root.mainloop()
 
-        break
-
-    elif func == "2":
-
-        break
-
-    elif func == "3":
-
-        break
-
-    elif func == "?":
-        print("도움말 입력.")
-
-        break
-
-    else:
-        b_is_exit = not b_is_exit
+if __name__ == "__main__":
+    create_window()
 
