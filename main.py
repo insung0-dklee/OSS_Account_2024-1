@@ -1,8 +1,11 @@
-import hashlib #hashlib 사용
+import hashlib
 import os
 import json
 from datetime import datetime
 import pickle
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk # pip install pillow 설치 (receiptUploade)
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -106,6 +109,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 영수증 업로드
     ?: 도움말 출력
     exit: 종료
     """)
@@ -244,6 +248,44 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 영수증 사진 업로드 기능
+def receiptUpload():
+    
+    """
+    영수증 사진 업로드를 위한 GUI를 생성
+    사버튼을 눌러 파일 시스템에서 영수증 이미지를 선택
+    선택된 이미지를 Label 위젯에 표시
+    
+    """
+    root = tk.Tk() #tkinter 윈도우 생성
+    root.title("영수증 업로드") 
+    root.attributes('-topmost', True)
+    def upload():
+        # 파일 선택 다이얼로그 열기
+        path = filedialog.askopenfilename(title="영수증 사진 선택", filetypes=[("Image files", "*.jpg *.jpeg *.png")]) #이미지 파일 타입
+        if path:
+            
+            messagebox.showinfo("영수증이 성공적으로 업로드되었습니다", path)
+            
+            # pip install pillow 설치해주세요!!
+            
+            # 이미지 파일을 열고 Label에 표시
+            image = Image.open(path)
+            img = ImageTk.PhotoImage(image) 
+            imageLabel.config(image=img) #라벨에 이미지를 설정
+            imageLabel.image = img 
+        else:
+            messagebox.showwarning("파일을 선택하세요")
+            
+    button = tk.Button(root, text="Upload File", command=upload) # Button 생성, 버튼 이벤트 -> upload 실행
+    button.pack(pady=20)  # 버튼 배치, 여백 설정
+
+    imageLabel = tk.Label(root) # 이미지 표시할 Label 생성
+    imageLabel.pack(pady=20)  # Label 여백 설정, 배치
+    
+    root.mainloop()
+    
+    
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -267,7 +309,7 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "6":
+        receiptUpload()
     else:
-        b_is_exit = not b_is_exit
-
         print("올바른 기능을 입력해 주세요.")
