@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
+import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -243,6 +244,21 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+
+#가계부 초깃값 임의로 설정
+a = Account_book("가계부 1",1000000)
+b = Account_book("가계부 2",2000000)
+c = Account_book("가계부 3",3000000)
+
+Account_list = [a,b,c] #가계부 리스트
+i=0
+
+def choose_Account(func):#가계부 선택 함수
+    print("가계부 선택(번호로 입력)")
+    for i in range(0,len(Account_list)):#가계부 리스트 출력
+      print(f"가계부 {i+1}번 : ",Account_list[i].name)
+    choose = input()
+    return choose 
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
