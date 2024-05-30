@@ -106,6 +106,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 주식 수익 기록
+    7: 주식 수익 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -244,6 +246,67 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+def record_stock_profit():
+    # stock_profits.json 파일이 존재하지 않는 경우 빈 파일을 생성
+    if not os.path.exists('stock_profits.json'):
+        with open('stock_profits.json', 'w') as file:
+            json.dump([], file)
+
+    date = input("날짜 (YYYY-MM-DD): ")
+    stock_name = input("주식 종목명: ")
+    buy_price = float(input("매입 가격: "))
+    sell_price = float(input("매도 가격: "))
+    profit = sell_price - buy_price
+
+    # 기록할 주식 수익 정보를 딕셔너리로 생성
+    stock_profit = {
+        "date": date,
+        "stock_name": stock_name,
+        "buy_price": buy_price,
+        "sell_price": sell_price,
+        "profit": profit
+    }
+
+    # 기존 파일의 데이터를 불러옴
+    with open('stock_profits.json', 'r') as file:
+        data = json.load(file)
+
+    # 새로운 주식 수익 정보를 추가
+    data.append(stock_profit)
+
+    # 데이터를 파일에 다시 저장
+    with open('stock_profits.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+    print("주식 수익이 성공적으로 기록되었습니다.")
+
+def view_stock_profit():
+    """
+    사용자가 입력한 날짜에 해당하는 주식 수익 정보를 조회하는 함수
+    """
+    date = input("조회할 날짜 (YYYY-MM-DD): ")
+
+    # 파일이 존재하지 않는 경우, 빈 리스트를 반환
+    if not os.path.exists('stock_profits.json'):
+        print("주식 수익 기록이 없습니다.")
+        return
+
+    # 파일이 존재하는 경우, 주식 수익 정보를 불러옴
+    with open('stock_profits.json', 'r') as file:
+        data = json.load(file)
+
+    found = False
+    # 사용자가 입력한 날짜와 동일한 날짜의 주식 수익 정보를 출력
+    for profit in data:
+        if profit['date'] == date:
+            print(f"날짜: {profit['date']}, 주식 종목명: {profit['stock_name']}, 매입 가격: {profit['buy_price']}, 매도 가격: {profit['sell_price']}, 수익: {profit['profit']}")
+            found = True
+
+    # 해당 날짜의 주식 수익 정보가 없는 경우 메시지 출력
+    if not found:
+        print("해당 날짜의 주식 수익 정보가 없습니다.")
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -261,6 +324,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        record_stock_profit()
+    elif func == "7":
+        view_stock_profit()
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -271,3 +338,4 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+        
