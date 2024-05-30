@@ -81,6 +81,7 @@ def user_reg() : #회원가입
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
+<<<<<<< HEAD
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
