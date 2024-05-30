@@ -66,6 +66,51 @@ def find_id_by_phone():
         print("해당 전화번호를 가진 사용자가 없습니다.")  # 존재하지 않으면 사용자 없음 메시지 출력
 
 
+"""
+회원 정보를 수정하는 함수
+"""
+def modify_user_info():
+    id_to_modify = input("수정할 사용자의 id 입력: ")  # 수정하고자 하는 사용자의 id 입력
+    
+    # 해당 id가 userdata2에 존재하는지 확인
+    if id_to_modify not in userdata2:
+        print("해당 아이디를 가진 사용자가 없습니다.")
+        return
+
+    # 수정할 정보 입력
+    new_name = input("새로운 이름 입력: ")  # 새로운 이름 입력
+    new_phone = input("새로운 전화번호 입력: ")  # 새로운 전화번호 입력
+
+    # 전화번호 중복 체크 - 중복된 전화번호는 수정 불가
+    if new_phone in userphones and userphones[new_phone] != id_to_modify:
+        print("이미 등록된 전화번호입니다. 다른 전화번호를 사용해주세요.")
+        return
+
+    new_pw = input("새로운 password 입력: ")  # 새로운 pw 입력
+
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(new_pw.encode())  # sha256으로 암호화
+    new_pw_data = h.hexdigest()  # 16진수로 변환
+
+    # 사용자 정보 수정
+    userdata2[id_to_modify] = {'pw': new_pw_data, 'name': new_name, 'phone': new_phone}
+    
+    # 이름과 전화번호 매핑 정보 수정
+    # 이전 이름과 전화번호 삭제
+    old_phone = [key for key, value in userphones.items() if value == id_to_modify][0]
+    del userphones[old_phone]
+    # 새로운 이름과 전화번호 매핑
+    usernames[new_name] = id_to_modify
+    userphones[new_phone] = id_to_modify
+
+    # 수정된 정보를 파일에 다시 쓰기
+    with open('login.txt', 'w', encoding='UTF-8') as fw:
+        for user_id, user_info in userdata2.items():
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
+
+    print("사용자 정보가 성공적으로 수정되었습니다.")
+
+
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
