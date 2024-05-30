@@ -112,15 +112,19 @@ def print_help():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    global cash_budget, card_budget
+    
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액: "))
+    payment_method = input("지불 방법 (현금/카드): ")
     entry = {
         "date": date,
         "category": category,
         "description": description,
-        "amount": amount
+        "amount": amount,
+        "payment_method": payment_method
     }
     ledger.append(entry)
     print("항목이 추가되었습니다.")
@@ -213,11 +217,13 @@ def input_expense():
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
+    payment_method = input("지불 방법 (현금/카드): ")
     # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
         'date': date,
         'item': item,
-        'amount': amount
+        'amount': amount,
+        'payment_method': payment_method
     }
     # 지출 내역을 파일에 저장
     save_expense(expense)
