@@ -38,7 +38,9 @@ while not b_is_exit:
 
     elif func == "?":
         print("도움말 입력.")
-
+        print("1:지출 기록")#?입력시  
+        print("2:수입 기록")#어떤기능이 있는지
+        print("3:기록 조회")#알려주는 부분
         break
 
     else:
