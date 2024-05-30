@@ -1,29 +1,32 @@
-import hashlib #hashlib 사용
+import hashlib  # hashlib 사용
 import os
 import json
 from datetime import datetime
 import pickle
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
 
-def user_reg() : #회원가입
-    id = input("id 입력: " ) #회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+def user_reg():  # 회원가입
+    id = input("id 입력: ")  # 회원가입 시의 id 입력
 
-    h = hashlib.sha256() #hashlib 모듈의 sha256 사용
-    h.update(pw.encode()) #sha256으로 암호화
-    pw_data = h.hexdigest() #16진수로 변환
+    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
-    f = open('login.txt', 'wb') #login 파일 오픈
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(pw.encode())  # sha256으로 암호화
+    pw_data = h.hexdigest()  # 16진수로 변환
 
-    userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
+    f = open('login.txt', 'wb')  # login 파일 오픈
 
-    with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-        for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+    userdata[id] = pw_data  # key에 id값을, value에 비밀번호 값
 
-def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
+    with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+        for user_id, user_pw in userdata.items():  # 딕셔너리 내에 있는 값을 모두 for문
+            fw.write(f'{user_id} : {user_pw}\n')  # key, value값을 차례로 login.txt파일에 저장
+
+
+def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day,
+                 hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
     parameters -
@@ -34,11 +37,13 @@ def day_spending(hist, spending, where="", year=datetime.now().year, month=datet
     """
 
     dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
-        hist[f"{dt}"] = []      # 새 리스트 생성
+    if f"{dt}" not in hist:  # 해당 일자에 수입지출 내역이 없을 시,
+        hist[f"{dt}"] = []  # 새 리스트 생성
     hist[f"{dt}"].append((-spending, where))
 
-def day_income(hist, income, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
+
+def day_income(hist, income, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day,
+               hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 수입을 dictionary에 리스트 및 튜플 형태로 기록.
     parameters -
@@ -49,9 +54,10 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     """
 
     dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
-        hist[f"{dt}"] = []      # 새 리스트 생성
+    if f"{dt}" not in hist:  # 해당 일자에 수입지출 내역이 없을 시,
+        hist[f"{dt}"] = []  # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
+
 
 def new_account(user_id, bal):
     """
@@ -60,12 +66,13 @@ def new_account(user_id, bal):
     user_id : 사용자 이름
     bal : 잔고
     """
-    household_ledger = {'user_id':user_id, 'bal':bal, 'history':{}}
+    household_ledger = {'user_id': user_id, 'bal': bal, 'history': {}}
 
     with open(f'{user_id}.txt', 'wb') as info:
         # pickle의 dump 기능을 이용하여 이용자의 이름으로 된 파일에
         # 이용자의 id, 잔고, 수입/지출 내역(해당 함수 내에서는 초기값 공백)을 저장
-        pickle.dump(household_ledger,info)
+        pickle.dump(household_ledger, info)
+
 
 def open_account_info(user_id):
     """
@@ -79,6 +86,7 @@ def open_account_info(user_id):
     except Exception as e:
         print(f"{user_id}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
         return None
+
 
 def calculator():
     try:
@@ -95,8 +103,10 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+
 # 가계부 데이터 저장 변수
 ledger = []
+
 
 # 도움말 출력 함수
 def print_help():
@@ -109,6 +119,7 @@ def print_help():
     ?: 도움말 출력
     exit: 종료
     """)
+
 
 # 수입/지출 항목 추가 함수
 def add_entry():
@@ -125,20 +136,33 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
         print(entry)
 
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    while True:
+        month = input("보고서 생성할 월 (YYYY-MM): ")
+        try:
+            year, month_num = map(int, month.split('-'))
+            if 1 <= month_num <= 12:
+                break
+            else:
+                print("오류: 월은 1에서 12 사이여야 합니다.")
+        except ValueError:
+            print("오류: 올바른 형식의 입력이 아닙니다. YYYY-MM 형식으로 입력해주세요.")
+
     monthly_total = 0
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += entry["amount"]
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
+
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
@@ -148,6 +172,7 @@ def set_budget():
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
     else:
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
@@ -160,6 +185,7 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
@@ -167,14 +193,17 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
 @Return
     None
 """
+
+
 def add_memo():
     print("메모장 제목: ")
     str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
+    new_f = open(str_title, "w", encoding="utf8")
     print("내용 입력: ")
     str_memo = input()
     new_f.write(str_memo)
     new_f.close()
+
 
 # 지출 내역을 저장할 파일 이름
 expenses_file = 'expenses.json'
@@ -183,6 +212,7 @@ expenses_file = 'expenses.json'
 if not os.path.exists(expenses_file):
     with open(expenses_file, 'w') as file:
         json.dump([], file)
+
 
 def save_expense(expense):
     # 파일을 열어 기존 데이터를 불러옴
@@ -193,6 +223,7 @@ def save_expense(expense):
     # 데이터를 파일에 저장
     with open(expenses_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+
 
 # 저장된 지출 내역을 조회하는 함수
 def view_expenses():
@@ -206,6 +237,7 @@ def view_expenses():
         else:
             # 데이터가 비어 있으면 해당 메시지 출력
             print("저장된 지출 내역이 없습니다.")
+
 
 # 지출 내역을 입력받는 함수
 def input_expense():
@@ -222,6 +254,7 @@ def input_expense():
     # 지출 내역을 파일에 저장
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
+
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
@@ -243,6 +276,7 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
