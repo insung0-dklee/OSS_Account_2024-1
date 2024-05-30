@@ -43,4 +43,27 @@ while not b_is_exit:
 
     else:
         b_is_exit = not b_is_exit
+import tkinter as tk
+w=tk.Tk()
+w.title('가계부') # 제목을 '가계부로 설정'
+w.geometry('200x400') # 가로 200, 세로 400으로 설정
+name_label=tk.Label(w,text='품목')#라벨을 생성해 '품목'이라는 텍스트 표시
+name_label.pack() #라벨을 화면에 표시
+name_entry=tk.Entry(w) #라벨을 생성해 품목을 입력할 수 있는 공간 생성
+name_entry.pack() #라벨을 화면에 표시
 
+amount_label=tk.Label(w, text='금액') #라벨을 생성해 '금액'이라는 텍스트 표시
+amount_label.pack() #라벨을 화면에 표시
+amount_entry=tk.Entry(w) #엔트리를 생성해 금액을 입력할 수 있는 공간 생성
+amount_entry.pack() # 생성한 엔트리를 화면에 표시
+add_button=tk.Button(w,text='추가') #버튼을 생성해 '추가'라는 텍스트를 표시 
+add_button.pack() # 생성한 버튼을 화면에 표시
+remove_button=tk.Button(w,text='삭제') #버튼을 생성해 '삭제'라는 텍스트를표시 
+remove_button.pack() # 생성한 버튼을 화면에 표시
+save_button=tk.Button(w,text='저장') #버튼을 생성해 '저장'이라는 텍스트를 표시
+save_button.pack() # 생성한 버튼을 화면에 표시
+listbox=tk.Listbox(w,selectmode=tk.SINGLE) #리스트박스를 생성해 화면에 표시
+listbox.pack()#생성한 리스트박스를 화면에 표시
+total_label=tk.Label(w,text='총 지출: 0원') #라벨을 생성해 '총 지출: 0원'이라는 텍스트를 표시  
+total_label.pack() #생성한 라벨을 화면에 표시
+w.mainloop() 
