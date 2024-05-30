@@ -106,6 +106,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 항목 수정
     ?: 도움말 출력
     exit: 종료
     """)
@@ -159,6 +160,29 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+
+# 항목 수정 함수
+def edit_entry():
+    view_entries()  # 먼저 항목들을 보여줌
+    try:
+        index = int(input("수정할 항목 번호를 입력하세요: ")) - 1
+        if 0 <= index < len(ledger):
+            date = input("새 날짜 (YYYY-MM-DD): ")
+            category = input("새 카테고리: ")
+            description = input("새 설명: ")
+            amount = float(input("새 금액: "))
+            ledger[index] = {
+                "date": date,
+                "category": category,
+                "description": description,
+                "amount": amount
+            }
+            print("항목이 수정되었습니다.")
+        else:
+            print("잘못된 번호입니다.")
+    except ValueError:
+        print("유효한 숫자를 입력하세요.")
+
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
