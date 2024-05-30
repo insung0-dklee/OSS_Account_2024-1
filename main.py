@@ -3,14 +3,18 @@
 b_is_exit = 0
 # 지출 내역을 저장하는 리스트
 spending_list = []
+# 통계 기능을 위한 딕셔너리
+statistics = {}
+
 
 # 도움말을 출력하는 함수
 def display_help():
     print("""
     도움말:
-    1 - 프로그램 종료 
-    2 - 지출 기록 추가
-    3 - 전체 지출 내역 표시
+    0 - 프로그램 종료 
+    1 - 지출 기록 추가
+    2 - 전체 지출 내역 표시
+    3 - 통계 내역 표시
     ? - 도움말 표시
     """)
 
@@ -54,10 +58,33 @@ def display_spending():
             print(f"{idx + 1}. 항목: {spending['item']}, 금액: {spending['amount']}")
         print(f"전체 합계: {total_amount}")
 
+
+# 통계 내역을 출력하는 함수
+def display_statistics():
+    if not spending_list:
+        print("지출 내역이 없습니다.")
+    else:
+        print("통계:")
+        for item, amount in statistics.items():
+            print(f"{item}: {amount}")
+
+# 통계를 계산하는 함수
+# 항목을 소문자로 변환하여 일관성 있게 처리
+def calculate_statistics():
+    for spending in spending_list:
+        item = spending['item'].lower()  
+        amount = spending['amount']
+        # 이미 통계에 있는 항목인지 확인하고 추가하거나 업데이트
+        if item in statistics:
+            statistics[item] += amount
+        else:
+            statistics[item] = amount
+
 # 사용자로부터 기능을 입력받고 해당 기능을 실행
 # 0 : 프로그램 종료
 # 1 : 지출 금액 입력
 # 2 : 전체 지출 금액 확인
+# 3 : 통계 기능 실행
 # 그외의 숫자값: 기능 재 입력
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
@@ -71,6 +98,11 @@ while not b_is_exit:
 
     elif func == "2":
         display_spending()
+
+    elif func == "3":
+        
+        calculate_statistics()
+        display_statistics()
 
     elif func == "?":
         display_help()
