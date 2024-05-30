@@ -45,7 +45,33 @@ def user_reg() : #회원가입
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
-6
+def user_login(): # 로그인 함수
+    id = input("id 입력: ")
+
+    if os.path.exists('login.txt'):
+        with open('login.txt', 'r', encoding='UTF-8') as fr:
+            users = fr.readlines()
+            for user in users:
+                saved_id, saved_pw = user.strip().split(' : ')
+                if saved_id == id: # id가 같은지 확인
+                    pw = getpass.getpass("password 입력: ")  # 비밀번호 입력 시 보이지 않게 getPass 모듈 사용
+
+                    h = hashlib.sha256() # SHA256으로 암호화
+                    h.update(pw.encode())
+                    pw_data = h.hexdigest()
+
+                    if saved_pw == pw_data: # 저장된 암호화된 비밀번호와 입력한 비밀번호를 암호화한 값이 같은지 확인
+                        print(f"환영합니다, {id}님!")
+                        return True
+                    else:
+                        print("비밀번호가 틀렸습니다.")
+                        return False
+                else:
+                    print("등록되지 않은 회원입니다. 회원가입을 먼저 해주세요.") # 저장된 아이디 중 일치하는 아이디가 없는 경우
+    else:
+        print("등록되지 않은 회원입니다. 회원가입을 먼저 해주세요.") # login.txt 파일이 없는 경우 즉, 등록한 회원이 아무도 없는 경우
+    return False
+
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
@@ -286,6 +312,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         user_reg()
+    elif func == "7":
+        user_login()
     elif func == "?":
         print_help()
     elif func == "exit":
