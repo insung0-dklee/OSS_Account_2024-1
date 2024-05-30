@@ -3,13 +3,31 @@ import os
 import json
 from datetime import datetime
 import pickle
+import getpass 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+     # 이미 존재하는 아이디인지 확인
+    with open('login.txt', 'r', encoding='UTF-8') as fr:
+        users = fr.readlines()
+        for user in users:
+            saved_id, _ = user.strip().split(' : ')
+            if saved_id == id:
+                print("이미 존재하는 아이디입니다. 다른 아이디를 사용해 주세요.")
+                return
+
+    # 비밀번호 입력시 보이지 않게 하기 위해 getPass 모듈 사용 및 비밀번호 확인 과정 추가
+    while True:
+        pw = getpass.getpass("password 입력: ")  # 비밀번호 입력 시 보이지 않게 함
+        pw_confirm = getpass.getpass("password 확인: ")  # 비밀번호 확인
+
+        if pw != pw_confirm:
+            print("비밀번호가 일치하지 않습니다. 다시 시도해 주세요.")
+        else:
+            break
 
     h = hashlib.sha256() #hashlib 모듈의 sha256 사용
     h.update(pw.encode()) #sha256으로 암호화
@@ -261,6 +279,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        user_reg()
     elif func == "?":
         print_help()
     elif func == "exit":
