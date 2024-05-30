@@ -18,9 +18,9 @@ while not b_is_exit:
         break
 
     elif func == "?":
-        print("도움말 입력.")
+        print("도움말: 1 - 거래 추가, 2 - 잔액 조회, 3 - 거래 내역 조회, 4 - 종료")
 
-        break
+        
 
     else:
         b_is_exit = not b_is_exit
