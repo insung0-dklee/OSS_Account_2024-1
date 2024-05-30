@@ -23,6 +23,49 @@ def user_reg() : #회원가입
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
 
+# 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
+userdata2 = {}
+# 이름과 아이디를 매핑하기 위한 딕셔너리
+usernames = {}
+# 전화번호와 아이디를 매핑하기 위한 딕셔너리
+userphones = {}
+
+def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+    id = input("id 입력: ")  # 회원가입 시의 id 입력
+    name = input("이름 입력: ")  # 회원가입 시의 이름 입력
+    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+
+    # 전화번호 중복 체크 - 중복된 전화번호는 가입 불가
+    if phone in userphones:
+        print("이미 등록된 전화번호입니다. 다른 전화번호를 사용해주세요.")
+        return
+
+    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(pw.encode())  # sha256으로 암호화
+    pw_data = h.hexdigest()  # 16진수로 변환
+
+    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+    usernames[name] = id  # 이름과 아이디 매핑
+    userphones[phone] = id  # 전화번호와 아이디 매핑
+
+    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+        for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+
+
+"""
+전화번호를 통해 아이디를 찾는 함수
+"""
+def find_id_by_phone():
+    phone = input("찾고자 하는 사용자의 전화번호 입력: ")  # 사용자가 찾고자 하는 전화번호를 입력받음
+    if phone in userphones:  # 입력받은 전화번호가 userphones 딕셔너리에 존재하는지 확인
+        print(f'해당 전화번호로 등록된 아이디는 {userphones[phone]}입니다.')  # 존재하면 해당 전화번호에 매핑된 아이디를 출력
+    else:
+        print("해당 전화번호를 가진 사용자가 없습니다.")  # 존재하지 않으면 사용자 없음 메시지 출력
+
+
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
