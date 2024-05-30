@@ -7,28 +7,33 @@ import pickle
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
-    id = input("id 입력: " ) #회원가입 시의 id 입력
     """
-     if id in userdata:
-        print("이미 존재하는 아이디입니다.")
-        return
-        - 입력한 아이디가 userdata에 존재한다면 경고창을 출력하고 함수를 종료.
+    while True - 반복문을 사용하여 유요한 아이디가 입력될 때까지 반복.
+    if id in userdata - 만약 입력한 아이디가 userdata에 존재할 시, 재입력을 요구하는 알림창 출력.
+    else - 유요한 아이디 입력을 받으면 반복문을 멈춤.
     """
-    if id in userdata:
-        print("이미 존재하는 아이디입니다.")
-        return
+    while True:
+        id = input("id 입력: ")  # 회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
-    pw_confirm = input("password 확인 입력: ")  # 올바른 비밀번호 확인 유무 파악을 위한 입력
+        if id in userdata:
+            print("이미 존재하는 아이디입니다. 다른 아이디를 입력하십시오.")
+        else:
+            break
+
     """
-    if pw != pw_confirm:
-        print("입력한 비밀번호들이 일치하지 않습니다.")
-        return
-        - 입력한 비밀번호들이 서로 일치 하지 않는다면 경고창을 출력 후 함수를 종료.
+    while True - 반복문을 사용하여 유요한 비밀번호가 입력될 때까지 반복.
+    if pw != pw_confirm - 비밀번호가 서로 일치하지 않는다면 재입력을 요구하는 알림창 출력.
+    else - 유요한 비밀번호가 입력된다면 반복문을 멈춤
     """
-    if pw != pw_confirm:
-        print("입력한 비밀번호들이 일치하지 않습니다.")
-        return
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        pw_confirm = input("password 확인 입력: ")  # 올바른 비밀번호 확인 유무 파악을 위한 입력
+
+        if pw != pw_confirm:
+            print("입력한 비밀번호들이 일치하지 않습니다. 다시 입력하십시오.")
+        else:
+            break
+
 
     h = hashlib.sha256() #hashlib 모듈의 sha256 사용
     h.update(pw.encode()) #sha256으로 암호화
