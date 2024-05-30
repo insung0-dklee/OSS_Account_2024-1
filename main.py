@@ -111,6 +111,38 @@ def modify_user_info():
     print("사용자 정보가 성공적으로 수정되었습니다.")
 
 
+# 아이디와 전화번호를 입력 받아 비밀번호를 찾는 함수
+def find_pw_by_id_phone():
+    id = input("ID 입력: ")  # 사용자로부터 ID 입력 받음
+    phone = input("전화번호 입력: ")  # 사용자로부터 전화번호 입력 받음
+    
+    # 입력받은 ID와 전화번호가 일치하는 지 확인
+    if id in userdata2 and userdata2[id]['phone'] == phone:
+        # 일치하는 경우 암호화된 비밀번호 출력
+        print(f"비밀번호 (암호화된 형태): {userdata2[id]['pw']}")
+    else:
+        # 정보가 일치하지 않는 경우 메시지 출력
+        print("일치하는 사용자 정보를 찾을 수 없습니다.")
+
+# 전체 회원 목록을 출력하는 함수
+def print_all_users():
+    print("전체 회원 목록:")
+    for user_id, user_info in userdata2.items():
+        # 각 회원의 ID, 이름, 전화번호 출력
+        print(f"ID: {user_id}, 이름: {user_info['name']}, 전화번호: {user_info['phone']}")
+
+# 회원의 아이디로 회원의 이름과 전화번호를 찾는 함수
+def find_name_phone_by_id():
+    id = input("ID 입력: ")  # 사용자로부터 ID 입력 받음
+    
+    if id in userdata2:
+        # 해당 ID를 가진 사용자의 이름과 전화번호 출력
+        print(f"이름: {userdata2[id]['name']}, 전화번호: {userdata2[id]['phone']}")
+    else:
+        # ID가 일치하는 사용자를 찾을 수 없는 경우 메시지 출력
+        print("해당 ID를 가진 사용자를 찾을 수 없습니다.")
+
+
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
