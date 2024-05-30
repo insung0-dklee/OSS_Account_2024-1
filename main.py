@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import pickle
 
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
@@ -106,6 +107,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 지출 내역 수정
     ?: 도움말 출력
     exit: 종료
     """)
@@ -136,14 +138,18 @@ def generate_monthly_report():
     monthly_total = 0
     for entry in ledger:
         if entry["date"].startswith(month):
-            monthly_total += entry["amount"]
+            # 지출 내역의 금액을 숫자로 변환하여 더함
+            monthly_total += float(entry["amount"])
+            
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     budget = float(input("예산 설정 (원): "))
-    current_total = sum(entry["amount"] for entry in ledger)
+    # 저장된 지출 내역의 금액을 숫자로 변환하여 더함
+    current_total = sum(float(entry["amount"]) for entry in ledger)
+   
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
     else:
@@ -223,7 +229,7 @@ def input_expense():
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
-# 기능 3: 지출 내역 삭제
+# 지출 내역 삭제
 def delete_expense():
     # 삭제할 지출 항목의 인덱스를 입력받음
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
@@ -244,6 +250,84 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+
+from datetime import datetime
+
+# 날짜 형식 검사 함수
+# 날짜가 달력상 날짜인지 확인
+def validate_date(date):
+    try:
+        datetime.strptime(date, '%Y-%m-%d')
+        return True
+    except ValueError:
+        print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
+        return False
+    
+# 금액 형식 검사 함수 (소수점 포함)
+def validate_amount(amount):
+    try:
+        float(amount)
+        return True
+    except ValueError:
+        print("금액은 숫자 또는 소수점으로 입력하세요.")
+        return False
+
+
+# 지출 내역을 수정하는 함수
+def modify_expense():
+    # 저장된 지출 내역이 없는 경우
+    if not ledger:
+        print("저장된 지출 내역이 없습니다.")
+        return
+    
+    # 저장된 지출 내역을 출력하여 사용자가 선택할 수 있도록 함
+    print("저장된 지출 내역:")
+    for idx, expense in enumerate(ledger, start=1):
+        print(f"{idx}. 날짜: {expense['date']}, 카테고리: {expense['category']}, 설명: {expense['description']}, 금액: {expense['amount']}원")
+    
+    # 사용자로부터 수정할 지출 항목의 번호를 입력받음
+    index = input("수정할 지출 항목의 번호를 입력하세요: ")
+    
+    try:
+        index = int(index)
+        #사용자에게 입력 받은 수정할 지출 항목의 내역을 출력한다
+        if 1 <= index <= len(ledger):
+            expense = ledger[index - 1]
+            print(f"수정하고자 하는 지출 내역: {expense}")
+            
+            while True:
+                # 새로운 값들을 입력 받음
+                date = input(f"새 지출 날짜 (현재값: {expense['date']}) : ")
+                # 입력 받은 값이  날짜 형식인지 검사
+                if date and not validate_date(date):
+                    continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
+                category = input(f"새 카테고리 (현재값: {expense['category']}) : ")
+                description = input(f"새 설명 (현재값: {expense['description']}) : ")
+                
+                amount = input(f"새 금액 (현재값: {expense['amount']}) : ")
+                
+                # 입력 받은 금액 값이  숫자 형식 인지 검사
+                if amount and not validate_amount(amount):
+                    continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
+                
+                # 데이터 형식에 맞게 입력 받았다면 입력 받은 값으로 업데이트
+                expense['date'] = date if date else expense['date']
+                expense['category'] = category if category else expense['category']
+                expense['description'] = description if description else expense['description']
+                expense['amount'] = amount if amount else expense['amount']
+                
+                # 입력 받은 값이 모두 유효한 경우 반복문 종료
+                break
+            
+            print("지출 내역이 수정되었습니다.")
+        else:
+            print("잘못된 번호입니다. 다시 시도하세요.")
+    except ValueError:
+        print("숫자를 입력하세요.")
+
+
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -261,6 +345,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        modify_expense()
     elif func == "?":
         print_help()
     elif func == "exit":
