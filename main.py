@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
+import matplotlib.pyplot as plt
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -107,6 +108,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 카테고리별 항목 조회
+    7: 지출 추세 그래프 생성
     ?: 도움말 출력
     exit: 종료
     """)
@@ -201,6 +203,7 @@ def save_expense(expense):
     # 데이터를 파일에 저장
     with open(expenses_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+    plot_expense_trends()  # 지출 내역 저장 후 지출 추세 그래프 갱신
 
 # 저장된 지출 내역을 조회하는 함수
 def view_expenses():
@@ -252,6 +255,30 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+#지출 추세 그래프 생성 기능
+def plot_expense_trends():
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+    monthly_expenses = {}
+    for expense in data:
+        date = expense['date']
+        amount = float(expense['amount'])
+        month = date[:7]
+        if month not in monthly_expenses:
+            monthly_expenses[month] = 0
+        monthly_expenses[month] += amount
+    sorted_months = sorted(monthly_expenses.keys())
+    sorted_expenses = [monthly_expenses[month] for month in sorted_months]
+    plt.figure(figsize=(10, 5))
+    plt.plot(sorted_months, sorted_expenses, marker='o', linestyle='-', color='b')
+    plt.title('Monthly Expense Trends')
+    plt.xlabel('Month')
+    plt.ylabel('Total Expenses (원)')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -271,6 +298,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         view_entries_by_category()
+    elif func == "7":
+        plot_expense_trends()
     elif func == "?":
         print_help()
     elif func == "exit":
