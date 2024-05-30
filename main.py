@@ -106,6 +106,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    0: 데이터 초기화
     ?: 도움말 출력
     exit: 종료
     """)
@@ -244,6 +245,23 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+"""
+가계부 데이터 및 사용자 데이터를 초기화하는 함수.
+가계부 데이터와 사용자 데이터를 빈 상태로 설정하고, 지출 내역 파일을 초기화한다.
+"""
+def reset_data():
+    global ledger, userdata
+    # 가계부 데이터와 사용자 데이터를 초기화
+    ledger = []
+    userdata = {}
+    # 지출 내역 파일을 초기화
+    with open(expenses_file, 'w') as file:
+        json.dump([], file)
+    # 로그인 파일이 존재하는 경우 삭제
+    if os.path.exists('login.txt'):
+        os.remove('login.txt')
+    print("모든 데이터가 초기화되었습니다.")
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -267,6 +285,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "0":
+        reset_data()
     else:
         b_is_exit = not b_is_exit
 
