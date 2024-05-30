@@ -3,11 +3,13 @@
 b_is_exit = 0
 
 def print_help():
-    print("1: 수입 추가")
-    print("2: 지출 추가")
-    print("3: 내역 조회")
-    print("4: 잔액 확인")
-    print("?: 도움말")
+    # 도움말 메시지 출력 함수
+    # 이 함수는 사용자가 사용할 수 있는 각 기능에 대한 설명을 출력
+    print("1: ??") # 1번을 누르면 수입 추가 등 안내문 출력
+    print("2: ??")
+    print("3: ??")
+    print("4: ??")
+    print("?: ??")
 
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
