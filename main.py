@@ -6,6 +6,7 @@ import pickle
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk # pip install pillow 설치 (receiptUploade)
+import shutil
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -268,9 +269,9 @@ def receiptUpload():
             if not os.path.exists(directory):
                 os.makedirs(directory)
             
-            # 선택한 파일을 지정된 폴더에 이동
+            # 선택한 파일을 폴더에 복사
             dest = os.path.join(directory, os.path.basename(path))
-            os.rename(path, dest) 
+            shutil.copy(path, dest) 
             
             messagebox.showinfo("영수증이 성공적으로 업로드되었습니다", f"파일이 다음 위치에 저장되었습니다: {dest}")
             
