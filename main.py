@@ -1,87 +1,29 @@
-<<<<<<< HEAD
-b_is_exit = False
-
-# 가계부 데이터를 저장할 리스트
-transactions = []
-
-# 지출 항목 추가 함수
-def add_expense():
-    date = input("날짜 (YYYY-MM-DD): ")  # 날짜 입력
-    category = input("카테고리: ")       # 카테고리 입력
-    amount = float(input("금액: "))      # 금액 입력
-    # 거래 내역에 추가
-    transactions.append({"type": "expense", "date": date, "category": category, "amount": amount})
-    print("지출 항목이 추가되었습니다.")  # 추가 확인 메시지
-
-# 수입 항목 추가 함수
-def add_income():
-    date = input("날짜 (YYYY-MM-DD): ")  # 날짜 입력
-    category = input("카테고리: ")       # 카테고리 입력
-    amount = float(input("금액: "))      # 금액 입력
-    # 거래 내역에 추가
-    transactions.append({"type": "income", "date": date, "category": category, "amount": amount})
-    print("수입 항목이 추가되었습니다.")  # 추가 확인 메시지
-
-# 거래 내역 보기 함수
-def view_transactions():
-    if not transactions:
-        print("거래 내역이 없습니다.")  # 거래 내역이 없을 경우 메시지 출력
-        return
-
-    # 거래 내역 출력
-    for t in transactions:
-        t_type = "수입" if t["type"] == "income" else "지출"  # 거래 타입 설정
-        print(f"{t['date']} - {t_type} - {t['category']} - {t['amount']}원")
-
-# 총 수입과 지출 및 잔액 보기 함수
-def view_summary():
-    # 총 수입 계산
-    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
-    # 총 지출 계산
-    total_expense = sum(t['amount'] for t in transactions if t['type'] == 'expense')
-    # 잔액 계산
-    balance = total_income - total_expense
-    # 결과 출력
-    print(f"총 수입: {total_income}원")
-    print(f"총 지출: {total_expense}원")
-    print(f"잔액: {balance}원")
-
-# 도움말 보기 함수
-def show_help():
-    print("1: 지출 항목 추가")
-    print("2: 수입 항목 추가")
-    print("3: 지출 및 수입 내역 보기")
-    print("4: 총 수입과 지출 및 잔액 보기")
-    print("?: 도움말 보기")
-    print("exit: 프로그램 종료")
-
-=======
-import hashlib #hashlib 사용
+import hashlib # hashlib 사용
 import os
 import json
+import webbrowser
 from datetime import datetime
 import pickle
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+userdata = {} # 아이디, 비밀번호 저장해둘 딕셔너리
 
-def user_reg() : #회원가입
-    id = input("id 입력: " ) #회원가입 시의 id 입력
+def user_reg(): # 회원가입
+    id = input("id 입력: ") # 회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+    pw = input("password 입력: ") # 회원가입 시의 pw 입력
 
-    h = hashlib.sha256() #hashlib 모듈의 sha256 사용
-    h.update(pw.encode()) #sha256으로 암호화
-    pw_data = h.hexdigest() #16진수로 변환
+    h = hashlib.sha256() # hashlib 모듈의 sha256 사용
+    h.update(pw.encode()) # sha256으로 암호화
+    pw_data = h.hexdigest() # 16진수로 변환
 
-    f = open('login.txt', 'wb') #login 파일 오픈
+    f = open('login.txt', 'wb') # login 파일 오픈
 
-    userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
+    userdata[id] = pw_data # key에 id값을, value에 비밀번호 값
 
-    with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-        for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+    with open('login.txt', 'a', encoding='UTF-8') as fw: # utf-8 변환 후 login.txt에 작성
+        for user_id, user_pw in userdata.items(): # 딕셔너리 내에 있는 값을 모두 for문
+            fw.write(f'{user_id} : {user_pw}\n') # key, value값을 차례로 login.txt파일에 저장
 
-<<<<<<< HEAD
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
     일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
@@ -124,7 +66,7 @@ def new_account(user_id, bal):
     with open(f'{user_id}.txt', 'wb') as info:
         # pickle의 dump 기능을 이용하여 이용자의 이름으로 된 파일에
         # 이용자의 id, 잔고, 수입/지출 내역(해당 함수 내에서는 초기값 공백)을 저장
-        pickle.dump(household_ledger,info)
+        pickle.dump(household_ledger, info)
 
 def open_account_info(user_id):
     """
@@ -165,6 +107,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 코스피 지수 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -229,7 +172,7 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
 def add_memo():
     print("메모장 제목: ")
     str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
+    new_f = open(str_title, "w", encoding="utf8")
     print("내용 입력: ")
     str_memo = input()
     new_f.write(str_memo)
@@ -303,29 +246,17 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+def open_kospisite():
+    webbrowser.open("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%BD%94%EC%8A%A4%ED%94%BC")
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
->>>>>>> d7b0a1472f482aaff11f5ab8869d9171fb39315b
 # 메인 루프
 while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")  # 사용자로부터 기능 입력받기
+    func = input("기능 입력 (? 입력시 도움말) : ")
 
-    # 각 기능에 따라 함수 호출
     if func == "1":
-<<<<<<< HEAD
-        add_expense()
-    elif func == "2":
-        add_income()
-    elif func == "3":
-        view_transactions()
-    elif func == "4":
-        view_summary()
-    elif func == "?":
-        show_help()
-    elif func.lower() == "exit":  # 'exit' 입력 시 프로그램 종료
-        b_is_exit = True
-=======
         add_entry()
     elif func == "2":
         view_entries()
@@ -335,18 +266,14 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        open_kospi_site()
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
         add_memo()
->>>>>>> d7b0a1472f482aaff11f5ab8869d9171fb39315b
     else:
-        print("알 수 없는 명령입니다. 도움말을 보려면 ? 를 입력하세요.")  # 잘못된 입력 시 메시지 출력
-
-<<<<<<< HEAD
-print("프로그램을 종료합니다.")  # 프로그램 종료 메시지
-=======
+        b_is_exit = not b_is_exit
         print("올바른 기능을 입력해 주세요.")
->>>>>>> d7b0a1472f482aaff11f5ab8869d9171fb39315b
