@@ -3,9 +3,8 @@ class HouseholdAccountBook:
         self.records = []
         self.balance = 0
     
-    def show_balance(self):
-        print(f"현재 잔액: {self.balance}")
-
+    def show_balance(self): # 가계부 class에 있는 현재 잔액을 조회하는 함수. #self : 자신의 가계부 클래스를 가리킴.
+        print(f"현재 잔액: {self.balance}") # 현재 잔액을 출력한다.
 
 def main():
     book = HouseholdAccountBook()
@@ -20,7 +19,7 @@ def main():
           pass
         elif func == "3":
           pass
-        elif func == "4":
+        elif func == "4": # 4를 입력하면 현재 잔액 조회 함수를 호출한다.
             book.show_balance()
 
         elif func == "?":
