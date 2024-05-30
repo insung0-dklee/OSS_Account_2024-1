@@ -248,6 +248,10 @@ def delete_expense():
 b_is_exit = 0
 
 # 메인 루프
+while not b_is_exit:
+    func = input("기능 입력 (? 입력시 도움말) : ")
+
+    if func == "1":
         add_entry()
     elif func == "2":
         view_entries()
