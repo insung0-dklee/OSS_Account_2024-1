@@ -101,19 +101,28 @@ ledger = []
 # 도움말 출력 함수
 def print_help():
     print("""
-    1: 수입/지출 항목 추가
+    1: 수입/지출 항목 추가 
     2: 항목 조회
     3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
+    4: 예산 설정
     5: 지출 카테고리 분석
     ?: 도움말 출력
     exit: 종료
     """)
 
-# 수입/지출 항목 추가 함수
+# 예산 설정 함수
+def set_budget():
+    global cash_budget, card_budget
+    cash_budget = float(input("현금 예산 설정 (원): "))
+    card_budget = float(input("카드 예산 설정 (원): "))
+    current_cash_total = sum(entry["amount"] for entry in ledger if entry["payment_method"] == "현금")
+    current_card_total = sum(entry["amount"] for entry in ledger if entry["payment_method"] == "카드")
+    print(f"현금 예산 설정 완료. 현재 지출: {current_cash_total} 원 \n남은 예산: {cash_budget - current_cash_total} 원")
+    print(f"카드 예산 설정 완료. 현재 지출: {current_card_total} 원 \n남은 예산: {card_budget - current_card_total} 원")
+
+# 수입/지출 항목 추가 함수 (예산 초과시 경고 알림)
 def add_entry():
     global cash_budget, card_budget
-    
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
@@ -126,6 +135,16 @@ def add_entry():
         "amount": amount,
         "payment_method": payment_method
     }
+    if payment_method == "현금":
+        current_cash_total = sum(entry["amount"] for entry in ledger if entry["payment_method"] == "현금") + amount
+        if current_cash_total > cash_budget:
+            print(f"경고: 현금 예산 초과! \n예산: {cash_budget} 원 \n현재 지출: {current_cash_total} 원 \n초과된 예산: {current_cash_total - cash_budget} 원")
+            return
+    elif payment_method == "카드":
+        current_card_total = sum(entry["amount"] for entry in ledger if entry["payment_method"] == "카드") + amount
+        if current_card_total > card_budget:
+            print(f"경고: 카드 예산 초과! \n예산: {card_budget} 원 \n현재 지출: {current_card_total} 원 \n초과된 예산: {current_card_total - card_budget} 원")
+            return
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
@@ -143,15 +162,6 @@ def generate_monthly_report():
             monthly_total += entry["amount"]
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
-
-# 예산 설정 및 초과 알림 함수
-def set_budget():
-    budget = float(input("예산 설정 (원): "))
-    current_total = sum(entry["amount"] for entry in ledger)
-    if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
-    else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
