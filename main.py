@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pickle
 import Account_book
 
@@ -259,6 +259,47 @@ def choose_Account(func):#가계부 선택 함수
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
     return choose 
+
+#디데이 기능
+d_day_file = 'd_day.json' 
+
+def save_d_day(target_date_str):
+    with open(d_day_file, 'w') as file:
+        json.dump({"target_date": target_date_str}, file)
+
+def load_d_day():
+    if os.path.exists(d_day_file):
+        with open(d_day_file, 'r') as file:
+            data = json.load(file)
+        return data.get("target_date", None)
+    return None
+
+def add_d_day():
+    try:
+        target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
+        today = datetime.today()
+        d_day = (target_date - today).days
+        if d_day >= 0:
+            print(f"D-Day: {d_day}일 남았습니다.")
+            save_d_day(target_date_str)
+        else:
+            print("이미 지난 날짜입니다.")
+    except ValueError:
+        print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
+
+def view_d_day():
+    target_date_str = load_d_day()
+    if target_date_str:
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
+        today = datetime.today()
+        d_day = (target_date - today).days
+        if d_day >= 0:
+            print(f"D-Day: {d_day}일 남았습니다.")
+        else:
+            print("이미 지난 디데이입니다.")
+    else:
+        print("저장된 디데이 정보가 없습니다.")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
