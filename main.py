@@ -253,12 +253,31 @@ c = Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(func):#가계부 선택 함수
+def choose_Account():
+    """
+    사용자에게 가계부를 선택하도록 하는 함수.
+
+    Returns:
+        Account_book: 사용자가 선택한 가계부 객체.
+                      선택한 가계부가 없거나 잘못된 선택인 경우 None을 반환한다.
+    """
     print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose 
+
+    # 가계부 목록을 순회하면서 번호와 이름을 출력한다.
+    for i in range(len(Account_list)):
+        print(f"가계부 {i + 1}번 : ", Account_list[i].name)
+
+    # 사용자로부터 가계부 선택 번호를 입력받는다.
+    choose = int(input())
+
+    # 사용자가 유효한 번호를 선택했는지 확인한다.
+    if 1 <= choose <= len(Account_list):
+        # 선택한 가계부 객체를 반환한다.
+        return Account_list[choose - 1]
+    else:
+        # 잘못된 선택인 경우 오류 메시지를 출력하고 None을 반환한다.
+        print("잘못된 선택입니다.")
+        return None
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
