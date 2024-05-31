@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import pickle
 import Account_book
+import webbrowser
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -108,6 +109,8 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
+    메모장: 메모 추가
+    guide : 가계부 작성 가이드 사이트로 이동
     exit: 종료
     """)
 
@@ -244,11 +247,17 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+        
+        
+# 실제 가계부 작성 가이드 웹사이트로 이동
+def guide_link():
+    webbrowser.open("https://help.3o3.co.kr/hc/ko/articles/15516331018521")
+
 
 #가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
+a = Account_book.Account_book("가계부 1",1000000)
+b = Account_book.Account_book("가계부 2",2000000)
+c = Account_book.Account_book("가계부 3",3000000)
 
 Account_list = [a,b,c] #가계부 리스트
 i=0
@@ -283,6 +292,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "guide":
+        guide_link()
     else:
         b_is_exit = not b_is_exit
 
