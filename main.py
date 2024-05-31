@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import pickle
 import Account_book
+import pandas as pd #pandas 사용
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -96,70 +97,74 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
-# 가계부 데이터 저장 변수
-ledger = []
-
 # 도움말 출력 함수
 def print_help():
     print("""
     1: 수입/지출 항목 추가
     2: 항목 조회
-    3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
-    5: 지출 카테고리 분석
+    3: 항목 삭제
+    4: 월별 보고서 생성
+    5: 예산 설정 및 초과 알림
+    6: 지출 항목 분석
+    7: 가계부를 excel 파일로 저장
     ?: 도움말 출력
     exit: 종료
     """)
 
-# 수입/지출 항목 추가 함수
-def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
-    amount = float(input("금액: "))
-    entry = {
-        "date": date,
-        "category": category,
-        "description": description,
-        "amount": amount
-    }
-    ledger.append(entry)
-    print("항목이 추가되었습니다.")
-
-# 항목 조회 함수
-def view_entries():
-    for entry in ledger:
-        print(entry)
-
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    year_month = input("보고서 생성할 월 (YYYY-MM): ")
+    year, month = int(year_month.split('-')[0]) , int(year_month.split('-')[1])
     monthly_total = 0
-    for entry in ledger:
-        if entry["date"].startswith(month):
-            monthly_total += entry["amount"]
-            print(entry)
-    print(f"{month}월 총 지출: {monthly_total} 원")
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            # 데이터가 존재하면 각 지출 내역을 출력
+            for expense in data:
+                if int(expense["date"].split('-')[0]) == year and int(expense["date"].split('-')[1]) == month:
+                    monthly_total += int(expense["amount"])
+            print(f"{month}월 총 지출: {monthly_total} 원")
+        else:
+            # 데이터가 비어 있으면 해당 메시지 출력
+            print("저장된 지출 내역이 없습니다.")
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    budget = float(input("예산 설정 (원): "))
-    current_total = sum(entry["amount"] for entry in ledger)
-    if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
-    else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        # 파일을 열어 데이터를 불러옴
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            budget = int(input("예산 설정 (원): "))
+            current_total = sum(int(expense["amount"]) for expense in data)
+            if current_total > budget:
+                print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+            else:
+                print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        else:
+            # 데이터가 비어 있으면 해당 메시지 출력
+            print("저장된 지출 내역이 없습니다.")
+
+
+
+    
 
 # 지출 카테고리 분석 함수
-def analyze_categories():
-    category_totals = {}
-    for entry in ledger:
-        category = entry["category"]
-        if category not in category_totals:
-            category_totals[category] = 0
-        category_totals[category] += entry["amount"]
-    for category, total in category_totals.items():
-        print(f"{category}: {total} 원")
+def analyze_items():
+    item_totals = {}
+        # 파일을 열어 데이터를 불러옴
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            for expense in data:
+                item = expense["item"]
+                if not(item in item_totals):
+                    item_totals[item] = 0
+                item_totals[item] += int(expense["amount"])
+            for item, total in item_totals.items():
+                print(f"{item}: {total} 원")
+        else:
+            # 데이터가 비어 있으면 해당 메시지 출력
+            print("저장된 지출 내역이 없습니다.")
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -253,12 +258,32 @@ c = Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(func):#가계부 선택 함수
+def choose_Account():#가계부 선택 함수
     print("가계부 선택(번호로 입력)")
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
     return choose 
+
+#가계부 내용을 엑셀 파일로 저장하는 함수
+def ledger_to_excel():
+    # 파일을 열어 데이터를 불러옴
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            # 데이터가 존재하면 각 지출 내역을 출력
+            DF = pd.DataFrame(
+                {"date":[expense["date"] for expense in data],
+                "item":[expense["item"] for expense in data],
+                "amount":[expense["amount"] for expense in data]}
+            )
+            DF = DF.set_index('date')
+            file_name = input("파일 이름(.xlsx 적지 마세요):")
+            DF.to_excel(file_name+'.xlsx')
+            print()
+        else:
+            # 데이터가 비어 있으면 해당 메시지 출력
+            print("저장된 지출 내역이 없습니다.")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -268,15 +293,19 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+        input_expense()
     elif func == "2":
-        view_entries()
+        view_expenses()
     elif func == "3":
-        generate_monthly_report()
+        delete_expense()
     elif func == "4":
-        set_budget()
+        generate_monthly_report()
     elif func == "5":
-        analyze_categories()
+        set_budget()
+    elif func == "6":
+        analyze_items()
+    elif func == "7":
+        ledger_to_excel()
     elif func == "?":
         print_help()
     elif func == "exit":
