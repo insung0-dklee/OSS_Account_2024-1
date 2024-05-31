@@ -225,6 +225,14 @@ def input_expense():
     print("지출 내역이 저장되었습니다.")
     isOTT(date,item,amount)
 
+# 정기 구독을 저장할 파일 이름
+OTT_file = 'OTT.json'
+
+# 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
+if not os.path.exists(OTT_file):
+    with open(OTT_file, 'w') as file:
+        json.dump([], file)
+
 #정기 구독으로 추정되는 경우 사용자에게 권유
 def isOTT(date,item,amount):
         date = datetime.datetime.strptime(date, "%Y-%m-%d")
@@ -250,8 +258,19 @@ def isOTT(date,item,amount):
                     'amount': amount
                 }
                 #정기 구독의 내용을 파일에 저장
-                #save_OTT라는 이름으로 저장하는 함수 추가 예정
+                save_OTT(OTT)
                 print("정기 구독으로 추가하였습니다.")
+
+def save_OTT(OTT):
+    # 파일을 열어 기존 데이터를 불러옴
+    with open(OTT_file, 'r') as file:
+        data = json.load(file)
+    # 새 지출 내역을 리스트에 추가
+    data.append(OTT)
+    # 데이터를 파일에 저장
+    with open(OTT_file, 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
