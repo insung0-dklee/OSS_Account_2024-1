@@ -210,10 +210,25 @@ def view_expenses():
 
 # 지출 내역을 입력받는 함수
 def input_expense():
+    # 지출 내역을 입력받는 함수
+def input_expense():
     # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
-    date = input("지출 날짜 (예: 2024-05-30): ")
+    while True:
+        date = input("지출 날짜 (예: 2024-05-30): ")
+        if validate_date(date):
+            break
+        else:
+            print("날짜 형식이 올바르지 않습니다. 다시 입력해 주세요.")
+    
     item = input("지출 항목: ")
-    amount = input("지출 금액: ")
+    
+    while True:
+        try:
+            amount = float(input("지출 금액: "))
+            break
+        except ValueError:
+            print("금액이 올바르지 않습니다. 숫자를 입력해 주세요.")
+    
     # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
         'date': date,
@@ -223,6 +238,35 @@ def input_expense():
     # 지출 내역을 파일에 저장
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
+
+# 수입 내역을 입력받는 함수
+def input_income():
+    # 사용자로부터 수입 날짜, 항목, 금액을 입력받음
+    while True:
+        date = input("수입 날짜 (예: 2024-05-30): ")
+        if validate_date(date):
+            break
+        else:
+            print("날짜 형식이 올바르지 않습니다. 다시 입력해 주세요.")
+    
+    item = input("수입 항목: ")
+    
+    while True:
+        try:
+            amount = float(input("수입 금액: "))
+            break
+        except ValueError:
+            print("금액이 올바르지 않습니다. 숫자를 입력해 주세요.")
+    
+    # 입력받은 데이터를 딕셔너리 형태로 저장
+    income = {
+        'date': date,
+        'item': item,
+        'amount': amount
+    }
+    # 수입 내역을 파일에 저장
+    save_income(income)
+    print("수입 내역이 저장되었습니다.")
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
