@@ -1,11 +1,8 @@
 import hashlib #hashlib 사용
-<<<<<<< HEAD
 import os
 import json
 from datetime import datetime
 import pickle
-=======
->>>>>>> origin/test
 import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -257,7 +254,7 @@ c = Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account():#가계부 선택 함수 - func 제거(함수에 아무런 영향이 없음 + 호출시 의미없는 값을 넣어주어야 함) - 1
+def choose_Account():#가계부 선택 함수 - func 제거(함수에 아무런 영향) - 1
     print("가계부 선택(번호로 입력)")
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
@@ -286,32 +283,12 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
-#가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
-
-Account_list = [a,b,c] #가계부 리스트
-i=0
-
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose 
 
 # 메인 루프
 while not b_is_exit:
-    print("--------------------------------")
-    choose = int(choose_Account(func))-1
     func = input("기능 입력 (? 입력시 도움말) : ")
 
-    if choose > len(Account_list):
-      print("해당하는 가계부가 없습니다.")
-      continue1
     if func == "1":
-<<<<<<< HEAD
         add_entry()
     elif func == "2":
         view_entries()
@@ -329,22 +306,7 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
-=======
-      Account_list[choose].income()
-    elif func == "2":
-      Account_list[choose].spend()
-    elif func == "3":
-      Account_list[choose].show_account()
-      Account_list[choose].show_total()
-    elif func == "4":
-      Account_list[choose].show_sortedlist()
-    elif func == "?":
-        print("도움말 입력.");
->>>>>>> origin/test
     else:
         b_is_exit = not b_is_exit
-        print("프로그램을 종료합니다.");
-        break
-
 
         print("올바른 기능을 입력해 주세요.")
