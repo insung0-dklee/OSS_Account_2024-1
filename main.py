@@ -287,3 +287,33 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+def compare_financial_goal(user1, user2, goal):
+    """
+    두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
+    
+    @Param
+        user1 : User object : 비교할 첫 번째 사용자 객체.
+        user2 : User object : 비교할 두 번째 사용자 객체.
+        goal : float : 달성하고자 하는 목표 금액.
+    @Return
+        None
+    @Raises
+        목표 금액이 음수이거나 0일 경우, 오류 메시지를 출력하고 함수를 종료합니다.
+    """
+    if goal <= 0:
+        print("목표 금액은 양수여야 합니다.")
+        return
+
+    user1_progress = (user1.balance / goal) * 100
+    user2_progress = (user2.balance / goal) * 100
+
+    print(f"{user1.name}의 목표 달성률: {user1_progress:.2f}%")
+    print(f"{user2.name}의 목표 달성률: {user2_progress:.2f}%")
+
+    if user1_progress > user2_progress:
+        print(f"{user1.name}의 목표 달성률이 더 높습니다.")
+    elif user1_progress < user2_progress:
+        print(f"{user2.name}의 목표 달성률이 더 높습니다.")
+    else:
+        print("두 사용자의 목표 달성률이 같습니다.")
