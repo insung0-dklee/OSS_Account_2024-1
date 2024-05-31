@@ -244,6 +244,49 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+"""
+    지출 내역 수정 기능
+
+    수정할 지출 항목의 번호를 입력받음
+    파일에서 지출 데이터를 읽어옴
+    사용자가 새로 입력한 값이 없을 경우 기존 값 유지
+    지출 데이터를 수정하고 파일에 다시 저장
+    입력 값이 숫자가 아닌 경우 처리
+"""
+def modify_expense():
+    index = input("수정할 지출 항목의 번호를 입력하세요: ")
+
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+    try:
+        index = int(index)
+        if 1 <= index <= len(data):
+            date = input(f"새 지출 날짜 (기존 값: {data[index-1]['date']}): ") or data[index-1]['date']
+            item = input(f"새 지출 항목 (기존 값: {data[index-1]['item']}): ") or data[index-1]['item']
+            amount = input(f"새 지출 금액 (기존 값: {data[index-1]['amount']}): ") or data[index-1]['amount']
+
+            data[index-1] = {'date': date, 'item': item, 'amount': amount}
+            with open(expenses_file, 'w') as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+            print("지출 내역이 수정되었습니다.")
+        else:
+            print("잘못된 번호입니다. 다시 시도하세요.")
+    except ValueError:
+
+        print("숫자를 입력하세요.")
+
+# 총 지출/수입 조회 기능
+def view_total_expense_income():  
+    total_expense = 0
+    total_income = 0
+    # 장부의 각 항목을 순회하며 지출과 수입을 계산
+    for entry in ledger:
+        if entry["amount"] < 0:  # 지출인 경우
+            total_expense += entry["amount"]
+        else:  # 수입인 경우
+            total_income += entry["amount"]
+    # 총 지출과 총 수입을 출력
+    print(f"총 지출: {total_expense} 원, 총 수입: {total_income} 원")
 
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
@@ -277,6 +320,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6": 
+        modify_expense()  
+    elif func == "7":  
+        view_total_expense_income() 
     elif func == "?":
         print_help()
     elif func == "exit":
