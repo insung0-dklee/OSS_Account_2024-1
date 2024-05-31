@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
+import requests
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -161,6 +162,57 @@ def analyze_categories():
         print(f"{category}: {total} 원")
 
 """
+get_exchange_rate : 현재 환율정보를 가져오는 함수
+@Parm
+    api_key : exchangerate-api에서 발급받은 API 키
+    to_currency : 전화할 통화 (예: EUR)
+@return
+    exchange_rate : 환율 정보
+"""
+def get_exchange_rate(api_key, to_currency):
+    url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/KRW" #API 요청할 URL주소
+    response = requests.get(url) #API 요청보내기
+    data = response.json()
+
+    if response.status_code != 200:
+        raise Exception("API 요청 실패: " + data['error'])
+
+    exchange_rate = data['conversion_rates'][to_currency]
+    return exchange_rate #환율 정보 반환
+"""
+exchange_rate_calculation : 환율계산을 해주는 함수
+@Parm
+    api_key : exchangerate-api에서 발급받은 API 키
+    to_currency : 전화할 통화 (예: EUR)
+    money : 환전할 금액
+@return
+    converted_money : 환전된 결과
+"""
+def exchange_rate_calculation(money, to_currency, api_key):
+    try:
+        exchange_rate = get_exchange_rate(api_key, to_currency) #환율 정보 가져오기
+        converted_money = money * exchange_rate #환율 계산
+        return converted_money #환전된 결과 반환
+    except Exception as e:
+        print(f"환율 변환에 실패했습니다: {e}")
+        return None
+"""
+exchange_rate : 환전할 금액과 통화를 입력받아 환전한 결과를 알려주는 함수
+@Parm
+    None
+@return
+    None
+"""
+def exchange_rate():
+    api_key = "cc93f53c8ad9339a8165ca89" #API 키
+    money = int(input("환전할 금액을 입력하세요: "))  # 금액 입력
+    to_currency = input("환전할 통화를 입력하세요 (예: EUR): ").upper() #통화 입력
+
+    converted_money = exchange_rate_calculation(money, to_currency, api_key) #환율 계산
+    if converted_money is not None:
+        print(f"{money} KRW는 {converted_money:.2f} {to_currency}입니다.") #환전결과 출력
+
+"""
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
     None
@@ -261,6 +313,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        exchange_rate()
     elif func == "?":
         print_help()
     elif func == "exit":
