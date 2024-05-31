@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pickle
 import Account_book
 
@@ -223,6 +223,35 @@ def input_expense():
     # 지출 내역을 파일에 저장
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
+    isOTT(date,item,amount)
+
+#정기 구독으로 추정되는 경우 사용자에게 권유
+def isOTT(date,item,amount):
+        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        with open(expenses_file, 'r') as file:
+            data = json.load(file)
+        #3달동안 비슷한 날짜에 같은 지출이 있었는지 확인
+        search_expenses = []
+        for i in range(1, 4):
+            searchdate_max = (date - timedelta(days=i*30 - 3)).strftime("%Y-%m-%d") #윤달 및 31일 같은 변수를 고려해서 오차범위를 +-3일로 설정
+            searchdate_min = (date - timedelta(days=i*30 + 3)).strftime("%Y-%m-%d")
+            #기존 데이터 안에 같은 내역이 있고 지정한 범위 안에 있는지 확인 후 있으면 search_expenses에 추가
+            for expense in data:
+                if searchdate_min <= expense['date'] <= searchdate_max and expense['item'] == item and expense['amount'] == amount:
+                    search_expenses.append(expense)
+                    break
+
+        if len(search_expenses) == 3:
+            answer = input("최근 3달동안 일정한 날에 같은 내역이 있습니다. \n 정기 구독으로 추가하시겠습니까? (y/n)")
+            if answer == 'y':
+                OTT = {
+                    'start_date': date,
+                    'item': item,
+                    'amount': amount
+                }
+                #정기 구독의 내용을 파일에 저장
+                #save_OTT라는 이름으로 저장하는 함수 추가 예정
+                print("정기 구독으로 추가하였습니다.")
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
