@@ -749,6 +749,48 @@ def visualize_monthly_assets(account_history):
     plt.title('월별 자산')
     plt.show()
 
+#10,000원 이하 소액 결제 관리 시스템
+def analyze_low_spending_categories():
+    # 10,000원 이하로 사용하는 카테고리를 저장할 리스트
+    low_spending_categories = []
+    
+    # 각 카테고리의 총 지출을 저장할 딕셔너리
+    category_totals = {}
+    
+    # 가계부의 각 항목을 순회하면서 카테고리별 총 지출을 계산
+    for entry in ledger:
+        category = entry["category"]
+        amount = entry["amount"]
+        # 카테고리가 존재하지 않는 경우 새로운 항목으로 추가
+        if category not in category_totals:
+            category_totals[category] = 0
+        # 해당 카테고리의 총 지출에 현재 항목의 금액을 추가
+        category_totals[category] += amount
+    
+    # 각 카테고리별 지출을 확인하여 10,000원 이하로 사용하는 카테고리를 찾음
+    for category, total in category_totals.items():
+        if total <= 10000:
+            low_spending_categories.append(category)
+    
+    # 10,000원 이하로 사용하는 카테고리 리스트 반환
+    return low_spending_categories
+
+# 10,000원 이하로 사용하는 카테고리를 요약하여 제공하는 함수
+def summarize_low_spending_categories():
+    # 10,000원 이하로 사용하는 카테고리를 분석
+    low_spending_categories = analyze_low_spending_categories()
+    
+    # 분석 결과를 출력
+    if low_spending_categories:
+        print("10,000원 이하로 사용하는 카테고리:")
+        for category in low_spending_categories:
+            print(category)
+    else:
+        print("10,000원 이하로 사용하는 카테고리가 없습니다.")
+
+summarize_low_spending_categories()
+
+
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
