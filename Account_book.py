@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Account_book: # 가계부 클래스
 
   bal = 0 #잔액 - 미설정시 0원
@@ -6,6 +8,8 @@ class Account_book: # 가계부 클래스
   spend_total = 0 #지출 총액
   spend_list = [] #지출 기록 리스트
   name = " " #이름 - 미설정시 공백
+
+  fixed_list=[] #고정 지출 리스트
 
   def __init__(self,name,bal): # 초기화
     self.name = name #이름 설정
@@ -59,3 +63,41 @@ class Account_book: # 가계부 클래스
         print(i+1,"위 ",sortedlist[i],"원")
     else:
       print("잘못 입력하셨습니다.")
+
+
+  """
+  고정 지출 리스트에 정보 추가 함수
+  @Param
+   spend_money : 지출 금액
+   spend_date : 지출 날짜
+  @Return
+    None
+  """
+  def fixed_spend(self, spend_money, spend_date):  # 고정 지출 입력
+    if spend_money <= 0:
+      print("지출 금액은 0보다 커야 합니다.")
+      return
+    if spend_money > self.bal:
+      print("잔액보다 큰 금액은 지출할 수 없습니다.")
+      return        
+    # 지출 리스트에 지출 정보 추가
+    self.fixed_list.append((spend_money, spend_date))
+    print(f"{spend_date}에 {spend_money}원의 고정 지출이 기록되었습니다.")
+  """
+  고정 지출 처리 함수
+  @Param
+    None
+  @Return
+    None
+  """
+  def process_daily_expenses(self):  # 매일 지출 처리
+    today = datetime.now().date()
+    # 고정 지출 리스트에 기록했던 날짜와 현재 날짜를 비교하여 동일하면 처리
+    for spend_money, expense_date in self.fixed_list:
+      spend_date = datetime.strptime(expense_date, "%Y-%m-%d").date()
+      if spend_date == today:
+        if spend_money <= self.bal:
+          self.bal -= spend_money
+          print(f"{expense_date}에 {spend_money}원의 고정 지출이 자동으로 처리되었습니다.")
+        else:
+          print(f"{expense_date}에 처리하지 못한 고정 지출이 있습니다. 잔액이 부족합니다.")
