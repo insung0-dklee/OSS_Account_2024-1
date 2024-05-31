@@ -5,6 +5,9 @@ from datetime import datetime
 import pickle
 import Account_book
 
+import tkinter as tk
+from tkinter import messagebox
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
@@ -95,6 +98,28 @@ def calculator():
     except Exception as e:
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
+
+
+def create_ad_window(ad_message, ad_title="Advertisement"):
+    # 광고창을 위한 새로운 윈도우 생성
+    ad_window = tk.Toplevel()
+    ad_window.title(ad_title)
+    ad_window.geometry("300x200")
+    ad_window.resizable(False, False)
+
+    # 광고 메시지 레이블
+    ad_label = tk.Label(ad_window, text=ad_message, wraplength=250, justify=tk.CENTER)
+    ad_label.pack(expand=True)
+
+    # 확인 버튼
+    ok_button = tk.Button(ad_window, text="OK", command=ad_window.destroy)
+    ok_button.pack(pady=10)
+
+    # 광고창이 다른 창 위에 표시되도록 설정
+    ad_window.transient(root)
+    ad_window.grab_set()
+    root.wait_window(ad_window)
+
 
 # 가계부 데이터 저장 변수
 ledger = []
