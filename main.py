@@ -63,6 +63,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6. 회원가입
     ?: 도움말 출력
     exit: 종료
     """)
@@ -192,6 +193,9 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "6":  # 회원가입 기능 추가
+        user_reg()      # 사용자가 회원가입할 수 있도록 함수 호출
     else:
         print("올바른 기능을 입력해 주세요.")
+
 
