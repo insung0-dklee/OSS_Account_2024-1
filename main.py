@@ -3,7 +3,6 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -107,6 +106,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 최소/최대값 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -244,21 +244,32 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+        
+def find_max_min():
+    if ledger:
+        max_expense = max(ledger, key=lambda x: x['amount'])
+        min_expense = min(ledger, key=lambda x: x['amount'])
+        print(f"최대 지출 항목: {max_expense['date']} - {max_expense['category']} : {max_expense['amount']}원")
+        print(f"최소 지출 항목: {min_expense['date']} - {min_expense['category']} : {min_expense['amount']}원")
+    else:
+        print("가계부에 지출 내역이 없습니다.")
+        
+# 모든 데이터 초기화 함수
+def reset_all():
+    global ledger, userdata
+    ledger.clear()  # 가계부 데이터 초기화
+    userdata.clear()  # 사용자 데이터 초기화
+    # 파일 시스템에서도 관련 파일들을 삭제하거나 초기화합니다.
+    if os.path.exists('expenses.json'):
+        with open('expenses.json', 'w') as file:
+            json.dump([], file)  # 지출 내역 파일 초기화
+    for user_id in os.listdir():
+        if user_id.endswith('.txt') and user_id != 'login.txt':
+            os.remove(user_id)  # 사용자 파일 삭제
+    if os.path.exists('login.txt'):
+        open('login.txt', 'w').close()  # 로그인 파일 초기화
+    print("모든 데이터가 초기화되었습니다.")
 
-#가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
-
-Account_list = [a,b,c] #가계부 리스트
-i=0
-
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose 
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -277,6 +288,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 최대값과 최소값 출력 기능 추가
+        find_max_min()
+    elif func == "reset":
+        reset_all()    
     elif func == "?":
         print_help()
     elif func == "exit":
