@@ -2,27 +2,39 @@ import hashlib #hashlib 사용
 import os
 import json
 from datetime import datetime
+import re
 import pickle
-import Account_book
+from Account_book import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
-    h = hashlib.sha256() #hashlib 모듈의 sha256 사용
-    h.update(pw.encode()) #sha256으로 암호화
-    pw_data = h.hexdigest() #16진수로 변환
+        """
+        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+        """
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
 
-    f = open('login.txt', 'wb') #login 파일 오픈
+        h = hashlib.sha256() #hashlib 모듈의 sha256 사용
+        h.update(pw.encode()) #sha256으로 암호화
+        pw_data = h.hexdigest() #16진수로 변환
 
-    userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
+        f = open('login.txt', 'wb') #login 파일 오픈
 
-    with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-        for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+        userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
+
+        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
+            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+        print("회원가입이 완료되었습니다!")
+        break
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
@@ -245,7 +257,8 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-from Account_book import Account_book
+
+
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
 b = Account_book("가계부 2",2000000)
@@ -284,6 +297,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "6":
+        user_reg()
     else:
         b_is_exit = not b_is_exit
 
