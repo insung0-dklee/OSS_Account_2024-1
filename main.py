@@ -3,6 +3,9 @@ import os
 import json
 from datetime import datetime
 import pickle
+import pytesseract
+from PIL import Image
+import re
 import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -107,6 +110,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 영수증 스캔
     ?: 도움말 출력
     exit: 종료
     """)
@@ -245,6 +249,30 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 영수증 스캔 함수
+def scan_receipt(image_path):
+    try:
+        img = Image.open(image_path)
+        text = pytesseract.image_to_string(img, lang='eng')
+        
+        # 날짜 추출 (예: 2024-05-30 또는 2024/05/30 형식)
+        date_match = re.search(r'\d{4}[-/]\d{2}[-/]\d{2}', text)
+        date = date_match.group() if date_match else "날짜를 인식하지 못했습니다."
+        
+        # 항목과 금액 추출 (예: 항목명 1000원 또는 항목명 1000)
+        items = re.findall(r'(\w+)\s+(\d+(?:,\d{3})*(?:\.\d+)?)\s*원?', text)
+
+        if not items:
+            items = re.findall(r'(\w+)\s+(\d+(?:\.\d+)?)', text)
+
+        print(f"날짜: {date}")
+        print("항목과 금액:")
+        for item, amount in items:
+            print(f"{item}: {amount} 원")
+
+    except Exception as e:
+        print(f"영수증 인식 중 오류가 발생하였습니다: {e}")
+
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
 b = Account_book("가계부 2",2000000)
@@ -277,6 +305,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 영수증 스캔 기능 추가
+        image_path = input("영수증 이미지 경로를 입력하세요: ")
+        scan_receipt(image_path)
     elif func == "?":
         print_help()
     elif func == "exit":
