@@ -107,6 +107,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    메모장
+    환율계산
     ?: 도움말 출력
     exit: 종료
     """)
@@ -246,7 +248,8 @@ def delete_expense():
         print("숫자를 입력하세요.")
 
 #가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
+from Account_book import Account_book # Account_book 이라는 객체를 생성하는 부분에서 문제가 발생함.main.py 파일에서 클래스를 인스턴스화하는 방법을 올바르게 사용해야 합니다
+a = Account_book("가계부 1",1000000)  
 b = Account_book("가계부 2",2000000)
 c = Account_book("가계부 3",3000000)
 
@@ -260,15 +263,70 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+# 엔화와 달러의 환율 정보를 정적으로 저장합니다.
+exchange_rate = {
+    "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
+    "JPY": 0.1      # 1엔화 = 10원 (가상의 환율)
+}
+
+def convert_currency(amount, currency):
+    """
+    입력된 금액을 선택한 통화로 환전하는 함수
+    :param amount: 원화로 입력된 금액
+    :param currency: 환전할 통화 (USD 또는 JPY)
+    :return: 환전된 금액
+    """
+    if currency in exchange_rate:
+        # 선택한 통화의 환율로 원화를 환전합니다.
+        converted_amount = amount * exchange_rate[currency]
+        return converted_amount
+    else:
+        return None
+
+# 환율 계산을 실행하는 부분
+def calculate_exchange():
+    amount = float(input("환전할 금액(원): "))
+    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    converted_amount = convert_currency(amount, currency)
+    if converted_amount is not None:
+        print(f"{amount}원을 {currency}로 환전한 금액은 {converted_amount}입니다.")
+    else:
+        print("지원되지 않는 통화입니다.")
+
+# 가계부 기능에 환율 계산 추가
+def add_entry_with_exchange():
+    # 기존의 지출 항목 추가 함수(add_entry())와 비슷하게 작성하되,
+    # 추가로 환전할 통화와 금액을 입력받고, 해당 통화로 환전된 금액을 함께 저장합니다.
+    date = input("날짜 (YYYY-MM-DD): ")
+    category = input("카테고리: ")
+    description = input("설명: ")
+    amount = float(input("금액(원): "))
+    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    converted_amount = convert_currency(amount, currency)
+    if converted_amount is not None:
+        # 환전된 금액과 통화 정보를 함께 저장합니다.
+        entry = {
+            "date": date,
+            "category": category,
+            "description": description,
+            "amount": amount,
+            "currency": currency,
+            "converted_amount": converted_amount
+        }
+        ledger.append(entry)
+        print("항목이 추가되었습니다.")
+    else:
+        print("지원되지 않는 통화입니다.")
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
-# 메인 루프
+# 기존의 메인 루프에 환율 계산 기능을 추가합니다.
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+        add_entry_with_exchange()  # 변경된 함수 호출
     elif func == "2":
         view_entries()
     elif func == "3":
@@ -283,6 +341,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+    elif func == "환율계산":
+        calculate_exchange()  # 추가된 기능 호출
     else:
         b_is_exit = not b_is_exit
 
