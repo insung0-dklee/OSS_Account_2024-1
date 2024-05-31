@@ -3,6 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
+import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -106,8 +107,6 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 계좌생성 및 잔액 입력
-    7: 계좌 정보 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -246,46 +245,20 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-def user_account_info():
-    # 사용자의 ID를 입력 받습니다.
-    user_id = input("사용자 ID를 입력하세요: ")
+#가계부 초깃값 임의로 설정
+a = Account_book("가계부 1",1000000)
+b = Account_book("가계부 2",2000000)
+c = Account_book("가계부 3",3000000)
 
-    # 해당 사용자의 정보가 이미 존재하는지 확인합니다.
-    if os.path.exists(f'{user_id}.txt'):
-        print("이미 해당 ID로 등록된 계정이 있습니다.")
-        return
+Account_list = [a,b,c] #가계부 리스트
+i=0
 
-    # 사용자의 잔고를 입력 받습니다.
-    balance = float(input("잔고를 입력하세요: "))
-
-    # 새 계정을 생성하고 정보를 저장합니다.
-    new_account(user_id, balance)
-    print("계정이 생성되었습니다.")
-
-def view_account_info():
-    # 사용자의 ID를 입력 받습니다.
-    user_id = input("사용자 ID를 입력하세요: ")
-
-    # 해당 사용자의 정보가 존재하는지 확인합니다.
-    user_info = open_account_info(user_id)
-    if user_info:
-        # 사용자 정보를 출력합니다.
-        print(f"사용자 ID: {user_info['user_id']}")
-        print(f"잔고: {user_info['bal']}")
-
-        # 지출 및 수입 내역이 있는 경우 출력합니다.
-        if user_info['history']:
-            print("지출/수입 내역:")
-            for date, transactions in user_info['history'].items():
-                print(f"날짜: {date}")
-                for amount, description in transactions:
-                    print(f"    금액: {amount}, 내용: {description}")
-        else:
-            print("지출/수입 내역이 없습니다.")
-    else:
-        print("해당 ID로 등록된 계정이 없습니다.")
-
-
+def choose_Account(func):#가계부 선택 함수
+    print("가계부 선택(번호로 입력)")
+    for i in range(0,len(Account_list)):#가계부 리스트 출력
+      print(f"가계부 {i+1}번 : ",Account_list[i].name)
+    choose = input()
+    return choose 
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -304,10 +277,6 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
-        user_account_info()
-    elif func == "7":
-        view_account_info()
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -316,5 +285,5 @@ while not b_is_exit:
         add_memo()
     else:
         b_is_exit = not b_is_exit
-        print("올바른 기능을 입력해 주세요.")
 
+        print("올바른 기능을 입력해 주세요.")
