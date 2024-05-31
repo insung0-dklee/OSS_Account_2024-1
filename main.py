@@ -162,7 +162,9 @@ def analyze_categories():
         print(f"{category}: {total} 원")
 
 """
-add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
+add_memo    메모 추가
+read_memo   메모 읽기
+memo
 @Parm
     None
 @Return
@@ -176,6 +178,41 @@ def add_memo():
     str_memo = input()
     new_f.write(str_memo)
     new_f.close()
+
+def read_memo():
+    print("열고 싶은 메모장 제목: ")
+    str_title = input()
+    try:
+        with open(str_title, "r", encoding="utf8") as f:
+            content = f.read()
+            print("메모 내용:")
+            print(content)
+    except FileNotFoundError:
+        print("해당 제목의 메모장을 찾을 수 없습니다.")
+
+def delete_memo():
+    print("삭제할 메모장 제목: ")
+    str_title = input()
+    if os.path.exists(str_title):
+        os.remove(str_title)
+        print(f"{str_title} 메모가 삭제되었습니다.")
+    else:
+        print("해당 제목의 메모장을 찾을 수 없습니다.")
+
+def memo():
+    print("1. 메모 추가")
+    print("2. 메모 읽기")
+    print("3. 메모 삭제")
+    choice = input("선택: ")
+    if choice == "1":
+        add_memo()
+    elif choice == "2":
+        read_memo()
+    elif choice == "3":
+        delete_memo()
+    else:
+        print("잘못된 선택입니다.")
+
 
 # 지출 내역을 저장할 파일 이름
 expenses_file = 'expenses.json'
@@ -282,7 +319,7 @@ while not b_is_exit:
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
-        add_memo()
+        memo()
     else:
         b_is_exit = not b_is_exit
 
