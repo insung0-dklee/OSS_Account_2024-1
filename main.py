@@ -160,6 +160,23 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+"""
+YU_Account : 프로그램 시작 화면 출력
+@Parm
+    None
+@return
+    None
+"""
+def YU_Account():
+    welcome_message = """=======================================
+*                                     *
+*           YU_Account_Book           *
+*                                     *
+=======================================
+-이 프로그램은 사용자가 재정을 효과적 
+으로 관리할 수 있도록 도와줍니다.
+    """
+    print(welcome_message)
 
 """
 get_exchange_rate : 현재 환율정보를 가져오는 함수
@@ -298,7 +315,7 @@ def delete_expense():
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
-
+YU_Account() #프로그램 시작 화면
 # 메인 루프
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
