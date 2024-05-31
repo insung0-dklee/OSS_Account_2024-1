@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pickle
 import requests
 
@@ -160,6 +160,26 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+"""
+fixed_expense : 정기적인 지출 항목을 관리해주는 기능
+@Parm
+    None
+@return
+    None
+"""
+def fixed_expense():
+    current_date = datetime.now()#현재 날짜 가져오기
+    expense_name = input("정기적인 지출 항목 :") #정기적인 소비 항목 입력
+    expense = int(input("금액 :")) #금액 입력
+    cycle = int(input("주기 :")) #주기 입력(month)
+
+    # 정기 지출 항목 등록
+    print(f"등록된 지출 항목: {expense_name}, 금액: {expense}, 주기: {cycle} 개월")
+    
+    # 정기적으로 반복되는 지출 항목 처리
+    next_date = current_date + timedelta(days=cycle * 30)  # 주기(month)에 맞게 날짜 계산
+    print(f"다음 지출 예정일: {next_date.strftime('%Y-%m-%d')}")
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -332,6 +352,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         exchange_rate()
+    elif func == "7":
+        fixed_expense()
     elif func == "?":
         print_help()
     elif func == "exit":
