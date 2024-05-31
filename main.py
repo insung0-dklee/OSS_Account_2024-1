@@ -16,6 +16,7 @@ def user_reg() : #회원가입
     h.update(pw.encode()) #sha256으로 암호화
     pw_data = h.hexdigest() #16진수로 변환
 
+    
     f = open('login.txt', 'wb') #login 파일 오픈
 
     userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
