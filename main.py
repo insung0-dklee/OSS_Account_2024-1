@@ -107,6 +107,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 저축 계획 수립
     ?: 도움말 출력
     exit: 종료
     """)
@@ -246,9 +247,9 @@ def delete_expense():
         print("숫자를 입력하세요.")
 
 #가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
+a = Account_book.Account_book("가계부 1",1000000)
+b = Account_book.Account_book("가계부 2",2000000)
+c = Account_book.Account_book("가계부 3",3000000)
 
 Account_list = [a,b,c] #가계부 리스트
 i=0
@@ -258,7 +259,45 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose 
+    return choose
+
+# 저축 계획을 수립하는 함수
+def savings_plan():
+    target_amount = float(input("목표 저축액을 입력하세요: "))
+    current_savings = float(input("현재 저축액을 입력하세요: "))
+    monthly_savings = float(input("월 저축액을 입력하세요: "))
+    months = int(input("목표 기간(개월)을 입력하세요: "))
+
+    """
+    목표 저축액, 현재 저축액, 월 저축액, 목표 기간을 입력받아
+    추가 저축액과 매월 저축액을 계산하는 함수.
+    
+    target_amount : 목표 저축액
+    current_savings : 현재 저축액
+    monthly_savings : 월 저축액
+    months : 목표 기간(월 단위)
+    
+    Returns:
+    추가 저축액과 매월 저축액을 포함한 결과를 dictionary 형태로 반환 후 출력
+    """
+
+    needed_savings = target_amount - current_savings
+    total_savings_with_current_plan = current_savings + (monthly_savings * months)
+
+    if total_savings_with_current_plan < target_amount:
+        additional_monthly_savings = (needed_savings - (monthly_savings * months)) / months
+    else:
+        additional_monthly_savings = 0
+
+    result = {
+        "total_savings_needed": needed_savings,
+        "total_savings_with_current_plan": total_savings_with_current_plan,
+        "additional_monthly_savings": additional_monthly_savings
+    }
+
+    print(f"추가 저축액: {result['total_savings_needed']} 원")
+    print(f"계획된 총 저축액: {result['total_savings_with_current_plan']} 원")
+    print(f"추가로 필요한 월 저축액: {result['additional_monthly_savings']} 원")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -277,6 +316,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        savings_plan()
     elif func == "?":
         print_help()
     elif func == "exit":
