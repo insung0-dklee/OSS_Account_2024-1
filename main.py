@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
+from Account_book import *
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -107,6 +107,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 현재 날짜 및 시간 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -260,6 +261,10 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+def print_current_datetime():
+    now = datetime.now()
+    print(f"현재 날짜 및 시간: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -277,6 +282,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        print_current_datetime()
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -284,6 +291,4 @@ while not b_is_exit:
     elif func == "메모장":
         add_memo()
     else:
-        b_is_exit = not b_is_exit
-
         print("올바른 기능을 입력해 주세요.")
