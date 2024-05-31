@@ -7,6 +7,7 @@ import Account_book
 import random
 import webbrowser
 import re
+import matplotlib.pyplot as plt # 그래프를 그리기 위한 `matplotlib` 라이브러리 설치.
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -724,6 +725,30 @@ def YU_Account():
     print(welcome_message)
 
 YU_Account() #프로그램 시작 화면
+
+def visualize_monthly_assets(account_history):
+    """
+    가계부의 월별 자산(잔고)을 막대 그래프로 시각화합니다.
+    
+    Parameters:
+        account_history (dict): 가계부의 거래 내역. {날짜: 잔고} 형태의 딕셔너리.
+    """
+    # 월별 자산을 저장할 딕셔너리
+    monthly_assets = {}
+    
+    # 거래 내역을 기반으로 월별 자산 계산
+    for date, balance in account_history.items():
+        month = date.split('-')[1]  # 날짜에서 월 추출
+        if month not in monthly_assets:
+            monthly_assets[month] = balance
+    
+    # 월별 자산을 막대 그래프로 시각화
+    plt.bar(monthly_assets.keys(), monthly_assets.values())
+    plt.xlabel('월')
+    plt.ylabel('잔고')
+    plt.title('월별 자산')
+    plt.show()
+
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
