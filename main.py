@@ -1,78 +1,42 @@
-import hashlib #hashlib 사용
+import hashlib  # hashlib 사용
 import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
 
-def user_reg() : #회원가입
-    id = input("id 입력: " ) #회원가입 시의 id 입력
+def user_reg():  # 회원가입
+    id = input("id 입력: ")  # 회원가입 시의 id 입력
+    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(pw.encode())  # sha256으로 암호화
+    pw_data = h.hexdigest()  # 16진수로 변환
 
-    pw = input("password 입력: ") #회원가입 시의 pw 입력
+    userdata[id] = pw_data  # key에 id값을, value에 비밀번호 값
 
-    h = hashlib.sha256() #hashlib 모듈의 sha256 사용
-    h.update(pw.encode()) #sha256으로 암호화
-    pw_data = h.hexdigest() #16진수로 변환
-
-    f = open('login.txt', 'wb') #login 파일 오픈
-
-    userdata[id] = pw_data #key에 id값을, value에 비밀번호 값
-
-    with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-        for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+    with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+        for user_id, user_pw in userdata.items():  # 딕셔너리 내에 있는 값을 모두 for문
+            fw.write(f'{user_id} : {user_pw}\n')  # key, value값을 차례로 login.txt파일에 저장
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
-    """
-    일자와 시간을 지정하여 해당 일자의 지출을 dictionary에 리스트 및 튜플 형태로 기록.
-    parameters -
-    hist : 기록하고자 하는 dictionary
-    spending : 지출 액수
-    where : 지출 장소, 혹은 지출 이유 등등. 미기재 가능.
-    year, month, day, hour : 지정된 일자의 년, 월, 일. 미기재 가능 (미기재 시 현재의 년월일시로 자동 지정됨)
-    """
-
     dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
-        hist[f"{dt}"] = []      # 새 리스트 생성
+    if f"{dt}" not in hist:  # 해당 일자에 수입지출 내역이 없을 시,
+        hist[f"{dt}"] = []  # 새 리스트 생성
     hist[f"{dt}"].append((-spending, where))
 
 def day_income(hist, income, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
-    """
-    일자와 시간을 지정하여 해당 일자의 수입을 dictionary에 리스트 및 튜플 형태로 기록.
-    parameters -
-    hist : 기록하고자 하는 dictionary
-    income : 수입 액수
-    where : 지출 장소, 혹은 지출 이유 등등. 미기재 가능.
-    year, month, day, hour : 지정된 일자의 년, 월, 일. 미기재 가능 (미기재 시 현재의 년월일시로 자동 지정됨)
-    """
-
     dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
-        hist[f"{dt}"] = []      # 새 리스트 생성
+    if f"{dt}" not in hist:  # 해당 일자에 수입지출 내역이 없을 시,
+        hist[f"{dt}"] = []  # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
 def new_account(user_id, bal):
-    """
-    새 계정이 이용될 때, user_id와 bal, history를 포함한 dictionary를 생성하여 저장
-    parameters -
-    user_id : 사용자 이름
-    bal : 잔고
-    """
-    household_ledger = {'user_id':user_id, 'bal':bal, 'history':{}}
-
+    household_ledger = {'user_id': user_id, 'bal': bal, 'history': {}}
     with open(f'{user_id}.txt', 'wb') as info:
-        # pickle의 dump 기능을 이용하여 이용자의 이름으로 된 파일에
-        # 이용자의 id, 잔고, 수입/지출 내역(해당 함수 내에서는 초기값 공백)을 저장
-        pickle.dump(household_ledger,info)
+        pickle.dump(household_ledger, info)
 
 def open_account_info(user_id):
-    """
-    user_id의 id를 사용하는 유저의 정보가 저장된 파일을 열어
-    해당 유저의 id, 잔고, 지출/수입 내역이 담긴 dictionary를 return.
-    """
     try:
         with open(f'{user_id}.txt', 'rb') as info:
             user_dict = pickle.load(info)
@@ -83,17 +47,10 @@ def open_account_info(user_id):
 
 def calculator():
     try:
-        # 사용자가 계산할 수식을 입력받는다.
         expr = input("계산할 수식을 입력하세요 (예: 2 + 3 * 4): ")
-
-        # eval() 함수를 사용하여 입력된 수식을 평가하고 결과를 result에 저장한다.
-        # eval() 함수는 입력된 문자열을 파이썬 표현식으로 계산해준다.
         result = eval(expr)
-
-        # 계산 결과를 출력한다.
         print(f"결과: {result}")
     except Exception as e:
-        # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
 # 가계부 데이터 저장 변수
@@ -107,6 +64,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 소득세 계산
+    7: 계정 정보 조회
+    8: 메모장
     ?: 도움말 출력
     exit: 종료
     """)
@@ -161,17 +121,10 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
-"""
-add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
-@Parm
-    None
-@Return
-    None
-"""
 def add_memo():
     print("메모장 제목: ")
     str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
+    new_f = open(str_title, "w", encoding="utf8")
     print("내용 입력: ")
     str_memo = input()
     new_f.write(str_memo)
@@ -186,53 +139,37 @@ if not os.path.exists(expenses_file):
         json.dump([], file)
 
 def save_expense(expense):
-    # 파일을 열어 기존 데이터를 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
-    # 새 지출 내역을 리스트에 추가
     data.append(expense)
-    # 데이터를 파일에 저장
     with open(expenses_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
-# 저장된 지출 내역을 조회하는 함수
 def view_expenses():
-    # 파일을 열어 데이터를 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
         if data:
-            # 데이터가 존재하면 각 지출 내역을 출력
             for idx, expense in enumerate(data, start=1):
                 print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원")
         else:
-            # 데이터가 비어 있으면 해당 메시지 출력
             print("저장된 지출 내역이 없습니다.")
 
-# 지출 내역을 입력받는 함수
 def input_expense():
-    # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
-    # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
         'date': date,
         'item': item,
         'amount': amount
     }
-    # 지출 내역을 파일에 저장
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
-# 기능 3: 지출 내역 삭제
 def delete_expense():
-    # 삭제할 지출 항목의 인덱스를 입력받음
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
-
-    # 저장된 지출 내역을 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
-    # 입력받은 인덱스가 유효한지 확인하고 삭제
     try:
         index = int(index)
         if 1 <= index <= len(data):
@@ -245,20 +182,30 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-#가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
+# 소득세 계산 함수
+def calculate_tax():
+    income = float(input("총 소득을 입력하세요 (원): "))
+    tax = 0
 
-Account_list = [a,b,c] #가계부 리스트
-i=0
+    if income <= 14000000:
+        tax = income * 0.06
+    elif income <= 50000000:
+        tax = 14000000 * 0.06 + (income - 14000000) * 0.15
+    elif income <= 88000000:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + (income - 50000000) * 0.24
+    elif income <= 150000000:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + (income - 88000000) * 0.35
+    elif income <= 300000000:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + (income - 150000000) * 0.38
+    elif income <= 500000000:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 300000000) * 0.40
+    elif income <= 1000000000:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (income - 500000000) * 0.42
+    else:
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + 500000000 * 0.42 + (income - 1000000000) * 0.45
 
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose 
+    print(f"총 소득: {income} 원")
+    print(f"예상 소득세: {tax} 원")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -277,13 +224,28 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        calculate_tax()  # 세금 계산 기능 추가
+    elif func == "7":
+        user_id = input("사용자 ID를 입력하세요: ")
+        user_info = open_account_info(user_id)
+        if user_info:
+            print(f"사용자 ID: {user_info['user_id']}")
+            print(f"잔고: {user_info['bal']}")
+            if user_info['history']:
+                print("지출/수입 내역:")
+                for date, transactions in user_info['history'].items():
+                    print(f"날짜: {date}")
+                    for amount, description in transactions:
+                        print(f"    금액: {amount}, 내용: {description}")
+            else:
+                print("지출/수입 내역이 없습니다.")
+    elif func == "8":
+        add_memo()
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
-    elif func == "메모장":
-        add_memo()
     else:
-        b_is_exit = not b_is_exit
-
         print("올바른 기능을 입력해 주세요.")
+
