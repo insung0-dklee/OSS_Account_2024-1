@@ -4,7 +4,6 @@ import json
 from datetime import datetime, date
 import pickle
 import Account_book
-import Quotes
 import random
 import webbrowser
 import re
@@ -28,6 +27,92 @@ def user_reg():  # 회원가입
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
+
+# 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
+userdata2 = {}
+# 이름과 아이디를 매핑하기 위한 딕셔너리
+usernames = {}
+# 전화번호와 아이디를 매핑하기 위한 딕셔너리
+userphones = {}
+
+def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+    id = input("id 입력: ")  # 회원가입 시의 id 입력
+    name = input("이름 입력: ")  # 회원가입 시의 이름 입력
+    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+
+    # 전화번호 중복 체크 - 중복된 전화번호는 가입 불가
+    if phone in userphones:
+        print("이미 등록된 전화번호입니다. 다른 전화번호를 사용해주세요.")
+        return
+
+    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(pw.encode())  # sha256으로 암호화
+    pw_data = h.hexdigest()  # 16진수로 변환
+
+    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+    usernames[name] = id  # 이름과 아이디 매핑
+    userphones[phone] = id  # 전화번호와 아이디 매핑
+
+    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+        for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+
+
+"""
+전화번호를 통해 아이디를 찾는 함수
+"""
+def find_id_by_phone():
+    phone = input("찾고자 하는 사용자의 전화번호 입력: ")  # 사용자가 찾고자 하는 전화번호를 입력받음
+    if phone in userphones:  # 입력받은 전화번호가 userphones 딕셔너리에 존재하는지 확인
+        print(f'해당 전화번호로 등록된 아이디는 {userphones[phone]}입니다.')  # 존재하면 해당 전화번호에 매핑된 아이디를 출력
+    else:
+        print("해당 전화번호를 가진 사용자가 없습니다.")  # 존재하지 않으면 사용자 없음 메시지 출력
+
+"""
+회원 정보를 수정하는 함수
+"""
+def modify_user_info():
+    id_to_modify = input("수정할 사용자의 id 입력: ")  # 수정하고자 하는 사용자의 id 입력
+
+    # 해당 id가 userdata2에 존재하는지 확인
+    if id_to_modify not in userdata2:
+        print("해당 아이디를 가진 사용자가 없습니다.")
+        return
+
+    # 수정할 정보 입력
+    new_name = input("새로운 이름 입력: ")  # 새로운 이름 입력
+    new_phone = input("새로운 전화번호 입력: ")  # 새로운 전화번호 입력
+
+    # 전화번호 중복 체크 - 중복된 전화번호는 수정 불가
+    if new_phone in userphones and userphones[new_phone] != id_to_modify:
+        print("이미 등록된 전화번호입니다. 다른 전화번호를 사용해주세요.")
+        return
+
+    new_pw = input("새로운 password 입력: ")  # 새로운 pw 입력
+
+    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+    h.update(new_pw.encode())  # sha256으로 암호화
+    new_pw_data = h.hexdigest()  # 16진수로 변환
+
+    # 사용자 정보 수정
+    userdata2[id_to_modify] = {'pw': new_pw_data, 'name': new_name, 'phone': new_phone}
+
+    # 이름과 전화번호 매핑 정보 수정
+    # 이전 이름과 전화번호 삭제
+    old_phone = [key for key, value in userphones.items() if value == id_to_modify][0]
+    del userphones[old_phone]
+    # 새로운 이름과 전화번호 매핑
+    usernames[new_name] = id_to_modify
+    userphones[new_phone] = id_to_modify
+
+    # 수정된 정보를 파일에 다시 쓰기
+    with open('login.txt', 'w', encoding='UTF-8') as fw:
+        for user_id, user_info in userdata2.items():
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
+
+    print("사용자 정보가 성공적으로 수정되었습니다.")
 
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
@@ -661,9 +746,6 @@ while not b_is_exit:
         print_help()
     elif func == "exit":
         b_is_exit = True
-        random_quote = random.choice(Quotes.quotes)
-        print(random_quote)
-        print("-----프로그램을 종료합니다-----")
     elif func == "메모장":
         add_memo()
         memo()
