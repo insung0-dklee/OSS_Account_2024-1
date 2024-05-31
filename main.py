@@ -2,6 +2,7 @@ import hashlib #hashlib 사용
 import os
 import json
 from datetime import datetime
+from datetime import date
 import pickle
 import Account_book
 
@@ -287,3 +288,51 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+def calculate_monthly_savings(target_amount, target_date):
+    """
+    목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
+    
+    @Param
+        target_amount : 목표 금액.
+        target_date : 목표 날짜 (YYYY-MM-DD 형식).
+    @Return
+        monthly_savings : 매월 저축해야 할 금액.
+        months_left : 남은 달 수.
+    @Raises
+        날짜 관련 연산에서 예외가 발생할 경우 에러 메시지를 출력합니다.
+    """
+    today = date.today()
+    target_date = datetime.strptime(target_date, "%Y-%m-%d").date()
+    
+    months_left = (target_date.year - today.year) * 12 + target_date.month - today.month
+    
+    monthly_savings = target_amount / months_left
+    
+    print(f"매월 저축해야 할 금액: {monthly_savings:.2f}원, 남은 달 수: {months_left}개월")
+    return monthly_savings, months_left
+
+
+def track_savings(savings, target_amount, months_left):
+    """
+    현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
+    
+    @Param
+        savings : 현재까지 저축된 금액.
+        target_amount : 목표 금액.
+        monthly_savings : 매월 저축해야 할 금액.
+        months_left : 남은 달 수.
+    @Return
+        remaining_amount : 남은 금액.
+        updated_monthly_savings : 수정된 월간 저축액.
+    @Raises
+        날짜 관련 연산에서 예외가 발생할 경우 에러 메시지를 출력합니다.
+    """
+
+    remaining_amount = target_amount - savings
+    updated_monthly_savings = remaining_amount / months_left
+    
+    print(f"남은 금액: {remaining_amount:.2f}원, 수정된 월간 저축액: {updated_monthly_savings:.2f}원")
+    return remaining_amount, updated_monthly_savings
+
+
