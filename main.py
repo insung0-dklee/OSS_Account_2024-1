@@ -153,11 +153,15 @@ def set_budget():
 # 지출 카테고리 분석 함수
 def analyze_categories():
     category_totals = {}
+	#빈 딕셔너리 생성
     for entry in ledger:
+	#각 항목을 순회하며 카테고리를 가져옴
         category = entry["category"]
         if category not in category_totals:
             category_totals[category] = 0
+	#카테고리가 딕셔너리에 없다면 키로 추가하고 초기값 0
         category_totals[category] += entry["amount"]
+	#지출 금액을 해당 카테고리 값에 더함
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
