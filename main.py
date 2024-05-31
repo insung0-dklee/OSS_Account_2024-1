@@ -8,33 +8,9 @@ import Account_book
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg() : #회원가입
-    """
-    while True - 반복문을 사용하여 유요한 아이디가 입력될 때까지 반복.
-    if id in userdata - 만약 입력한 아이디가 userdata에 존재할 시, 재입력을 요구하는 알림창 출력.
-    else - 유요한 아이디 입력을 받으면 반복문을 멈춤.
-    """
-    while True:
-        id = input("id 입력: ")  # 회원가입 시의 id 입력
+    id = input("id 입력: " ) #회원가입 시의 id 입력
 
-        if id in userdata:
-            print("이미 존재하는 아이디입니다. 다른 아이디를 입력하십시오.")
-        else:
-            break
-
-    """
-    while True - 반복문을 사용하여 유요한 비밀번호가 입력될 때까지 반복.
-    if pw != pw_confirm - 비밀번호가 서로 일치하지 않는다면 재입력을 요구하는 알림창 출력.
-    else - 유요한 비밀번호가 입력된다면 반복문을 멈춤
-    """
-    while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
-        pw_confirm = input("password 확인 입력: ")  # 올바른 비밀번호 확인 유무 파악을 위한 입력
-
-        if pw != pw_confirm:
-            print("입력한 비밀번호들이 일치하지 않습니다. 다시 입력하십시오.")
-        else:
-            break
-
+    pw = input("password 입력: ") #회원가입 시의 pw 입력
 
     h = hashlib.sha256() #hashlib 모듈의 sha256 사용
     h.update(pw.encode()) #sha256으로 암호화
@@ -131,7 +107,6 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 회원가입
     ?: 도움말 출력
     exit: 종료
     """)
@@ -270,6 +245,7 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+from Account_book import Account_book
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
 b = Account_book("가계부 2",2000000)
@@ -283,7 +259,7 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose 
+    return choose
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -302,15 +278,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
-        user_reg()
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
         add_memo()
-
     else:
         b_is_exit = not b_is_exit
 
