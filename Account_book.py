@@ -35,6 +35,9 @@ class Account_book: # 가계부 클래스
 
   def show_account(self): #금액 출력
     print("현재 남은 금액은: ",self.bal, "원 입니다.")
+    
+  def show_account_toDollar(self): #달러로 환전한 잔금 출력 (20240531,05:42기준)
+    print("현재 남은 금액은: ",self.bal * 0.00072, "$ 입니다.")
 
   def show_total(self): #수입,지출 총액 출력
     print("현재까지 소득의 총합은 ",self.income_total,"원 입니다.")
