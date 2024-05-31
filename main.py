@@ -107,6 +107,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    내보내기: 가계부 데이터 내보내기
+    가져오기: 가계부 데이터 가져오기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -258,7 +260,38 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose 
+    return choose
+
+def export_account(account):
+    """
+    가계부 데이터를 JSON 파일로 내보내기.
+    parameters -
+    account : 내보낼 가계부 객체
+    """
+    filename = f"{account.name}_export.json"
+    account_data = {
+        'name': account.name,
+        'balance': account.balance,
+        'history': account.history
+    }
+    with open(filename, 'w', encoding='utf-8') as file:
+        json.dump(account_data, file, ensure_ascii=False, indent=4)
+    print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.")
+
+def import_account():
+    """
+    JSON 파일로부터 가계부 데이터를 가져와 가계부 리스트에 추가하기.
+    """
+    filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ")
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            account_data = json.load(file)
+        new_account = Account_book(account_data['name'], account_data['balance'])
+        new_account.history = account_data['history']
+        Account_list.append(new_account)
+        print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
+    except Exception as e:
+        print(f"파일을 가져오는 중 오류가 발생했습니다: {e}")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -283,6 +316,11 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "메모장":
         add_memo()
+     elif func == "내보내기":
+        account_index = int(choose_Account(func)) - 1
+        export_account(Account_list[account_index])
+    elif func == "가져오기":
+        import_account()
     else:
         b_is_exit = not b_is_exit
 
