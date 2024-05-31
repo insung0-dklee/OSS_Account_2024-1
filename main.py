@@ -286,4 +286,4 @@ while not b_is_exit:
     else:
         b_is_exit = not b_is_exit
 
-        print("올바른 기능을 입력해 주세요.")
+        print("올바른 기능을 입력해 주세요.") 
