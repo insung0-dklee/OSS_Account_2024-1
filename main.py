@@ -6,6 +6,7 @@ import pickle
 import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+cards = {} # 사용자별 카드 정보를 저장할 딕셔너리
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
@@ -23,6 +24,65 @@ def user_reg() : #회원가입
     with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+
+
+def save_cards():
+    """
+    현재 cards 딕셔너리를 'cards.json' 파일에 저장하는 함수.
+    json 모듈을 사용하여 딕셔너리를 JSON 형식으로 변환하고 파일에 씀.
+    """
+    with open('cards.json', 'w') as file:
+        #json.dump를 사용하여 cards 딕셔너리를 파일에 저장
+        json.dump(cards, file, ensure_ascii=False, indent=4)
+
+def load_cards():
+    """
+    'cards.json' 파일에서 카드 정보를 불러오는 함수.
+    파일이 존재하면 JSON 형식으로 저장된 데이터를 읽어와서 cards 딕셔너리에 저장.
+    """
+    global cards
+    if os.path.exists('cards.json'):
+        #파일이 존재하면 파일을 열고 데이터를 읽어옴
+        with open('cards.json', 'r') as file:
+            #json.load를 사용하여 파일의 내용을 cards 딕셔너리에 로드
+            cards = json.load(file)
+
+def add_card(user_id):
+    """
+    사용자가 새로운 카드를 추가할 수 있게 하는 함수.
+    사용자 ID를 입력받아 해당 사용자에 대한 카드 번호를 추가하고 저장.
+    
+    매개변수:
+    user_id : str : 카드를 추가할 사용자 ID
+    """
+    if user_id not in cards:
+        #사용자 ID가 cards 딕셔너리에 없으면 빈 리스트로 초기화
+        cards[user_id] = []
+    #사용자로부터 카드 번호를 입력받음
+    card_number = input("카드 번호 입력: ")
+    #입력받은 카드 번호를 해당 사용자 ID의 리스트에 추가
+    cards[user_id].append(card_number)
+    #변경된 cards 딕셔너리를 파일에 저장
+    save_cards()
+    print("카드가 추가되었습니다.")
+
+def view_cards(user_id):
+    """
+    특정 사용자의 카드 목록을 출력하는 함수.
+    
+    매개변수:
+    user_id : str : 카드 목록을 조회할 사용자 ID
+    """
+    if user_id in cards:
+        #사용자 ID가 cards 딕셔너리에 있는 경우
+        print(f"{user_id}님의 카드 목록:")
+        #enumerate를 사용하여 카드 목록을 출력
+        for idx, card in enumerate(cards[user_id], start=1):
+            print(f"{idx}. {card}")
+    else:
+        #사용자 ID가 cards 딕셔너리에 없는 경우
+        print("카드가 없습니다.")
+
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
@@ -224,6 +284,30 @@ def input_expense():
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
+# 카드로 지출 추가 함수
+def add_expense_with_card():
+    user_id = input("사용자 ID를 입력하세요: ")
+    view_cards(user_id)
+    card_index = int(input("사용할 카드 번호를 입력하세요: ")) - 1
+    if user_id in cards and 0 <= card_index < len(cards[user_id]):
+        card_number = cards[user_id][card_index]
+        date = input("지출 날짜 (예: 2024-05-30): ")
+        item = input("지출 항목: ")
+        amount = input("지출 금액: ")
+        expense = {
+            'date': date,
+            'item': item,
+            'amount': amount,
+            'card': card_number
+        }
+        save_expense(expense)
+        print("카드로 지출 내역이 저장되었습니다.")
+    else:
+        print("잘못된 카드 번호입니다.")
+
+# 초기 카드 정보를 로드
+load_cards()
+
 # 기능 3: 지출 내역 삭제
 def delete_expense():
     # 삭제할 지출 항목의 인덱스를 입력받음
@@ -277,6 +361,14 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        user_id = input("사용자 ID를 입력하세요: ")
+        add_card(user_id)
+    elif func == "7":
+        user_id = input("사용자 ID를 입력하세요: ")
+        view_cards(user_id)
+    elif func == "8":
+        add_expense_with_card()
     elif func == "?":
         print_help()
     elif func == "exit":
