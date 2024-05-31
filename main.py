@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
+from Account_book import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -132,14 +132,32 @@ def view_entries():
         print(entry)
 
 # 월별 보고서 생성 함수
+# 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
+    category_totals = {}  # 각 카테고리별 지출을 집계할 딕셔너리
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += entry["amount"]
-            print(entry)
-    print(f"{month}월 총 지출: {monthly_total} 원")
+            category = entry["category"]
+            if category not in category_totals:
+                category_totals[category] = 0
+            category_totals[category] += entry["amount"]
+
+    # 각 카테고리별로 지출 금액을 출력
+    print(f"{month}월 각 카테고리별 지출 내역:")
+    for category, total in category_totals.items():
+        print(f"{category}: {total} 원")
+
+    # 가장 지출이 많은 카테고리를 찾아 출력
+    if category_totals:
+        max_category = max(category_totals, key=category_totals.get)
+        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+    else:
+        print("해당 월에는 지출 내역이 없습니다.")
+
+
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
@@ -258,7 +276,7 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose 
+    return choose
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
