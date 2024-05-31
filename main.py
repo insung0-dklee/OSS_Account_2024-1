@@ -64,7 +64,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 세금 계산
+    6: 세금 및 보험 계산
     7: 계정 정보 조회
     8: 메모장
     ?: 도움말 출력
@@ -218,17 +218,44 @@ def calculate_vat():
     print(f"부가가치세가 없는 원래 가격: {price_without_vat:.2f} 원")
     print(f"부가가치세: {vat_amount:.2f} 원")
 
-# 세금 계산 메뉴 함수
-def tax_menu():
-    print("세금 계산 항목을 선택하세요: ")
+# 4대 보험 계산 함수
+def calculate_insurance():
+    income = float(input("총 소득을 입력하세요 (원): "))
+    national_pension_rate = 0.045
+    health_insurance_rate = 0.03495
+    long_term_care_rate = 0.1227
+    employment_insurance_rate = 0.009
+
+    national_pension = income * national_pension_rate
+    health_insurance = income * health_insurance_rate
+    long_term_care = health_insurance * long_term_care_rate
+    employment_insurance = income * employment_insurance_rate
+
+    total_insurance = national_pension + health_insurance + long_term_care + employment_insurance
+    after_insurance_income = income - total_insurance
+
+    print(f"총 소득: {income} 원")
+    print(f"국민연금: {national_pension:.2f} 원")
+    print(f"건강보험: {health_insurance:.2f} 원")
+    print(f"장기요양보험: {long_term_care:.2f} 원")
+    print(f"고용보험: {employment_insurance:.2f} 원")
+    print(f"총 4대 보험료: {total_insurance:.2f} 원")
+    print(f"4대 보험료 공제 후 금액: {after_insurance_income:.2f} 원")
+
+# 세금 및 보험 계산 메뉴 함수
+def tax_and_insurance_menu():
+    print("세금 및 보험 계산 항목을 선택하세요: ")
     print("1: 소득세 계산")
     print("2: 부가가치세 계산")
+    print("3: 4대 보험 계산")
     choice = input("선택: ")
 
     if choice == "1":
         calculate_income_tax()
     elif choice == "2":
         calculate_vat()
+    elif choice == "3":
+        calculate_insurance()
     else:
         print("잘못된 선택입니다.")
 
@@ -250,7 +277,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        tax_menu()  # 세금 계산 메뉴 호출
+        tax_and_insurance_menu()  # 세금 및 보험 계산 메뉴 호출
     elif func == "7":
         user_id = input("사용자 ID를 입력하세요: ")
         user_info = open_account_info(user_id)
@@ -273,5 +300,3 @@ while not b_is_exit:
         b_is_exit = True
     else:
         print("올바른 기능을 입력해 주세요.")
-
-
