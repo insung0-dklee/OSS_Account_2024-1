@@ -107,7 +107,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 두 달 지출 비교
+  6: 두 달 지출 비교
     ?: 도움말 출력
     exit: 종료
     """)
@@ -131,7 +131,28 @@ def add_entry():
 def view_entries():
     for entry in ledger:
         print(entry)
-        
+# 월별 지출 총액 계산 함수
+def get_monthly_total(month):
+    monthly_total = 0
+    for entry in ledger:
+        if entry["date"].startswith(month):
+            monthly_total += entry["amount"]
+    return monthly_total
+
+# 두 달 지출 비교 함수
+def compare_two_months():
+    month1 = input("비교할 첫 번째 달 (YYYY-MM): ")
+    month2 = input("비교할 두 번째 달 (YYYY-MM): ")
+    
+    total1 = get_monthly_total(month1)
+    total2 = get_monthly_total(month2)
+    
+    if total1 > total2:
+        print(f"{month1}의 지출이 {month2}의 지출보다 {total1 - total2}원 더 큽니다.")
+    elif total1 < total2:
+        print(f"{month2}의 지출이 {month1}의 지출보다 {total2 - total1}원 더 큽니다.")
+    else:
+        print(f"{month1}과 {month2}의 지출이 동일합니다.")
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
@@ -141,24 +162,15 @@ def generate_monthly_report():
             monthly_total += entry["amount"]
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
-budget = None #전역변수 budget의 기본값 설정
+
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
+    budget = float(input("예산 설정 (원): "))
     current_total = sum(entry["amount"] for entry in ledger)
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
     else:
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
-# 예산 확인 함수
-def check_budget():
-    global budget
-    if budget is None:
-        print("예산이 지정되지 않았습니다.")
-    else:
-        current_total = sum(entry["amount"] for entry in ledger)
-        print(f"설정된 예산은 {budget}원이고, 남은 예산은 {budget - current_total} 원입니다.")
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
@@ -287,9 +299,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
+elif func == "6":
         compare_two_months()
-
     elif func == "?":
         print_help()
     elif func == "exit":
