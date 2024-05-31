@@ -287,3 +287,96 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+    
+        
+class User:    # 사용자 정보 저장 (이름)
+    def __init__(self, name):
+        self.name = name
+
+class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
+    def __init__(self, account_name):
+        self.joint_account = account_name    # 공동 계정 이름
+        self.joint_users = []    # 추가한 사용자 리스트
+        self.joint_tran = []    # 거래 내역 리스트
+        self.joint_bal = 0    # 현재 잔액
+
+    def add_joint_user(self, joint_user):    # 계정에 사용자 추가
+        self.joint_users.append(joint_user)
+
+    def add_joint_income(self, amount, joint_desc=""):    # 수입 내역 추가 및 수입에 대한 설명
+        self.joint_tran.append({"type": "income", "amount": amount, "income_description": joint_desc})
+        self.joint_bal += amount
+
+    def add_joint_expense(self, amount, joint_desc=""):    # 지출 내역 추가 및 지출에 대한 설명
+        self.joint_tran.append({"type": "expense", "amount": amount, "expense_description": joint_desc})
+        self.joint_bal -= amount
+
+    def get_joint_bal(self):    # 현재 잔액 반환
+        return self.joint_bal
+
+    def get_joint_tran(self):    # 거래 내역 반환
+        return self.joint_tran
+
+    
+def joint_account_main():
+    # 공동 계정 생성
+    account_name = input("공동 계정 이름을 입력하세요: ")
+    joint_account = JointAccount(account_name)
+
+    while True:
+        print("\n메뉴:")
+        print("1. 사용자 추가")
+        print("2. 수입 추가")
+        print("3. 지출 추가")
+        print("4. 현재 잔액 확인")
+        print("5. 거래 내역 확인")
+        print("6. 종료")
+
+        choice = input("선택: ")
+
+        if choice == "1":
+            name = input("사용자 이름을 입력하세요: ")
+            joint_user = User(name)
+            joint_account.add_joint_user(joint_user)
+            print(f"사용자 {name}가 추가되었습니다.")
+
+        elif choice == "2":
+           try:    # 사용자 입력 값이 올바른 형식인지 검증
+                amount = float(input("수입 금액을 입력하세요: "))
+           except ValueError:
+                print("잘못된 금액입니다. 숫자를 입력하세요.")
+                continue
+           joint_desc = input("수입 설명을 입력하세요: ")
+           joint_account.add_joint_income(amount, joint_desc)
+           print(f"{amount}원이 추가되었습니다. 설명: {joint_desc}")
+
+        elif choice == "3":
+            try:    # 사용자 입력 값이 올바른 형식인지 검증
+                amount = float(input("지출 금액을 입력하세요: "))
+            except ValueError:
+                print("잘못된 금액입니다. 숫자를 입력하세요.")
+                continue
+            joint_desc = input("지출 설명을 입력하세요: ")
+            joint_account.add_joint_expense(amount, joint_desc)
+            print(f"{amount}원이 지출되었습니다. 설명: {joint_desc}")
+
+        elif choice == "4":
+            joint_balance = joint_account.get_joint_bal()
+            print(f"현재 잔액은 {joint_balance}원입니다.")
+
+        elif choice == "5":
+            joint_transactions = joint_account.get_joint_tran()
+            print("거래 내역:")
+            for tran in joint_transactions:
+                print(tran)
+
+        elif choice == "6":
+            print("프로그램을 종료합니다.")
+            break
+
+        else:
+            print("잘못된 입력입니다. 다시 시도하세요.")
+
+if __name__ == "__main__":
+    joint_account_main()    #스크립트의 재사용성과 유지보수성을 높이는 블록
+
