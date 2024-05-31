@@ -261,7 +261,7 @@ def choose_Account(func):#가계부 선택 함수
     return choose 
 
 # 프로그램 종료 여부를 판단하는 변수
-b_is_exit = 0
+b_is_exit = 0 # 프로그램을 종료할 때는 이 변수를 True로 변경하여 루프를 종료합니다.
 
 # 메인 루프
 while not b_is_exit:
