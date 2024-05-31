@@ -160,7 +160,7 @@ def import_account():
     """
     filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ")
     try:
-        with open(filename, 'r', encoding='utf-8') as file:
+        with open(filename, 'r', encoding='utf-8') as file: 
             account_data = json.load(file)
         new_account = Account_book(account_data['name'], account_data['balance'])
         new_account.history = account_data['history']
@@ -534,24 +534,25 @@ def track_savings(savings, target_amount, months_left):
 expenses_file = 'expenses.json'
 
 # 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
+# 파일 쓰기, 읽기 시 utf-8 인코딩 추가 (한글 깨짐)
 if not os.path.exists(expenses_file):
-    with open(expenses_file, 'w') as file:
+    with open(expenses_file, 'w', encoding='utf-8') as file:
         json.dump([], file)
 
 def save_expense(expense):
     # 파일을 열어 기존 데이터를 불러옴
-    with open(expenses_file, 'r') as file:
+    with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
     # 새 지출 내역을 리스트에 추가
     data.append(expense)
     # 데이터를 파일에 저장
-    with open(expenses_file, 'w') as file:
+    with open(expenses_file, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
 # 저장된 지출 내역을 조회하는 함수
 def view_expenses():
     # 파일을 열어 데이터를 불러옴
-    with open(expenses_file, 'r') as file:
+    with open(expenses_file, 'r',  encoding='utf-8') as file:
         data = json.load(file)
         if data:
             # 데이터가 존재하면 각 지출 내역을 출력
@@ -725,6 +726,21 @@ def YU_Account():
 
 YU_Account() #프로그램 시작 화면
 
+def load_expenses():
+    """
+    지출 내역을 expenses.json 파일에서 불러오는 함수
+    """
+    try:
+        with open('expenses.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        print(f"An error occurred while loading expenses: {e}")
+        return []
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -733,7 +749,7 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+       input_expense()
     elif func == "2":
         view_entries()
     elif func == "3":
