@@ -287,3 +287,16 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+# 월별/년별 요약 보고서 생성 함수
+def generate_monthly_yearly_report():
+    report_type = input("보고서 종류 선택 (월별: '월', 년별: '년'): ")
+    if report_type == "월":
+        year = int(input("년도 입력: "))
+        month = int(input("월 입력: "))
+        generate_summary_report(year, month)
+    elif report_type == "년":
+        year = int(input("년도 입력: "))
+        generate_summary_report(year)
+    else:
+        print("올바른 보고서 종류를 입력하세요.")
