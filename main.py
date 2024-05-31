@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 import pickle
 import Account_book
+import json
+import os
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -107,6 +109,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 반복지출한 카테고리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -245,7 +248,33 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 반복되는 카테고리 찾기 함수
+def find_repeated_categories():
+    category_counts = {}  # 각 카테고리의 빈도수를 저장할 딕셔너리
+    repeated_categories = {}  # 반복되는 카테고리와 횟수를 저장할 딕셔너리
+
+    # 모든 지출 항목에 대해 카테고리 빈도수 계산
+    for entry in ledger:
+        category = entry["category"]
+        category_counts[category] = category_counts.get(category, 0) + 1
+
+    # 빈도수가 2 이상인 카테고리를 반복되는 카테고리로 간주
+    for category, count in category_counts.items():
+        if count >= 2:
+            repeated_categories[category] = count
+
+    # 반복되는 카테고리 출력
+    if repeated_categories:
+        print("반복되는 카테고리와 횟수:")
+        for category, count in repeated_categories.items():
+            print(f"{category}: {count}번 반복")
+    else:
+        print("반복되는 카테고리가 없습니다.")
+
+
 #가계부 초깃값 임의로 설정
+from Account_book import Account_book
+
 a = Account_book("가계부 1",1000000)
 b = Account_book("가계부 2",2000000)
 c = Account_book("가계부 3",3000000)
@@ -277,6 +306,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        find_repeated_categories()
     elif func == "?":
         print_help()
     elif func == "exit":
