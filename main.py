@@ -235,7 +235,7 @@ if not os.path.exists(OTT_file):
 
 #정기 구독으로 추정되는 경우 사용자에게 권유
 def isOTT(date,item,amount):
-        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        date = datetime.strptime(date, "%Y-%m-%d")
         with open(expenses_file, 'r') as file:
             data = json.load(file)
         #3달동안 비슷한 날짜에 같은 지출이 있었는지 확인
@@ -261,6 +261,7 @@ def isOTT(date,item,amount):
                 save_OTT(OTT)
                 print("정기 구독으로 추가하였습니다.")
 
+#정기 구독을 저장하는 함수
 def save_OTT(OTT):
     # 파일을 열어 기존 데이터를 불러옴
     with open(OTT_file, 'r') as file:
@@ -271,6 +272,19 @@ def save_OTT(OTT):
     with open(OTT_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
+#저장된 정기 구독을 오늘의 날짜를 통해 결제일을 확인하고 지출로 추가하며 사용자에게 안내하는 함수
+def check_OTT():
+    today = datetime.now().strftime("%Y-%m-%d")
+    with open(OTT_file, 'r') as file:
+        OTTs = json.load(file)
+
+        for OTT in OTTs:
+            start_date = datetime.strptime(OTT['start_date'], "%Y-%m-%d")
+            if (start_date.day == datetime.now().day):
+                save_expense(OTT['item'], OTT['amount'])
+                print(f"오늘은 {OTT['item']}의 정기 구독이 결제되는 날입니다. {OTT['amount']}원을 지출로 추가합니다.")
+
+check_OTT() 
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
