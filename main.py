@@ -246,7 +246,8 @@ def delete_expense():
         print("숫자를 입력하세요.")
 
 #가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
+from Account_book import Account_book
+a = Account_book("가계부 1",1000000)  
 b = Account_book("가계부 2",2000000)
 c = Account_book("가계부 3",3000000)
 
