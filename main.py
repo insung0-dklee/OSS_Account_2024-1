@@ -244,6 +244,46 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+import json
+import matplotlib.pyplot as plt
+
+#지출 그래프를 선 그래프와 원형 그래프로 나타냄
+def plot_expense_trends(expenses_file):
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+        
+    monthly_expenses = {}
+    for expense in data:
+        date = expense['date']
+        amount = float(expense['amount'])
+        month = date[:7]
+        if month not in monthly_expenses:
+            monthly_expenses[month] = 0
+        monthly_expenses[month] += amount
+        
+    sorted_months = sorted(monthly_expenses.keys())
+    sorted_expenses = [monthly_expenses[month] for month in sorted_months]
+    
+    plt.figure(figsize=(20, 5))
+    
+    # 선 그래프
+    plt.subplot(1, 2, 1)
+    plt.plot(sorted_months, sorted_expenses, marker='o', linestyle='-', color='b')
+    plt.title('Monthly Expense Trends')
+    plt.xlabel('Month')
+    plt.ylabel('Total Expenses (원)')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    
+    # 원형 그래프
+    plt.subplot(1, 2, 2)
+    plt.pie(sorted_expenses, labels=sorted_months, autopct='%1.1f%%', startangle=140)
+    plt.title('Expense Distribution by Month')
+    
+    plt.tight_layout()
+    plt.show()
+
+
 
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
