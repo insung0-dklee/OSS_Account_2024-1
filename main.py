@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
+from Account_book import Account_book # 모듈을 함수처럼 호출하려고 해서 발생한 오류 해결
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
