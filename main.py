@@ -117,11 +117,13 @@ def add_entry():
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액: "))
+    score = day_evaluation()
     entry = {
         "date": date,
         "category": category,
         "description": description,
-        "amount": amount
+        "amount": amount,
+        "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
     print("항목이 추가되었습니다.")
@@ -130,13 +132,40 @@ def add_entry():
 def view_entries():
     for entry in ledger:
         print(entry)
+        if "score" in entry:
+            print(f"평가 점수: {entry['score']}")
 
-# 월별 보고서 생성 함수
+
+def day_evaluation():
+    # 사용자로부터 그날의 평가를 입력 받음
+    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+    try:
+        evaluation = float(evaluation)
+        if 0 <= evaluation <= 10:
+            print(f"오늘의 평가는 {evaluation}점입니다.")
+            return evaluation
+        else:
+            print("평가는 0에서 10 사이의 숫자여야 합니다.")
+            return None
+    except ValueError:
+        print("올바른 숫자를 입력하세요.")
+        return None
+
+def calculate_average_score(scores):
+    if scores:
+        total_score = sum(scores)
+        average_score = total_score / len(scores)
+        return average_score
+    else:
+        return None
+
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
-    category_totals = {}  # 각 카테고리별 지출을 집계할 딕셔너리
+    scores = []  # 평가 점수를 저장할 리스트
+    category_totals = {}
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += entry["amount"]
@@ -144,18 +173,23 @@ def generate_monthly_report():
             if category not in category_totals:
                 category_totals[category] = 0
             category_totals[category] += entry["amount"]
-
-    # 각 카테고리별로 지출 금액을 출력
+            print(entry)
+            if "score" in entry:
+                scores.append(entry["score"])  # 평가 점수를 리스트에 추가
+    print(f"{month}월 총 지출: {monthly_total} 원")
     print(f"{month}월 각 카테고리별 지출 내역:")
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
-
-    # 가장 지출이 많은 카테고리를 찾아 출력
+    average_score = calculate_average_score(scores)
     if category_totals:
         max_category = max(category_totals, key=category_totals.get)
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
+    if average_score is not None:
+        print(f"{month}월 평균 점수: {average_score:.2f} 점")
+    else:
+        print(f"{month}월에는 평가된 점수가 없습니다.")
 
 
 
