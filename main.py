@@ -703,7 +703,23 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose 
+    return choose
+"""
+asset_distribution : 가계부의 자산을 3:3:4 비율로 분배하는 함수
+@Parm
+    None
+@Return
+    None
+"""
+def asset_distribution():
+    total_asset = sum([account.balance for account in Account_list])
+    a_share = total_asset * 0.3
+    b_share = total_asset * 0.3
+    c_share = total_asset * 0.4
+    Account_list[0].balance = a_share
+    Account_list[1].balance = b_share
+    Account_list[2].balance = c_share
+    print(f"자산이 3:3:4 비율로 분배되었습니다:\n가계부 1: {a_share} 원\n가계부 2: {b_share} 원\n가계부 3: {c_share} 원")
 
 """
 YU_Account : 프로그램 시작 화면 출력
