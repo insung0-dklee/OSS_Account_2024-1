@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
+#import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -74,11 +74,12 @@ def open_account_info(user_id):
     해당 유저의 id, 잔고, 지출/수입 내역이 담긴 dictionary를 return.
     """
     try:
-        with open(f'{user_id}.txt', 'rb') as info:
+        user_id_clean = re.sub(r'[^a-zA-Z)-9]', '-', user_id)
+        with open(f'{user_id_clean}.txt', 'rb') as info:
             user_dict = pickle.load(info)
         return user_dict
     except Exception as e:
-        print(f"{user_id}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
+        print(f"{user_id_clean}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
         return None
 
 def calculator():
@@ -246,11 +247,11 @@ def delete_expense():
         print("숫자를 입력하세요.")
 
 #가계부 초깃값 임의로 설정
-a = Account_book("가계부 1",1000000)
-b = Account_book("가계부 2",2000000)
-c = Account_book("가계부 3",3000000)
+#a = Account_book("가계부 1",1000000)
+#b = Account_book("가계부 2",2000000)
+#c = Account_book("가계부 3",3000000)
 
-Account_list = [a,b,c] #가계부 리스트
+#Account_list = [a,b,c] #가계부 리스트
 i=0
 
 def choose_Account(func):#가계부 선택 함수
