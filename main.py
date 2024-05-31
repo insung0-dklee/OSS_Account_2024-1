@@ -64,7 +64,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 소득세 계산
+    6: 세금 계산
     7: 계정 정보 조회
     8: 메모장
     ?: 도움말 출력
@@ -183,7 +183,7 @@ def delete_expense():
         print("숫자를 입력하세요.")
 
 # 소득세 계산 함수
-def calculate_tax():
+def calculate_income_tax():
     income = float(input("총 소득을 입력하세요 (원): "))
     tax = 0
 
@@ -200,12 +200,37 @@ def calculate_tax():
     elif income <= 500000000:
         tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 300000000) * 0.40
     elif income <= 1000000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (income - 500000000) * 0.42
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 500000000) * 0.42
     else:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + 500000000 * 0.42 + (income - 1000000000) * 0.45
+        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (income - 1000000000) * 0.45
 
     print(f"총 소득: {income} 원")
     print(f"예상 소득세: {tax} 원")
+
+# 부가가치세 계산 함수
+def calculate_vat():
+    price_with_vat = float(input("부가가치세가 포함된 물품 가격을 입력하세요 (원): "))
+    vat_rate = 0.1
+    price_without_vat = price_with_vat / (1 + vat_rate)
+    vat_amount = price_with_vat - price_without_vat
+
+    print(f"부가가치세가 포함된 물품 가격: {price_with_vat} 원")
+    print(f"부가가치세가 없는 원래 가격: {price_without_vat:.2f} 원")
+    print(f"부가가치세: {vat_amount:.2f} 원")
+
+# 세금 계산 메뉴 함수
+def tax_menu():
+    print("세금 계산 항목을 선택하세요: ")
+    print("1: 소득세 계산")
+    print("2: 부가가치세 계산")
+    choice = input("선택: ")
+
+    if choice == "1":
+        calculate_income_tax()
+    elif choice == "2":
+        calculate_vat()
+    else:
+        print("잘못된 선택입니다.")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -225,7 +250,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        calculate_tax()  # 세금 계산 기능 추가
+        tax_menu()  # 세금 계산 메뉴 호출
     elif func == "7":
         user_id = input("사용자 ID를 입력하세요: ")
         user_info = open_account_info(user_id)
@@ -248,4 +273,5 @@ while not b_is_exit:
         b_is_exit = True
     else:
         print("올바른 기능을 입력해 주세요.")
+
 
