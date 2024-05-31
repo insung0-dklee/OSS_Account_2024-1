@@ -161,6 +161,41 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+#지난 3개월간 지출비용 비교 함수
+def compare_expenses():
+    # 현재 날짜를 기준으로 연도와 월을 가져옴
+    now = datetime.now()
+    current_year = now.year
+    current_month = now.month
+    
+    # 지난 3개월의 총 지출액 계산을 위한 변수 초기화
+    last_3_months_total = 0
+    last_3_months_count = 0
+    
+    # 지난 3개월의 각 월에 대한 지출액 계산
+    for i in range(1, 4):
+        month = (current_month - i) % 12 or 12
+        year = current_year if current_month - i > 0 else current_year - 1
+        month_str = f"{year}-{month:02}"
+        monthly_total = sum(entry["amount"] for entry in ledger if entry["date"].startswith(month_str))
+        last_3_months_total += monthly_total
+        last_3_months_count += 1
+    
+    # 지난 3개월의 평균 지출액 계산
+    last_3_months_avg = last_3_months_total / last_3_months_count if last_3_months_count > 0 else 0
+    
+    # 이번 달 지출액 계산
+    current_month_str = f"{current_year}-{current_month:02}"
+    current_month_total = sum(entry["amount"] for entry in ledger if entry["date"].startswith(current_month_str))
+    
+    # 비교 결과 출력
+    print(f"지난 3개월 평균 지출액: {last_3_months_avg:.2f} 원")
+    print(f"이번 달 지출액: {current_month_total:.2f} 원")
+    if current_month_total > last_3_months_avg:
+        print("이번 달 지출이 지난 3개월 평균보다 많습니다.")
+    else:
+        print("이번 달 지출이 지난 3개월 평균보다 적습니다.")
+
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
