@@ -1,7 +1,7 @@
 import requests
 from forex_python.converter import CurrencyRates
 
-# 환율전환에 있는 3개의 기능 중 몇번재 기능을 선택하는지에 따라서 DollarWonChange1,2,3 중 무슨 함수를 사용할지 결정됩니다.
+# 환율전환에 있는 3개의 기능 중 몇번째 기능을 선택하는지에 따라서 DollarWonChange1,2,3 중 무슨 함수를 사용할지 결정됩니다.
 # 3개의 DollarWonChange 함수 전부 외부 API를 이용해 환율 데이터를 불러오는 것까지는 동일합니다.
 # 환율 데이터를 불러온 이후의 코드부터 3개의 함수가 서로 달라집니다.
 # DollarWonChange1() == 1: 원화달러 현재환율 확인하기 == 환율 데이터를 불러와서 현재 1달러에 원화로 얼마인지 출력합니다.
