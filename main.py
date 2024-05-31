@@ -6,6 +6,40 @@ import pickle
 import Account_book
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+savings_goals = {}
+
+"""
+create_savings_goal : 사용자에게 목표 이름과 금액을 입력받아 가상 저금통을 생성하는 기능을 제공
+add_to_savings : 사용자가 지출을 줄여서 절약한 금액을 가상 저금통에 추가하는 기능을 제공
+check_savings_goals : 모든 가상 저금통의 현재 상태를 출력하는 기능을 제공
+"""
+
+# 가상 저금통 생성 함수
+def create_savings_goal():
+    goal_name = input("저축 목표 이름을 입력하세요: ")
+    goal_amount = float(input("저축 목표 금액을 입력하세요: "))
+    savings_goals[goal_name] = {'goal_amount': goal_amount, 'current_amount': 0}
+    print(f"{goal_name} 목표가 {goal_amount}원으로 설정되었습니다.")
+
+# 저금통에 돈을 추가하는 함수
+def add_to_savings():
+    goal_name = input("돈을 추가할 저축 목표 이름을 입력하세요: ")
+    if goal_name in savings_goals:
+        amount = float(input("추가할 금액을 입력하세요: "))
+        savings_goals[goal_name]['current_amount'] += amount
+        print(f"{goal_name} 목표에 {amount}원이 추가되었습니다. 현재 금액: {savings_goals[goal_name]['current_amount']}원")
+        if savings_goals[goal_name]['current_amount'] >= savings_goals[goal_name]['goal_amount'] * 0.9:
+            print("목표 금액의 90%를 사용하였습니다.")
+    else:
+        print(f"{goal_name} 목표가 존재하지 않습니다. 먼저 목표를 설정하세요")  # 추가된 부분: 따옴표와 괄호 추가
+
+# 저축 목표 확인 함수
+def check_savings_goals():
+    if not savings_goals:
+        print("현재 설정된 저축 목표가 없습니다.")
+    else:
+        for goal_name, goal_info in savings_goals.items():
+            print(f"목표: {goal_name}, 목표 금액: {goal_info['goal_amount']}원, 현재 금액: {goal_info['current_amount']}원")
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
@@ -107,6 +141,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 가상 저금통 기능
     ?: 도움말 출력
     exit: 종료
     """)
@@ -277,7 +312,17 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "?":
+    elif func == "6": 
+        savings_func = input("가상 저금통 기능 선택 (1: 저축 목표 설정, 2: 저금통에 돈 추가, 3: 저축 목표 확인): ")
+        if savings_func == "1":
+            create_savings_goal()
+        elif savings_func == "2":
+            add_to_savings()
+        elif savings_func == "3":
+            check_savings_goals()
+        else:
+            print("올바른 기능을 입력해 주세요.")
+    elif func == "?": 
         print_help()
     elif func == "exit":
         b_is_exit = True
@@ -285,5 +330,5 @@ while not b_is_exit:
         add_memo()
     else:
         b_is_exit = not b_is_exit
-
+ 
         print("올바른 기능을 입력해 주세요.")
