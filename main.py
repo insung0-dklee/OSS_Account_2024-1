@@ -287,3 +287,23 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+        # 월별 목표 금액을 저장할 딕셔너리
+monthly_goals = {}
+
+def set_monthly_goal(month, amount):
+    """월별 목표 금액을 설정합니다."""
+    monthly_goals[month] = amount
+    print(f"{month}의 목표 금액이 {amount}원으로 설정되었습니다.")
+
+def get_monthly_goal(month):
+    """월별 목표 금액을 반환합니다."""
+    return monthly_goals.get(month, "해당 월에 대한 목표 금액이 설정되지 않았습니다.")
+
+def show_all_goals():
+    """모든 월별 목표 금액을 출력합니다."""
+    if not monthly_goals:
+        print("설정된 목표 금액이 없습니다.")
+    else:
+        for month, amount in monthly_goals.items():
+            print(f"{month}: {amount}원")
