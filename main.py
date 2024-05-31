@@ -4,9 +4,13 @@ import json
 from datetime import datetime
 import pickle
 
+# 전역 변수
 userdata = {}
+ledger = []
+expenses_file = 'expenses.json'
 
-def user_reg():  # 회원가입
+# 회원가입 함수
+def user_reg():
     id = input("id 입력: ")
     pw = input("password 입력: ")
 
@@ -20,54 +24,7 @@ def user_reg():  # 회원가입
         for user_id, user_pw in userdata.items():
             fw.write(f'{user_id} : {user_pw}\n')
 
-def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
-    dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:
-        hist[f"{dt}"] = []
-    hist[f"{dt}"].append((-spending, where))
-
-def day_income(hist, income, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
-    dt = datetime(year, month, day, hour)
-    if f"{dt}" not in hist:
-        hist[f"{dt}"] = []
-    hist[f"{dt}"].append((income, where))
-
-def new_account(user_id, bal):
-    household_ledger = {'user_id': user_id, 'bal': bal, 'history': {}}
-    with open(f'{user_id}.txt', 'wb') as info:
-        pickle.dump(household_ledger, info)
-
-def open_account_info(user_id):
-    try:
-        with open(f'{user_id}.txt', 'rb') as info:
-            user_dict = pickle.load(info)
-        return user_dict
-    except Exception as e:
-        print(f"{user_id}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
-        return None
-
-def calculator():
-    try:
-        expr = input("계산할 수식을 입력하세요 (예: 2 + 3 * 4): ")
-        result = eval(expr)
-        print(f"결과: {result}")
-    except Exception as e:
-        print(f"오류 발생: {e}")
-
-ledger = []
-
-def print_help():
-    print("""
-    1: 수입/지출 항목 추가
-    2: 항목 조회
-    3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
-    5: 지출 카테고리 분석
-    6. 회원가입
-    ?: 도움말 출력
-    exit: 종료
-    """)
-
+# 가계부 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
@@ -82,10 +39,12 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+# 가계부 항목 조회 함수
 def view_entries():
     for entry in ledger:
         print(entry)
 
+# 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
@@ -95,6 +54,7 @@ def generate_monthly_report():
             print(entry)
     print(f"{month}월 총 지출: {monthly_total} 원")
 
+# 예산 설정 및 초과 알림 함수
 def set_budget():
     budget = float(input("예산 설정 (원): "))
     current_total = sum(entry["amount"] for entry in ledger)
@@ -103,6 +63,7 @@ def set_budget():
     else:
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
 
+# 지출 카테고리 분석 함수
 def analyze_categories():
     category_totals = {}
     for entry in ledger:
@@ -113,6 +74,7 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+# 메모장 추가 함수
 def add_memo():
     print("메모장 제목: ")
     str_title = input()
@@ -122,12 +84,7 @@ def add_memo():
     new_f.write(str_memo)
     new_f.close()
 
-expenses_file = 'expenses.json'
-
-if not os.path.exists(expenses_file):
-    with open(expenses_file, 'w') as file:
-        json.dump([], file)
-
+# 지출 내역 저장 함수
 def save_expense(expense):
     with open(expenses_file, 'r') as file:
         data = json.load(file)
@@ -135,6 +92,7 @@ def save_expense(expense):
     with open(expenses_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
+# 지출 내역 보기 함수
 def view_expenses():
     with open(expenses_file, 'r') as file:
         data = json.load(file)
@@ -144,6 +102,7 @@ def view_expenses():
         else:
             print("저장된 지출 내역이 없습니다.")
 
+# 지출 내역 입력 함수
 def input_expense():
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
@@ -156,6 +115,7 @@ def input_expense():
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
+# 지출 내역 삭제 함수
 def delete_expense():
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
     with open(expenses_file, 'r') as file:
@@ -166,15 +126,36 @@ def delete_expense():
             deleted_expense = data.pop(index - 1)
             with open(expenses_file, 'w') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
-            print(f"다음 내역이 삭제되었습니다: {deleted_expense}")
+                print(f"다음 내역이 삭제되었습니다: {deleted_expense}")
         else:
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
 
-b_is_exit = False
+# 예상 지출 계산 함수
+def predict_next_month_expense():
+    total_expense = sum(entry["amount"] for entry in ledger if entry["amount"] < 0)
+    months_count = len(set(entry["date"][:7] for entry in ledger))
+    average_expense = total_expense / months_count if months_count > 0 else 0
+    next_month_expense = average_expense
+    print(f"다음 달 예상 지출: {next_month_expense} 원")
 
-while not b_is_exit:
+# 도움말 출력 함수
+def print_help():
+    print("""
+    1: 수입/지출 항목 추가
+    2: 항목 조회
+    3: 월별 보고서 생성
+    4: 예산 설정 및 초과 알림
+    5: 지출 카테고리 분석
+    6: 회원가입
+    7: 예상 지출 항목
+    ?: 도움말 출력
+    exit: 종료
+    """)
+
+# 메인 코드
+while True:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -190,12 +171,13 @@ while not b_is_exit:
     elif func == "?":
         print_help()
     elif func == "exit":
-        b_is_exit = True
+        break
     elif func == "메모장":
         add_memo()
-    elif func == "6":  # 회원가입 기능 추가
-        user_reg()      # 사용자가 회원가입할 수 있도록 함수 호출
+    elif func == "6":
+        user_reg()
+    elif func == "7":
+        predict_next_month_expense()
     else:
         print("올바른 기능을 입력해 주세요.")
-
 
