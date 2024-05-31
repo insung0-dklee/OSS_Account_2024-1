@@ -281,8 +281,10 @@ def check_OTT():
         for OTT in OTTs:
             start_date = datetime.strptime(OTT['start_date'], "%Y-%m-%d")
             if (start_date.day == datetime.now().day):
-                save_expense(OTT['item'], OTT['amount'])
-                print(f"오늘은 {OTT['item']}의 정기 구독이 결제되는 날입니다. {OTT['amount']}원을 지출로 추가합니다.")
+                answer = input(f"오늘은 {OTT['item']}의 정기 구독 결제일입니다. {OTT['amount']}원을 지출로 추가하시겠습니까? (y/n)")
+                if answer == 'y':
+                    save_expense(OTT['item'], OTT['amount'])
+                    print(f"정기구독 {OTT['item']}{OTT['amount']}원을 지출로 추가합니다.")
 
 check_OTT() 
 
