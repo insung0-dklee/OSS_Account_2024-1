@@ -6,6 +6,8 @@ import pickle
 from Account_book import Account_book # 'module을 제대로 불러오지 못하는 부분 수정'
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+salary=0 # 기본 월급 설정 전 기본값
+minus=0 # 정기적인 지출 설정 전 기본값
 
 def user_reg() : #회원가입
     id = input("id 입력: " ) #회원가입 시의 id 입력
@@ -107,6 +109,10 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 봉급 추가
+    7: 봉급 출력
+    8: 정기 지출 추가
+    9: 정기 수입 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -245,6 +251,28 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 정기적인 월급 저장하는 함수
+def add_salary():
+    global salary
+    salary=int(input("월급 설정(만원)"))
+
+# 정기적인 월급 보여주는 함수
+def veiw_salary():
+    print(salary,"(만원)")
+
+# 정기적인 지출을 저장하는 함수
+def add_minus():
+    global minus
+    minus = int(input("지출 금액: (만원)"))
+
+# 정기적인 수입을 보여주는 함수
+def veiw_fullsallary():
+    fullsallary=salary-minus
+    if fullsallary <=0:
+        print(fullsallary, " 적자입니다")
+    else:
+        print(fullsallary, " 흑자입니다")
+
 #가계부 초깃값 임의로 설정
 a = Account_book("가계부 1",1000000)
 b = Account_book("가계부 2",2000000)
@@ -277,6 +305,14 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_salary()
+    elif func == "7":
+        veiw_salary()
+    elif func == "8":
+        add_minus()
+    elif func == "9":
+        veiw_fullsallary()
     elif func == "?":
         print_help()
     elif func == "exit":
