@@ -5,6 +5,8 @@ from datetime import datetime
 import pickle
 import Account_book
 import webbrowser
+import random
+import Quotes
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -254,6 +256,11 @@ def guide_link():
     webbrowser.open("https://help.3o3.co.kr/hc/ko/articles/15516331018521")
 
 
+
+
+
+
+
 #가계부 초깃값 임의로 설정
 a = Account_book.Account_book("가계부 1",1000000)
 b = Account_book.Account_book("가계부 2",2000000)
@@ -290,6 +297,9 @@ while not b_is_exit:
         print_help()
     elif func == "exit":
         b_is_exit = True
+        random_quote = random.choice(Quotes.quotes)
+        print(random_quote)
+        print("-----프로그램을 종료합니다-----")
     elif func == "메모장":
         add_memo()
     elif func == "guide":
