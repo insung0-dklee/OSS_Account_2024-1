@@ -729,8 +729,10 @@ YU_Account() #프로그램 시작 화면
 def load_expenses():
     """
     지출 내역을 expenses.json 파일에서 불러오는 함수
+    db처럼 지출 정보를 파일에 저장하는 input_expense() 함수를 활용
     """
-    try:
+    try: 
+        #expenses.json파일 오픈
         with open('expenses.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
         return data
@@ -741,6 +743,43 @@ def load_expenses():
         return []
 
 
+def analyze_and_advise():
+    """
+    지출 내역을 분석하여 지출을 줄일 수 있는 조언을 제공하는 함수
+    """
+    expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
+    if not expenses: # 저장된 지출이 없음
+        print("지출 없음")
+        return
+
+    category_totals = {}  # 카테고리 별로 지출 총액을 저장할 딕셔너리
+    for expense in expenses:
+        category = expense["item"]  # 지출 항목
+        amount = float(expense["amount"])  # 문자열로 저장된 금액을 float로 변환
+        if category not in category_totals:
+            category_totals[category] = 0  # 카테고리가 없으면 초기화
+        category_totals[category] += amount  # 카테고리별 지출 금액 합산
+
+    total_expense = sum(category_totals.values())  # 총 지출 금액 계산
+    print(f"총 지출: {total_expense} 원")
+
+    advice = []  # 조언을 저장할 리스트
+    for category, total in category_totals.items():
+        percentage = (total / total_expense) * 100  # 카테고리별 지출 비율 계산
+        #비율에 따라 조언 다르게 생성
+        if percentage > 30:
+            advice.append(f"{category}에서 지출이 총 지출의 {percentage:.2f}%를 차지합니다. {category}에서 절약할 수 있는 방법을 찾아보세요.")
+        elif percentage > 20:
+            advice.append(f"{category}에서 지출이 총 지출의 {percentage:.2f}%를 차지합니다. 조금 더 신경 써서 지출을 줄여보세요.")
+
+    if advice:
+        #조언 출력
+        print("지출을 줄일 수 있는 조언:")
+        for a in advice:
+            print(a)
+    else:
+        print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -749,7 +788,7 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-       input_expense()
+        add_entry()
     elif func == "2":
         view_entries()
     elif func == "3":
@@ -758,6 +797,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        input_expense()
+        analyze_and_advise()
     elif func == "?":
         print_help()
     elif func == "exit":
