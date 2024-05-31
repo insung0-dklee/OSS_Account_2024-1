@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 import pickle
-import Account_book
+from Account_book import Account_book # 'module을 제대로 불러오지 못하는 부분 수정'
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -285,5 +285,5 @@ while not b_is_exit:
         add_memo()
     else:
         b_is_exit = not b_is_exit
-
+        
         print("올바른 기능을 입력해 주세요.")
