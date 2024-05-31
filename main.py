@@ -1,4 +1,4 @@
-import hashlib #hashlib 사용
+﻿import hashlib #hashlib 사용
 import os
 import json
 from datetime import datetime
@@ -287,3 +287,36 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+#내 계좌에 이체한 금액을 지출로 인식하지 않게 하는 기능 추가
+
+
+class BankAccount:
+    def __init__(self, owner_name, balance=0): #예금주명, 잔액 초기화
+        self.owner_name = owner_name
+        self.balance = balance
+
+    def deposit(self, amount): #지정 금액을 입금
+        self.balance += amount
+
+    def withdraw(self, amount): #현재 계좌 잔액이 지정 금액보다 많거나 같으면 현재 계좌에서 지정 금액 만큼 출금
+        if self.balance >= amount:
+            self.balance -= amount
+            return True
+        else:
+            print("잔액이 부족합니다.") #잔액이 부족할 경우 잔액 부족 메시지 출력
+            return False
+
+    def transfer(self, other_account, amount): #현재 계좌에서 다른 계좌로 지정 금액을 이체
+        if self.owner_name == other_account.owner_name:
+            if self.withdraw(amount): #예금주명이 같은 계좌간의 이체인 경우
+                other_account.deposit(amount)
+                print("내 통장으로 옮기기 성공")
+            else:
+                print("내 통장으로 옮기기 실패")
+        else:
+            if self.withdraw(amount): #예금주명이 다른 계좌간의 이체인 경우
+                other_account.deposit(amount)
+                print("이체 성공")
+            else:
+                print("이체 실패")
