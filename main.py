@@ -135,10 +135,13 @@ def view_entries():
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
+    #  전역변수 ledger에 저장된 모든 지출 내역을 순회
     for entry in ledger:
+        # 현재 지출날짜가, 사용자가 입력한 월로 시작하는지 확인 
         if entry["date"].startswith(month):
+            #맞다면, 월별 총 지출에 더해서 생성월의 총 지출을 출력하게함.
             monthly_total += entry["amount"]
-            print(entry)
+            print(entry) 
     print(f"{month}월 총 지출: {monthly_total} 원")
 
 # 예산 설정 및 초과 알림 함수
