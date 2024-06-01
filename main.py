@@ -494,3 +494,72 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+#입출금 내역을 관리하는 기능 (입출금처, 입출금액, 메모, 전체 입출금 내역)
+class AccountBook:
+    def __init__(self):
+        self.transactions = [] #입출금 내역 저장을 위한 리스트 초기화
+
+    def deposit(self): #사용자로부터 입금 내역을 입력 받음
+        payee = input("출금처: ")
+        while True:
+            amount = input("입금액: ")
+            if amount.isdigit():
+                amount = int(amount)
+                break
+            else:
+                print("숫자만 입력할 수 있습니다.")
+        memo = input("메모: ")
+        self.transactions.append({"유형": "입금", "출금처": payee, "금액": amount, "메모": memo})
+        print("입금 내역이 저장되었습니다.")
+
+    def withdraw(self): #사용자로부터 출금 내역을 입력 받음
+        payer = input("입금처: ")
+        while True:
+            amount = input("출금액: ")
+            if amount.isdigit():
+                amount = int(amount)
+                break
+            else:
+                print("숫자만 입력할 수 있습니다.")
+        memo = input("메모: ")
+        self.transactions.append({"유형": "출금", "입금처": payer, "금액": amount, "메모": memo})
+        print("출금 내역이 저장되었습니다.")
+
+    def display_all_transactions(self): #사용자가 입력한 모든 입출금 내역을 출력함
+        print("\n전체 입출금 기록")
+        for transaction in self.transactions:
+            print(f"유형: {transaction['유형']} | {'출금처' if transaction['유형'] == '입금' else '입금처'}: {transaction['출금처'] if transaction['유형'] == '입금' else transaction['입금처']} | 금액: {transaction['금액']} | 메모: {transaction['메모']}")
+
+
+def main():
+    account_book = AccountBook()
+
+    while True:
+        print("\n-- 입출금 내역 관리 프로그램 --")
+        print("1. 입금")
+        print("2. 출금")
+        print("3. 전체 입출금")
+        print("4. 종료")
+
+        choice = input("메뉴를 선택하세요: ")
+
+        if choice == "1":
+            account_book.deposit()
+        elif choice == "2":
+            account_book.withdraw()
+        elif choice == "3":
+            account_book.display_all_transactions()
+        elif choice == "4":
+            print("입출금 내역 관리를 종료합니다.")
+            break
+        else:
+            print("올바른 메뉴를 선택하세요.(1~4)")
+
+
+if __name__ == "__main__":
+    main()
