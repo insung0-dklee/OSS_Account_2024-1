@@ -460,6 +460,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 날짜별 지출 내역 필터링 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -966,13 +967,21 @@ def analyze_and_advise():
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
 
 #디데이 기능
-d_day_file = 'd_day.json' 
+d_day_file = 'd_day.json'
 
 def save_d_day(target_date_str):
+    """
+    D-Day 목표 날짜를 파일에 저장합니다.
+    @param target_date_str : 문자열 형식의 목표 날짜 (YYYY-MM-DD).
+    """
     with open(d_day_file, 'w') as file:
         json.dump({"target_date": target_date_str}, file)
 
 def load_d_day():
+    """
+    파일에서 D-Day 목표 날짜를 불러옵니다.
+    @return 문자열 형식의 목표 날짜 (YYYY-MM-DD) 또는 None.
+    """
     if os.path.exists(d_day_file):
         with open(d_day_file, 'r') as file:
             data = json.load(file)
@@ -980,6 +989,9 @@ def load_d_day():
     return None
 
 def add_d_day():
+    """
+    D-Day 목표 날짜를 추가하고 남은 일수를 계산합니다.
+    """
     try:
         target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
@@ -994,6 +1006,9 @@ def add_d_day():
         print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
 
 def view_d_day():
+    """
+    D-Day 목표 날짜와 남은 일수를 확인합니다.
+    """
     target_date_str = load_d_day()
     if target_date_str:
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
@@ -1005,6 +1020,17 @@ def view_d_day():
             print("이미 지난 디데이입니다.")
     else:
         print("저장된 디데이 정보가 없습니다.")
+
+def filter_expenses_by_date(start_date, end_date):
+    """
+    특정 기간 동안의 지출 내역을 필터링하여 출력합니다.
+    @param start_date : 문자열 형식의 시작 날짜 (YYYY-MM-DD).
+    @param end_date : 문자열 형식의 종료 날짜 (YYYY-MM-DD).
+    """
+    for entry in ledger:
+        if start_date <= entry['date'] <= end_date:
+            print(entry)
+
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
@@ -1059,6 +1085,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        start_date = input("시작 날짜를 입력하세요 (예: 2024-01-01): ")
+        end_date = input("종료 날짜를 입력하세요 (예: 2024-12-31): ")
+        filter_expenses_by_date(start_date, end_date)
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -1066,7 +1096,7 @@ while not b_is_exit:
     elif func == "메모장":
         add_memo()
         memo()
+    
     else:
-        b_is_exit = not b_is_exit 
-
+        b_is_exit = not b_is_exit
         print("올바른 기능을 입력해 주세요.")
