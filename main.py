@@ -73,12 +73,25 @@ def find_id_by_phone():
 """
 회원 정보를 수정하는 함수
 """
+"""
+회원 정보를 수정하는 함수
+"""
 def modify_user_info():
     id_to_modify = input("수정할 사용자의 id 입력: ")  # 수정하고자 하는 사용자의 id 입력
 
     # 해당 id가 userdata2에 존재하는지 확인
     if id_to_modify not in userdata2:
         print("해당 아이디를 가진 사용자가 없습니다.")
+        return
+
+    # 비밀번호 확인
+    pw = input("현재 비밀번호 입력: ")
+    h = hashlib.sha256()
+    h.update(pw.encode())
+    pw_data = h.hexdigest()
+
+    if pw_data != userdata2[id_to_modify]['pw']:
+        print("비밀번호가 일치하지 않습니다.")
         return
 
     # 수정할 정보 입력
@@ -113,6 +126,7 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
 
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
@@ -292,6 +306,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 회원가입
+    7: 전화번호로 아이디 찾기
+    8: 회원 정보 수정
     ?: 도움말 출력
     exit: 종료
     """)
@@ -742,6 +759,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        user_reg_include_name_phone()
+    elif func == "7":
+        find_id_by_phone()
+    elif func == "8":
+        modify_user_info()
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -750,6 +773,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        b_is_exit = not b_is_exit 
-
         print("올바른 기능을 입력해 주세요.")
