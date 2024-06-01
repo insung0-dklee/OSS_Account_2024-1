@@ -70,7 +70,6 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
 
-
 """
 전화번호를 통해 아이디를 찾는 함수
 """
@@ -460,7 +459,6 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 가계부 초기화(이름, 잔액 설정)
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1016,32 +1014,12 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account():#가계부 선택 함수 - func 제거(함수에 아무런 영향) - 1
+def choose_Account(func):#가계부 선택 함수
     print("가계부 선택(번호로 입력)")
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-    return choose
-
-def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
-    if(num < 0):#오류 검출
-      print("잘못 입력하셨습니다.(0이하수 입력)")
-    else:
-      bal = input("남기고 싶은 잔액을 입력하세요. (x 입력시 현재잔액을 입력)") #주의 - 잔액 설정시 char형으로 저장 -> int형으로 변환해야 함
-      if(bal == "x"):
-        print("잔액을 그대로 가져옵니다.")
-        bal = Account_list[num-1].bal
-      else:
-        if(bal.isnumeric()): #숫자를 표현하는지 확인
-          bal = int(bal) 
-        else:
-          print("잘못 입력하셨습니다.(잔액 이상)")
-          return 0
-      print(f"가계부 {num}번을 초기화 합니다.")
-      name = Account_list[num-1].name #원래 저장소에서 이름 가져오기(배열은 0~n-1로 이루어짐)
-      Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
-      print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
-        
+    return choose 
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -1060,14 +1038,132 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+        
+"""
 
-YU_Account() #프로그램 시작 화면
+    여기서 부터 수정했습니다.
+    
+"""
+
+def print_Login_help(): #user interface 도움말
+    print("""
+    1: 회원가입
+    2: 로그인
+    3. 아이디 찾기
+    4. 비밀번호 찾기
+    
+    아무거나 입력시 프로그램 종료
+    
+    ?: 로그인 도움말 출력
+    """)
+
+def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
+    #파일 읽어 오기
+    f = open("login.txt",'r',encoding='UTF-8')
+
+    login_info = []#파일 정보 저장
+    #한줄씩 읽어 온 후 리스트에 저장
+    while True:
+        line = f.readline()
+        if line == '':
+            break
+        line = line.replace(' ','')#필요없는 값 삭제
+        line = line.replace('\n','')
+        line = line.split(':')
+        #파일에서 딕셔너리로 복구 시켜주는 코드(userdata2, usernames, userphones를 복구시킴)
+        login_info.append(line)
+        userdata2[line[0]] = {'pw': line[1], 'name': line[2], 'phone': line[3]} 
+        usernames[line[2]] = line[0]
+        userphones[line[3]] = line[0] 
+    f.close()
+    return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
+    
+def Login_interface(): #로그인 인터페이스
+    print("로그인(ID와 PW를 입력해 주세요.)")
+    ID = input("ID: ")
+    PW = input("PW: ")
+    
+    h = hashlib.sha256()
+    cnt = 0
+    
+    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
+
+    for i in range(len(login_info)):
+        if(login_info[i][0] == ID):
+            h.update(PW.encode()) #문자열로 비밀번호 추가 가능
+            login_pw = h.hexdigest()#암호화 후 출력
+            
+            if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
+                print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+            else:
+                print("비밀번호 오류입니다.")#아니면 끝
+                break
+        cnt += 1
+        
+    if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
+        print("존재하지 않는 아이디입니다.")
+    return 0
+
+def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
+    check = 0
+    
+    ID = input("찾고자 하는 사용자의 ID 입력: ")  # 사용자가 찾고자 하는 ID를 입력받음
+    
+    if ID in userdata2:  # ID(key)가 딕셔너리에 존재하는지 확인
+        print(f"{userdata2[ID]['name']}님, 전화번호를 입력해 주십시오.")
+        phone = input("전화번호 입력: ")
+        
+        if phone in userphones:
+            while(True):#비밀번호를 바꿀때 까지 무한루프
+                P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
+                
+                if(check == "1"): #주의 - check는 input으로 받으므로 char 형임
+                    h = hashlib.sha256() #암호 복호화
+                    h.update(P.encode())
+                    P = h.hexdigest()
+
+                    userdata2[ID]['pw'] = P#dic 수정
+                    
+                    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+                        for user_id, user_info in userdata2.items():
+                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                    break
+                                    
+        else:
+            print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
+    else:
+        print("ID가 존재하지 않습니다.") #ID 존재 X
+
+YU_Account()#프로그램 시작 화면
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
+interface = 0 #인터페이스 만들기
+user = 0 #user 이름 저장 변수
 
-# 메인 루프
+while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스 구현(탈출을 원할 시 0)
+    interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
+    
+    if interface == "1":
+        user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
+    elif interface == "2":
+        user_reg_include_name_phone() #회원가입 함수 - 이미 존재
+    elif interface == "3":
+        find_id_by_phone() #id 찾기 - 이미 존재
+    elif interface == "4": 
+        change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형
+    elif interface == "?":
+        print_Login_help() #?입력시 Login 도움말 띄우기
+    else:
+        print("프로그램을 종료합니다.")
+        user = interface
+        b_is_exit = 1
+
 while not b_is_exit:
+    print("-----------------------")
+    print("user:",user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1091,5 +1187,10 @@ while not b_is_exit:
         memo()
     else:
         b_is_exit = not b_is_exit 
-
         print("올바른 기능을 입력해 주세요.")
+    
+"""
+
+여기까지 입니다.
+
+"""
