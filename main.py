@@ -360,10 +360,14 @@ def day_evaluation():
             return evaluation
         else:
             print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
+            evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+            print(f"오늘의 평가는 {evaluation}점입니다.")
+            return evaluation
     except ValueError:
         print("올바른 숫자를 입력하세요.")
-        return None
+        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        print(f"오늘의 평가는 {evaluation}점입니다.")
+        return evaluation
 
 def calculate_average_score(scores):
     if scores:
