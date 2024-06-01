@@ -320,3 +320,72 @@ class BankAccount:
                 print("이체 성공")
             else:
                 print("이체 실패")
+
+
+#계좌 잔액 확인
+class AccountBalance: #계좌 잔액을 확인하는 AccountBalance 클래스 생성
+    def __init__(self): 
+        self.accounts = {} #계좌의 정보를 저장할 딕셔너리 초기화
+
+    def register_account(self, name, balance): #계좌의 이름과 잔액을 입력받아 딕셔너리에 저장
+        if name in self.accounts:
+            print(f"오류: '{name}' 계좌가 이미 등록되어 있습니다.")
+        else:
+            self.accounts[name] = balance
+            print(f"'{name}' 계좌가 {balance} 원으로 등록되었습니다.")
+
+    def check_balance(self, name): #계좌의 이름을 입력받아 잔액을 출력, 등록되지 않은 이름 입력 시 오류 메시지 출력
+        if name in self.accounts:
+            print(f"'{name}' 계좌의 잔액은 {self.accounts[name]} 원입니다.")
+        else:
+            print(f"오류: '{name}' 계좌가 존재하지 않습니다.")
+
+def main():
+    account_balance = AccountBalance()
+    #사용자로부터 초기 계좌 등록을 위한 정보를 입력 받음
+    print("***초기 계좌 등록***")
+    while True:
+        name = input("계좌 이름을 입력하세요 (종료하려면 '종료' 입력): ")
+        if name.lower() == '종료':
+            break
+        balance_str = input(f"{name} 계좌 잔액을 입력하세요: ")
+        try:
+            balance = float(balance_str)
+            account_balance.register_account(name, balance)
+        except ValueError:
+            print("오류: 잔액은 숫자로 입력되어야 합니다.")
+            
+    #계좌 등록이 끝났다면 사용자가 잔액을 확인하고 싶은 계좌 이름을 입력받아 잔액을 확인할 수 있음
+    while True:
+        print("\n--- 계좌 관리 ---")
+        print("1. 계좌 등록")
+        print("2. 잔액 확인")
+        print("3. 종료")
+
+        choice = input("옵션을 선택하세요 (1-3): ")
+
+        if choice == '1':
+            name = input("계좌 이름을 입력하세요: ")
+            if name in account_balance.accounts:
+                print(f"오류: '{name}' 계좌가 이미 등록되어 있습니다.")
+            else:
+                balance_str = input("계좌 잔액을 입력하세요: ")
+                try:
+                    balance = float(balance_str)
+                    account_balance.register_account(name, balance)
+                except ValueError:
+                    print("오류: 잔액은 숫자로 입력되어야 합니다.")
+
+        elif choice == '2':
+            name = input("잔액을 확인할 계좌 이름을 입력하세요: ")
+            account_balance.check_balance(name)
+
+        elif choice == '3':
+            print("계좌 관리를 종료합니다.")
+            break
+
+        else:
+            print("잘못된 옵션입니다. 올바른 옵션을 선택하세요.")
+
+if __name__ == "__main__":
+    main()
