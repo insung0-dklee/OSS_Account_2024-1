@@ -575,7 +575,26 @@ def input_expense():
     }
     # 지출 내역을 파일에 저장
     save_expense(expense)
+    #금액에 /가 있는 경우 n빵인지 물어봄
+    if('/' in amount) :
+        answer = input ("n빵 인가요? (y/n)")
+        if(answer == 'y') :
+            name= input("n빵한 사람의 이름을 입력하세요: ")
+            nBBang=[expense,name]
+            save_nBBang(nBBang)
     print("지출 내역이 저장되었습니다.")
+# n빵 내역을 저장할 파일 이름
+nBBang_file = 'nBBang.json'
+
+# n빵 내역을 저장할 파일이 존재하지 않는 경우 초기화
+if not os.path.exists(nBBang_file):
+    with open(nBBang_file, 'w') as file:
+        json.dump([], file)
+
+#n빵 내역 저장
+def save_nBBang(nBBang) :
+    with open(nBBang_file, 'a') as file:
+        file.write(json.dumps(nBBang, ensure_ascii=False, indent=4) + "\n")
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
