@@ -7,6 +7,8 @@ import Account_book
 import random
 import webbrowser
 import re
+import matplotlib.pyplot as plt
+from collections import defaultdict
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -292,6 +294,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    메모장: 메모 기능
+    그래프: 카테고리별 총 수입/지출 그래프 생성
     ?: 도움말 출력
     exit: 종료
     """)
@@ -376,7 +380,7 @@ def calculate_average_score(scores):
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
-    
+
     @Param
         user1 : User object : 비교할 첫 번째 사용자 객체.
         user2 : User object : 비교할 두 번째 사용자 객체.
@@ -430,7 +434,7 @@ def generate_monthly_report():
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
@@ -487,7 +491,7 @@ def add_memo():
 def calculate_monthly_savings(target_amount, target_date):
     """
     목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
-    
+
     @Param
         target_amount : 목표 금액.
         target_date : 목표 날짜 (YYYY-MM-DD 형식).
@@ -511,7 +515,7 @@ def calculate_monthly_savings(target_amount, target_date):
 def track_savings(savings, target_amount, months_left):
     """
     현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
-    
+
     @Param
         savings : 현재까지 저축된 금액.
         target_amount : 목표 금액.
@@ -705,6 +709,31 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+def generate_graph(ledger):
+    # 날짜별 수입/지출 항목을 카테고리별로 합산
+    categories_total = defaultdict(float)
+    for entry in ledger:
+        category = entry["category"]
+        amount = entry["amount"]
+        if amount < 0:
+            categories_total[category] -= amount
+        else:
+            categories_total[category] += amount
+
+    # 카테고리별 총 수입/지출을 그래프로 시각화
+    categories = list(categories_total.keys())
+    amounts = list(categories_total.values())
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(categories, amounts, color='skyblue')
+    plt.xlabel('categories')
+    plt.ylabel('amounts')
+    plt.title('Total Income/Expenditure by Category')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -742,14 +771,15 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "메모장":
+        add_memo()
+        memo()
+    elif func == "그래프":
+        generate_graph(ledger)
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
-    elif func == "메모장":
-        add_memo()
-        memo()
     else:
         b_is_exit = not b_is_exit 
-
         print("올바른 기능을 입력해 주세요.")
