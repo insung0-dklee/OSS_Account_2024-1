@@ -461,7 +461,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
-    exit: 종료
+    exit or x: 종료
     """)
 
 """
@@ -487,19 +487,32 @@ def get_valid_amount_input():
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
     while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
+        amount = get_input_or_exit("금액: ") # 사용자로부터 금액 입력 요청
+        if amount is None : return None # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        elif amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
             return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
+    print("\n<수입/지출 항목 추가>")
+    print("뒤로 가기는 exit을 입력해주세요.")
+    date = get_input_or_exit("날짜 (YYYY-MM-DD): ")
+    if date is None: # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        return
+    category = get_input_or_exit("카테고리: ")
+    if category is None: # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        return
+    description = get_input_or_exit("설명: ")
+    if description is None: # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        return
     score = day_evaluation()
+    if score is None: # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        return
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    if amount is None: # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        return
     entry = {
         "date": date,
         "category": category,
@@ -510,8 +523,19 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+# 뒤로 가기를 수행하는 함수
+def get_input_or_exit(prompt):
+    user_input = input(prompt)
+    if user_input == "exit":
+        print("취소되었습니다. \n")
+        return None # 유저가 입력 값에 exit을 입력할 경우 None이 되도록 함. 함수 밖에서 None을 입력받으면 return을 수행하는 if문을 추가
+    return user_input
+
 # 항목 조회 함수
 def view_entries():
+    print("\n<항목 조회>")
+    if len(ledger) == 0 :
+        print("항목이 없습니다.\n")
     for entry in ledger:
         print(entry)
         if "score" in entry:
@@ -520,18 +544,18 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
-    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-    try:
-        evaluation = float(evaluation)
-        if 0 <= evaluation <= 10:
-            print(f"오늘의 평가는 {evaluation}점입니다.")
-            return evaluation
+    while True:
+        evaluation = get_input_or_exit("오늘의 평가를 입력하세요 (0에서 10까지): ") # 사용자로부터 평가 입력 요청
+        if evaluation is None : return None # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        elif evaluation.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
+            evaluation = int(evaluation)
+            if 0 <= evaluation <= 10: # 숫자로만 이루어져 있다면 범위 내의 숫자인지 확인
+                print(f"오늘의 평가는 {evaluation}점입니다.")
+                return evaluation
+            else :
+                print("범위 내의 숫자를 입력하세요.") # 범위 내의 숫자가 아닐 경우, 오류 메시지 출력
         else:
-            print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
-    except ValueError:
-        print("올바른 숫자를 입력하세요.")
-        return None
+            print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 def calculate_average_score(scores):
     if scores:
@@ -573,7 +597,10 @@ def compare_financial_goal(user1, user2, goal):
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    print("\n<월별 보고서 생성>")
+    print("뒤로 가기는 exit을 입력해주세요.")
+    month = get_input_or_exit("보고서 생성할 월 (YYYY-MM): ")
+    if month is None : return # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
@@ -608,8 +635,17 @@ budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
+    print("\n<예산 설정 및 초과 알림>")
+    print("뒤로 가기는 exit을 입력해주세요.")
+    global budget #budget을 전역변수로 변경
+    while True:
+        budget = get_input_or_exit("예산 설정 (원): ") #budget을 전역변수로 변경
+        if budget is None : return None # 사용자가 뒤로 가기를 수행한 경우 함수를 빠져나감
+        elif budget.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
+            budget = float(budget)
+            break
+        else:
+            print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
     current_total = sum(float(entry["amount"]) for entry in ledger)
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
@@ -627,6 +663,9 @@ def check_budget():
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
+    print("\n<지출 카테고리 분석>")
+    if len(ledger) == 0 :
+        print("분석할 항목이 없습니다.\n")
     category_totals = {}
     for entry in ledger:
         category = entry["category"]
@@ -1061,12 +1100,11 @@ while not b_is_exit:
         analyze_categories()
     elif func == "?":
         print_help()
-    elif func == "exit":
+    elif func == "exit" or func == "x":
+        print("프로그램을 종료합니다.")
         b_is_exit = True
     elif func == "메모장":
         add_memo()
         memo()
     else:
-        b_is_exit = not b_is_exit 
-
         print("올바른 기능을 입력해 주세요.")
