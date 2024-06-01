@@ -292,6 +292,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 빚 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -725,6 +726,158 @@ def YU_Account():
 
 YU_Account() #프로그램 시작 화면
 
+
+from datetime import datetime
+
+class Debt:
+    def __init__(self, lender, amount, due_date):
+        """
+        초기화 함수. 빚의 대출 기관/사람, 금액, 상환 기한을 설정하고 상환된 금액은 0으로 초기화.
+        """
+        self.lender = lender
+        self.amount = amount
+        self.due_date = due_date
+        self.paid_amount = 0
+        self.payment_history = []  # 상환 내역을 저장할 리스트
+    
+    def pay_debt(self, amount):
+        """
+        빚 상환 함수. 상환된 금액을 더하고 남은 빚 금액을 계산하여 반환.
+        상환 내역에 기록을 추가.
+        """
+        self.paid_amount += amount
+        self.amount -= amount
+        self.payment_history.append((datetime.now(), amount))  # 상환 내역에 추가
+        return self.amount
+    
+    def get_payment_history(self):
+        """
+        상환 내역을 반환하는 함수.
+        """
+        return self.payment_history
+
+debts = []
+
+def validate_date(date_text):
+    """
+    날짜 형식이 올바른지 확인하는 함수. 'YYYY-MM-DD' 형식이어야 함.
+    """
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
+def add_debt():
+    """
+    새로운 빚을 추가하는 함수. 대출 기관/사람, 금액, 상환 기한을 입력받고
+    올바른 형식의 상환 기한이 입력될 때까지 반복.
+    """
+    lender = input("대출 기관/사람: ")
+    amount = float(input("대출 금액: "))
+    
+    while True:
+        due_date = input("상환 기한 (YYYY-MM-DD): ")
+        if validate_date(due_date):
+            break
+        else:
+            print("잘못된 날짜 형식입니다. 다시 입력해 주세요.")
+    
+    new_debt = Debt(lender, amount, due_date)
+    debts.append(new_debt)
+    print("새 빚이 추가되었습니다.")
+
+def view_debts():
+    """
+    등록된 빚 목록을 출력하는 함수. 등록된 빚이 없으면 해당 메시지를 출력.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+    for debt in debts:
+        print(f"대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+
+def pay_debt():
+    """
+    빚 상환 함수. 사용자가 상환할 빚을 선택하고 상환 금액을 입력받아 상환 처리.
+    상환 금액이 남은 빚 금액을 초과하지 않도록 검증.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+        return
+    
+    # 등록된 빚 목록 출력
+    for idx, debt in enumerate(debts):
+        print(f"{idx + 1}. 대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+    
+    # 상환할 빚 선택
+    debt_index = int(input("상환할 빚 번호를 입력하세요: ")) - 1
+    selected_debt = debts[debt_index]
+    
+    # 상환 금액 입력받아 검증
+    while True:
+        amount = float(input("상환 금액: "))
+        if amount > selected_debt.amount:
+            print(f"상환 금액이 남은 빚 금액을 초과할 수 없습니다. 남은 금액: {selected_debt.amount}")
+        else:
+            break
+    
+    # 빚 상환 처리
+    remaining_amount = selected_debt.pay_debt(amount)
+    
+    # 남은 금액에 따라 메시지 출력
+    if remaining_amount <= 0:
+        print("모든 빚이 상환되었습니다.")
+        debts.pop(debt_index)
+    else:
+        print(f"남은 금액: {remaining_amount}")
+
+def view_debt_payment_history():
+    """
+    특정 빚의 상환 내역을 조회하는 함수.
+    남아 있는 빚이 있는 경우 상환 내역을 조회 할 수 있다.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+        return
+    
+    # 등록된 빚 목록 출력
+    for idx, debt in enumerate(debts):
+        print(f"{idx + 1}. 대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+    
+    # 상환 내역을 조회할 빚 선택
+    debt_index = int(input("상환 내역을 조회할 빚 번호를 입력하세요: ")) - 1
+    selected_debt = debts[debt_index]
+    
+    # 상환 내역 출력
+    payment_history = selected_debt.get_payment_history()
+    if not payment_history:
+        print("상환 내역이 없습니다.")
+    else:
+        print(f"{selected_debt.lender}의 상환 내역:")
+        for date, amount in payment_history:
+            print(f"날짜: {date}, 금액: {amount}")
+
+def debt_management():
+    """
+    빚 관리 기능 함수. 사용자 입력에 따라 빚 추가, 목록 보기, 상환, 상환 내역 조회 기능을 호출.
+    """
+    while True:
+        debt_func = input("빚 관리 기능 입력 (1: 빚 추가, 2: 빚 목록 보기, 3: 빚 상환, 4: 상환 내역 조회, exit: 종료) : ")
+        if debt_func == "1":
+            add_debt()
+        elif debt_func == "2":
+            view_debts()
+        elif debt_func == "3":
+            pay_debt()
+        elif debt_func == "4":
+            view_debt_payment_history()
+        elif debt_func == "exit":
+            break
+        else:
+            print("올바른 기능을 입력해 주세요.")
+
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -744,6 +897,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "?":
         print_help()
+    elif func == "6":
+        debt_management()
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
