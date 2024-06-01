@@ -243,6 +243,18 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+# 어제와 오늘의 지출 차이 비교 함수
+def different():
+    print("어제 지출한 금액을 입력하세요")     
+    ym=int(input("입력"))       
+    print("오늘 지출한 금액을 입력하세요")
+    tm=int(input("입력"))        
+    if ym-tm>0:
+        print("축하합니다. 어제보다",ym-tm,"덜 사용하셨습니다")
+    elif ym-tm<0:
+        print("아쉽습니다. 어제보다",tm-ym,"더 사용하셨습니다.")
+    else :
+           print("어제와 같은 금액을 사용하셨습니다.")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
