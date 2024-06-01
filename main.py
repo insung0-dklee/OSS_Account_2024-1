@@ -7,6 +7,16 @@ import Account_book
 import random
 import webbrowser
 import re
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+# 한글 폰트 설정
+def set_korean_font():
+    font_path = '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'  # 예시: Ubuntu에서 나눔고딕 폰트 경로
+    font_path = 'C:/Windows/Fonts/malgun.ttf'  # 예시: Windows에서 맑은 고딕 폰트 경로
+    fontprop = fm.FontProperties(fname=font_path, size=10)
+    plt.rcParams['font.family'] = fontprop.get_name()
+    plt.rcParams['axes.unicode_minus'] = False
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -452,6 +462,16 @@ def calculator():
 # 가계부 데이터 저장 변수
 ledger = []
 
+# 가계부 데이터 샘플
+ledger = [
+    {'date': '2024-01-01', 'category': '식비', 'amount': 10000},
+    {'date': '2024-01-02', 'category': '교통비', 'amount': 5000},
+    {'date': '2024-01-03', 'category': '식비', 'amount': 15000},
+    {'date': '2024-02-01', 'category': '식비', 'amount': 20000},
+    {'date': '2024-02-02', 'category': '교통비', 'amount': 7000},
+    {'date': '2024-02-03', 'category': '여가비', 'amount': 25000},
+]
+
 # 도움말 출력 함수
 def print_help():
     print("""
@@ -461,6 +481,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 날짜별 지출 내역 필터링 조회
+    7: 날짜별 지출 내역 필터링 시각화 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1023,13 +1044,71 @@ def view_d_day():
 
 def filter_expenses_by_date(start_date, end_date):
     """
-    특정 기간 동안의 지출 내역을 필터링하여 출력합니다.
+    특정 기간 동안의 지출 내역을 필터링하여 반환합니다.
     @param start_date : 문자열 형식의 시작 날짜 (YYYY-MM-DD).
     @param end_date : 문자열 형식의 종료 날짜 (YYYY-MM-DD).
+    @return 필터링된 지출 내역 리스트.
     """
-    for entry in ledger:
-        if start_date <= entry['date'] <= end_date:
-            print(entry)
+    filtered_entries = [entry for entry in ledger if start_date <= entry['date'] <= end_date]
+    print(filtered_entries)
+    return filtered_entries
+
+def visualize_expenses(start_date, end_date):
+    """
+    특정 기간 동안의 지출 내역을 시각화합니다.
+    @param start_date : 문자열 형식의 시작 날짜 (YYYY-MM-DD).
+    @param end_date : 문자열 형식의 종료 날짜 (YYYY-MM-DD).
+    @return : 필터링된 지출 내역의 시각화 팝업 창
+    """
+    filtered_entries = filter_expenses_by_date(start_date, end_date)
+    
+    
+    # 카테고리별 지출 금액 계산
+    category_totals = {}
+    for entry in filtered_entries:
+        category = entry['category']
+        amount = float(entry['amount'])
+        if category not in category_totals:
+            category_totals[category] = 0
+        category_totals[category] += amount
+
+    # 날짜별 지출 금액 계산
+    date_totals = {}
+    for entry in filtered_entries:
+        date = entry['date']
+        amount = float(entry['amount'])
+        if date not in date_totals:
+            date_totals[date] = 0
+        date_totals[date] += amount
+
+    # 카테고리별 지출 금액 막대 그래프
+    categories = list(category_totals.keys())
+    totals = list(category_totals.values())
+
+    set_korean_font()  # 한글 폰트 설정
+
+    plt.figure(figsize=(10, 5))
+    plt.bar(categories, totals, color='skyblue')
+    plt.xlabel('카테고리')
+    plt.ylabel('지출 금액')
+    plt.title(f'{start_date}부터 {end_date}까지 카테고리별 지출 내역')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+    # 날짜별 지출 금액 선 그래프
+    dates = list(date_totals.keys())
+    totals = list(date_totals.values())
+    dates = [datetime.strptime(date, '%Y-%m-%d') for date in dates]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(dates, totals, marker='o', linestyle='-', color='skyblue')
+    plt.xlabel('날짜')
+    plt.ylabel('지출 금액')
+    plt.title(f'{start_date}부터 {end_date}까지 날짜별 지출 내역')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
 
 
 #가계부 초깃값 임의로 설정
@@ -1089,6 +1168,10 @@ while not b_is_exit:
         start_date = input("시작 날짜를 입력하세요 (예: 2024-01-01): ")
         end_date = input("종료 날짜를 입력하세요 (예: 2024-12-31): ")
         filter_expenses_by_date(start_date, end_date)
+    elif func == "7":
+        start_date = input("시작 날짜를 입력하세요 (예: 2024-01-01): ")
+        end_date = input("종료 날짜를 입력하세요 (예: 2024-12-31): ")
+        visualize_expenses(start_date, end_date)
     elif func == "?":
         print_help()
     elif func == "exit":
