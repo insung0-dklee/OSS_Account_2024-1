@@ -1,9 +1,9 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
-import Account_book
+#import Account_book
 import random
 import webbrowser
 import re
@@ -691,12 +691,12 @@ def modify_expense():
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
-a = Account_book.Account_book("가계부 1",1000000)
-b = Account_book.Account_book("가계부 2",2000000)
-c = Account_book.Account_book("가계부 3",3000000)
+#a = Account_book.Account_book("가계부 1",1000000)
+#b = Account_book.Account_book("가계부 2",2000000)
+#c = Account_book.Account_book("가계부 3",3000000)
 
-Account_list = [a,b,c] #가계부 리스트
-i=0
+#Account_list = [a,b,c] #가계부 리스트
+#i=0
 
 def choose_Account(func):#가계부 선택 함수
     print("가계부 선택(번호로 입력)")
@@ -704,6 +704,66 @@ def choose_Account(func):#가계부 선택 함수
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
     return choose 
+
+# 반복 지출 항목 저장 리스트
+recurring_expenses = []
+
+# 반복 지출 항목 설정 함수
+def set_recurring_expense():
+    name = input("반복 지출 항목 이름: ")
+    amount = float(input("금액: "))
+    frequency = input("반복 주기 (매달/매주): ")
+    start_date = input("시작 날짜 (YYYY-MM-DD): ")
+
+    expense = {
+        "name": name,
+        "amount": amount,
+        "frequency": frequency,
+        "start_date": start_date
+    }
+    recurring_expenses.append(expense)
+    print(f"반복 지출 항목 '{name}'이(가) 추가되었습니다.")
+
+    # 저장된 반복 지출 항목을 파일에 저장
+    with open('recurring_expenses.json', 'w', encoding='utf-8') as file:
+        json.dump(recurring_expenses, file, ensure_ascii=False, indent=4)
+
+# 파일로부터 반복 지출 항목을 로드하는 함수
+def load_recurring_expenses():
+    try:
+        with open('recurring_expenses.json', 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+# 반복 지출 항목을 자동으로 추가하는 함수
+def add_recurring_expenses():
+    today = datetime.now().date()
+    for expense in recurring_expenses:
+        start_date = datetime.strptime(expense["start_date"], "%Y-%m-%d").date()
+        if expense["frequency"] == "매달":
+            while start_date <= today:
+                if start_date > today - timedelta(days=30):
+                    ledger.append({
+                        "date": start_date.strftime("%Y-%m-%d"),
+                        "category": "반복 지출",
+                        "description": expense["name"],
+                        "amount": expense["amount"]
+                    })
+                start_date += timedelta(days=30)
+        elif expense["frequency"] == "매주":
+            while start_date <= today:
+                if start_date > today - timedelta(days=7):
+                    ledger.append({
+                        "date": start_date.strftime("%Y-%m-%d"),
+                        "category": "반복 지출",
+                        "description": expense["name"],
+                        "amount": expense["amount"]
+                    })
+                start_date += timedelta(days=7)
+
+# 초기화 시 반복 지출 항목 로드
+recurring_expenses = load_recurring_expenses()
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -727,6 +787,9 @@ YU_Account() #프로그램 시작 화면
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
+
+# 프로그램 시작 시 반복 지출 항목 자동 추가
+add_recurring_expenses()
 
 # 메인 루프
 while not b_is_exit:
