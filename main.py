@@ -460,8 +460,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 유형/무형 자산 추가
-    7: 자산 조회
+    6: 자산 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -995,15 +994,12 @@ def add_d_day():
     except ValueError:
         print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
 
-# 자산 정보를 저장하는 파일 이름
 ASSETS_FILE = "assets.json"
 
-# 자산 정보를 파일에 저장하는 함수
 def save_assets_to_file(assets):
     with open(ASSETS_FILE, 'w') as file:
         json.dump(assets, file, indent=4)
 
-# 파일에서 자산 정보를 읽어오는 함수
 def load_assets_from_file():
     try:
         with open(ASSETS_FILE, 'r') as file:
@@ -1011,38 +1007,50 @@ def load_assets_from_file():
     except FileNotFoundError:
         return []
 
-# 자산 추가 함수
-def add_asset():
-    assets = load_assets_from_file()
-    
-    asset_type = input("자산 유형 선택 (1: 유형 자산, 2: 무형 자산): ")
-    asset_name = input("자산 이름: ")
-    asset_value = input("자산 가치: ")
-    
-    if asset_type == "1":
-        asset_type_name = "유형 자산"
-    elif asset_type == "2":
-        asset_type_name = "무형 자산"
-    else:
-        print("잘못된 자산 유형입니다. 다시 시도하세요.")
-        return
-    
-    # 자산 정보를 리스트에 추가
-    assets.append({"type": asset_type_name, "name": asset_name, "value": asset_value})
-    
-    # 파일에 자산 정보 저장
-    save_assets_to_file(assets)
-    
-    print(f"{asset_name} ({asset_type_name}) 자산이 가치 {asset_value}로 추가되었습니다.")
+def asset_management():
+    def add_asset(assets):
+        asset_type = input("자산 유형 선택 (1: 유형 자산, 2: 무형 자산): ")
+        
+        if asset_type == "1":
+            asset_type_name = "유형 자산"
+        elif asset_type == "2":
+            asset_type_name = "무형 자산"
+        else:
+            print("잘못된 자산 유형입니다. 다시 시도하세요.")
+            return
 
-# 자산 확인 함수
-def view_assets():
-    assets = load_assets_from_file()
-    if not assets:
-        print("저장된 자산이 없습니다.")
-    else:
-        for idx, asset in enumerate(assets, start=1):
-            print(f"{idx}. {asset['name']} ({asset['type']}) - 가치: {asset['value']}")
+        asset_name = input("자산 이름: ")
+        asset_value = input("자산 가치: ")
+
+        assets.append({"type": asset_type_name, "name": asset_name, "value": asset_value})
+        save_assets_to_file(assets)
+        print(f"{asset_name} ({asset_type_name}) 자산이 가치 {asset_value}로 추가되었습니다.")
+
+    def view_assets(assets):
+        if not assets:
+            print("저장된 자산이 없습니다.")
+        else:
+            for idx, asset in enumerate(assets, start=1):
+                print(f"{idx}. {asset['name']} ({asset['type']}) - 가치: {asset['value']}")
+
+    def calculate_total_asset_value(assets):
+        total_value = sum(float(asset["value"]) for asset in assets)
+        print(f"총 자산 가치: {total_value}")
+
+    while True:
+        assets = load_assets_from_file()
+        choice = input("1: 자산 추가, 2: 자산 확인, 3: 총 자산 가치 계산, 4: 돌아가기\n선택: ")
+        
+        if choice == '1':
+            add_asset(assets)
+        elif choice == '2':
+            view_assets(assets)
+        elif choice == '3':
+            calculate_total_asset_value(assets)
+        elif choice == '4':
+            break  # 반복문 종료
+        else:
+            print("잘못된 입력입니다. 다시 시도하세요.")
 
 def view_d_day():
     target_date_str = load_d_day()
@@ -1111,9 +1119,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        add_asset()
-    elif func == "7":
-        view_assets()
+        asset_management()
     elif func == "?":
         print_help()
     elif func == "exit":
