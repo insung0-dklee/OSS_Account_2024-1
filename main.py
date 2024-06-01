@@ -1042,6 +1042,10 @@ def YU_Account():
 
 YU_Account() #프로그램 시작 화면
 
+version = "1.0.0"  # 프로그램 버전
+print(f"프로그램 버전: {version}")
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
