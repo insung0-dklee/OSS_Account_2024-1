@@ -7,6 +7,7 @@ import Account_book
 import random
 import webbrowser
 import re
+import tkinter as tk
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -499,15 +500,17 @@ def add_entry():
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    value_=create_scroll_app() # 금액을 스크롤 바를 이용하여 입력할 수 있게 수정함.
+    #amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
     entry = {
         "date": date,
         "category": category,
         "description": description,
-        "amount": amount,
+        "amount": value_,
         "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
+    print(f"금액: {value_} 원") #입력된 금액 출력
     print("항목이 추가되었습니다.")
 
 # 항목 조회 함수
@@ -636,6 +639,55 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+"""
+update_label : scroll bar 값이 변경될 때 호출되어 label 값을 업데이트하는 기능
+@Parm
+    value : scroll bar에 따라 바뀌는 변수
+    label : scroll bar 아래에 표시되는 금액
+@Return
+    None
+"""
+def update_label(value, label):
+    label.config(text=f"{int(value):,} 원") #금액 표시
+"""
+on_confirm : scroll bar의 현재 값을 에 저장하고, 어플리케이션을 종료하는 기능
+@Parm
+    scale : scale.get()을 호출하여 슬라이더의 현재 값을 가져옴
+    root : root.destroy()를 호출하여 GUI 어플리케이션을 종료함
+    result: 현재 값을 저장 할 딕셔너리
+@Return
+    None
+"""
+def on_confirm(scale, root, result):
+    result["value"] = scale.get() # 값을 읽어오기
+    root.destroy()
+"""
+create_scroll_app : scroll bar를 생성하여 금액을 입력받는 GUI 어플리케이션
+@Parm
+    Noen
+@Return
+    result : 입력된 금액
+"""
+def create_scroll_app():
+    root = tk.Tk()
+    result = {"value": 0}
+
+    root.geometry("400x300")# 윈도우 크기 설정
+    root.title("금액 입력 스크롤바")# 윈도우 제목 설정
+
+    # 위젯 생성 (가로 방향, 범위 0 ~ 100,000)
+    scale = tk.Scale(root, from_=0, to=100000, orient=tk.HORIZONTAL, command=lambda value: update_label(value, label))
+    scale.pack(side=tk.TOP, fill=tk.X, padx=20, pady=20)
+    label = tk.Label(root, text="0 원", font=("Arial", 24))# 숫자를 표시할 Label 생성
+    label.pack(pady=20)
+
+    # 확인 버튼 생성
+    confirm_button = tk.Button(root, text="확인", command=lambda: on_confirm(scale, root, result))
+    confirm_button.pack(pady=20)
+
+    root.mainloop()#GUI 루프 시작
+
+    return result["value"] #입력된 금액 반환
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
