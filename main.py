@@ -520,18 +520,17 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
-    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-    try:
-        evaluation = float(evaluation)
-        if 0 <= evaluation <= 10:
-            print(f"오늘의 평가는 {evaluation}점입니다.")
-            return evaluation
-        else:
-            print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
-    except ValueError:
-        print("올바른 숫자를 입력하세요.")
-        return None
+    while True: 
+        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        try:
+            evaluation = float(evaluation)
+            if 0 <= evaluation <= 10:
+                print(f"오늘의 평가는 {evaluation}점입니다.")
+                return evaluation
+            else:
+                print("평가는 0에서 10 사이의 숫자여야 합니다.")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
 
 def calculate_average_score(scores):
     if scores:
