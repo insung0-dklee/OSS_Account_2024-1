@@ -200,8 +200,10 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     hist[f"{dt}"].append((income, where))
 
 def read_memo():
-    print("열고 싶은 메모장 제목: ")
+    print("제목: ", end="")
     str_title = input()
+    if not str_title.endswith(".txt"):
+        str_title += ".txt"
     try:
         with open(str_title, "r", encoding="utf8") as f:
             content = f.read()
@@ -211,18 +213,33 @@ def read_memo():
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
 def delete_memo():
-    print("삭제할 메모장 제목: ")
+    print("삭제할 메모장 제목: ", end="")
     str_title = input()
+    if not str_title.endswith(".txt"):
+        str_title += ".txt"
     if os.path.exists(str_title):
         os.remove(str_title)
-        print(f"{str_title} 메모가 삭제되었습니다.")
+        print(f"{str_title[:-4]} 메모가 삭제되었습니다.")
     else:
         print("해당 제목의 메모장을 찾을 수 없습니다.")
+
+def list_memos():
+    files = os.listdir()
+    # .txt 확장자가 있는 파일만 필터링
+    memos = [f for f in files if os.path.isfile(f) and f.endswith(".txt")]
+    if memos:
+        print("모든 메모 제목:")
+        for memo in memos:
+            # .txt 제거하고 출력
+            print(memo[:-4])
+    else:
+        print("메모가 없습니다.")
 
 def memo():
     print("1. 메모 추가")
     print("2. 메모 읽기")
     print("3. 메모 삭제")
+    print("4. 모든 메모 제목 출력")
     choice = input("선택: ")
     if choice == "1":
         add_memo()
@@ -230,6 +247,8 @@ def memo():
         read_memo()
     elif choice == "3":
         delete_memo()
+    elif choice == "4":
+        list_memos()
     else:
         print("잘못된 선택입니다.")
 
@@ -292,6 +311,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    메모장: 메모 추가, 읽기, 삭제, 목록
     ?: 도움말 출력
     exit: 종료
     """)
@@ -476,13 +496,17 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
     None
 """
 def add_memo():
-    print("메모장 제목: ")
+    print("메모장 제목: ", end="")
     str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
-    print("내용 입력: ")
-    str_memo = input()
-    new_f.write(str_memo)
-    new_f.close()
+    # 확장자를 추가하여 파일을 저장
+    if not str_title.endswith(".txt"):
+        str_title += ".txt"
+    with open(str_title, "w", encoding="utf8") as new_f:
+        print("내용 입력: ", end="")
+        str_memo = input()
+        new_f.write(str_memo)
+        # .txt를 뺀 파일 제목으로 출력
+        print(f"{str_title[:-4]} 메모가 추가되었습니다.")
 
 def calculate_monthly_savings(target_amount, target_date):
     """
@@ -747,7 +771,6 @@ while not b_is_exit:
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
-        add_memo()
         memo()
     else:
         b_is_exit = not b_is_exit 
