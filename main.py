@@ -725,6 +725,13 @@ def YU_Account():
 
 YU_Account() #프로그램 시작 화면
 
+"""
+Time : 프로그램 시작 화면에 현재 시간과 날짜를 출력
+@Parm
+    None
+@return
+    None
+"""
 def Time():
     now_time = datetime.now()
     print("현재 날짜 : ", now_time.date())
