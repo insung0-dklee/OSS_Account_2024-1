@@ -460,6 +460,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 유형/무형 자산 추가
     ?: 도움말 출력
     exit: 종료
     """)
@@ -993,6 +994,22 @@ def add_d_day():
     except ValueError:
         print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
 
+# 자산 추가 함수
+def add_asset():
+    asset_type = input("자산 유형 선택 (1: 유형 자산, 2: 무형 자산): ")
+    asset_name = input("자산 이름: ")
+    asset_value = input("자산 가치: ")
+
+    if asset_type == "1":
+        asset_type_name = "유형 자산"
+    elif asset_type == "2":
+        asset_type_name = "무형 자산"
+    else:
+        print("잘못된 자산 유형입니다. 다시 시도해주세요.")
+        return
+        
+    print(f"{asset_name} ({asset_type_name}) 자산이 가치 {asset_value}으로 추가되었습니다.")
+
 def view_d_day():
     target_date_str = load_d_day()
     if target_date_str:
@@ -1059,6 +1076,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_asset()
     elif func == "?":
         print_help()
     elif func == "exit":
