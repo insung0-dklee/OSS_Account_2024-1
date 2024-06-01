@@ -725,6 +725,13 @@ def YU_Account():
 
 YU_Account() #프로그램 시작 화면
 
+def Start_Time():
+    now_time = datetime.now()
+    print("현재 날짜 : ", now_time.date())
+    print("현재 시간 : ", now_time.hour, "시", now_time.minute, "분", now_time.second, "초\n")
+Start_Time()
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
