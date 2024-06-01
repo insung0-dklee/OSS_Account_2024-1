@@ -367,6 +367,24 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
+"""
+add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
+@Parm
+    None
+@Return
+    None
+"""
+def add_memo():
+    print("메모장 제목: ")
+    str_title = input()
+    if not str_title.endswith(".txt"):
+        str_title += ".txt"
+    new_f = open(str_title,"w",encoding="utf8")
+    print("내용 입력: ")
+    str_memo = input()
+    new_f.write(str_memo)
+    new_f.close()
+
 def read_memo():
     print("열고 싶은 메모장 제목: ")
     str_title = input()
@@ -378,6 +396,19 @@ def read_memo():
     except FileNotFoundError:
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
+def list_memo():
+    """
+    현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
+    """
+    memo_files = [file for file in os.listdir() if file.endswith(".txt")]
+    if memo_files:
+        print("메모장 목록:")
+        for idx, memo_file in enumerate(memo_files, start=1):
+            print(f"{idx}. {memo_file}")
+    else:
+        print("메모장이 존재하지 않습니다.")
+
+
 def delete_memo():
     print("삭제할 메모장 제목: ")
     str_title = input()
@@ -388,18 +419,27 @@ def delete_memo():
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
 def memo():
-    print("1. 메모 추가")
-    print("2. 메모 읽기")
-    print("3. 메모 삭제")
-    choice = input("선택: ")
-    if choice == "1":
-        add_memo()
-    elif choice == "2":
-        read_memo()
-    elif choice == "3":
-        delete_memo()
-    else:
-        print("잘못된 선택입니다.")
+    while True:
+        print("=======================================")
+        print("1. 메모 추가")
+        print("2. 메모 리스트")
+        print("3. 메모 읽기")
+        print("4. 메모 삭제")
+        print("5. 메모 닫기")
+        print("=======================================")
+        choice = input("선택: ")
+        if choice == "1":
+            add_memo()
+        elif choice == "2":
+            list_memo()
+        elif choice == "3":
+            read_memo()
+        elif choice == "4":
+            delete_memo()
+        elif choice == "5":
+            break
+        else:
+            print("잘못된 선택입니다.")
 
 
 
@@ -635,22 +675,6 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
-
-"""
-add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
-@Parm
-    None
-@Return
-    None
-"""
-def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
-    print("내용 입력: ")
-    str_memo = input()
-    new_f.write(str_memo)
-    new_f.close()
 
 def calculate_monthly_savings(target_amount, target_date):
     """
@@ -1064,7 +1088,6 @@ while not b_is_exit:
     elif func == "exit":
         b_is_exit = True
     elif func == "메모장":
-        add_memo()
         memo()
     else:
         b_is_exit = not b_is_exit 
