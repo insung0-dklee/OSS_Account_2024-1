@@ -753,3 +753,48 @@ while not b_is_exit:
         b_is_exit = not b_is_exit 
 
         print("올바른 기능을 입력해 주세요.")
+
+"""
+카테고리 추가, 삭제 함수
+기본설정된 카테고리(교통비, 식비, 여가생활)의 지출 내역 입력과
+새로운 카테고리를 추가하고 필요없는 카테고리를 삭제하는 함수
+
+"""
+
+
+#기본설정된 카테고리
+category ={'교통비':0,'식비':0,'여가생활':0}
+print("현재 존재하는 category :",end=" ")
+for key in category.keys():
+    print(key,end=" ")
+print("\n")
+
+#기본 설정된 카테고리의 지출 내역 입력 함수
+def add_value(category):
+    for key in category.keys():
+        value = input(f"{key}의 값을 입력하세요: ") #각 카테고리별로 지출내역을 입력받음
+        category[key] = value
+    print(category)
+
+#카테고리를 추가하는 함수
+def add_cate(new):
+    new = input("새로운 category : ") #추가할 카테고리 입력
+    if new not in category:
+        print(f"{new}항목이 category에 추가되었습니다.")
+        value = input(f"{new}항목의 지출 내역을 입력해주세요.") #추가된 카테고리의 지출 입력
+        category[new] = value
+        print(category)
+    else:
+        print(f"{new}항목은 이미 category에 존재합니다.") #이미 존재할 경우 이를 알려줌.
+        print(f"{new} : ",category[new]) #추가하려했던 카테고리의 지출내역까지 출력
+        
+#카테고리를 삭제하는 함수
+def delete_cate(category, key):
+    key = input("삭제할 category : ") #삭제할 카테고리 입력
+    if key in category:
+        del category[key]
+        print(f"{key}항목이 삭제되었습니다.")
+        print(category) #카테고리가 삭제된 것을 확인시켜줌
+    else:
+        print(f"{key}항목은 존재하지 않습니다.")
+        print(category) #카테고리를 보여주면서 항목이 없는 것을 확인시킴
