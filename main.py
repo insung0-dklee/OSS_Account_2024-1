@@ -289,9 +289,10 @@ def print_help():
     print("""
     1: 수입/지출 항목 추가
     2: 항목 조회
-    3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
-    5: 지출 카테고리 분석
+    3: n빵 내역 조회
+    4: 월별 보고서 생성
+    5: 예산 설정 및 초과 알림
+    6: 지출 카테고리 분석
     ?: 도움말 출력
     exit: 종료
     """)
@@ -325,23 +326,27 @@ def get_valid_amount_input():
             total, people =  amount.split('/') # '/' 문자를 기준으로 문자열을 분리하고, 각 부분을 float로 변환
             return float(total), int(people) # 총 금액과 인원 수를 반환
         elif amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(total) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
+            total, people = amount, 1 # 인원 수는 1로 설정
+            return float(total), int(people)
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    people=1
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
     total,people = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
-    amount = total / people #금액 입력에/가 있고 n빵이 아닌 경우 나눈 값을 입력 가능하도록 수정
-    if(people!=1) :
+    amount = total/people
+    n_price = None
+    isnBBang = 'n' #n빵이 아니고 일반적으로 금액을 입력하는 경우 ledger.append뒤에 if문이 실행되지 않도록 'n'으로 초기화
+    if people!=1 :
         isnBBang = input ("n빵 인가요? (y/n)")
-        if(isnBBang == 'y') :
-            amount = total
+        if isnBBang == 'y'  :
+            n_price=total/(people+1) #n빵인 경우 금액 저장(자신도 n빵엥 포함이니  +1)
+            n_amount = total-n_price #자신분의 n빵 금액을 뺀 나머지를 저장
+
     entry = {
         "date": date,
         "category": category,
@@ -349,12 +354,17 @@ def add_entry():
         "amount": amount,
         "score": score  # 평가 점수 추가
     }
+
     ledger.append(entry)
     #금액에 /가 있는 경우 n빵인지 물어봄
     print("항목이 추가되었습니다.")
-    if(isnBBang == 'y') :
+    if isnBBang == 'y' :
+        nBBang_entry = entry.copy() #지출 내역과 n빵내역의 금액을 따로 저장하기 위해 복사함
+        entry["amount"]=n_price #지출 내역에는 자신의 n빵 금액을 저장
+        nBBang_entry["amount"]=n_amount #n빵 내역에서는 자신분의 금액을 뺀 받아야할 전체 금액을 입력
         name= input(f"n빵한 {people}명의 이름을 입력하세요: ")
-        nBBang=[entry,name]
+        name_list=name.split(' ')
+        nBBang=[entry,name_list,n_price]
         save_nBBang(nBBang)
         print("n빵이 저장되었습니다.")
 
@@ -364,7 +374,72 @@ def view_entries():
         print(entry)
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
+        
 
+# n빵 내역 출력 함수
+def view_nBBang():
+    try:
+        with open(nBBang_file, 'r') as file:
+            nBBang_data = json.load(file)
+            if len(nBBang_data) == 0:
+                print("n빵 내역이 없습니다.") 
+                return
+            
+            for i, entry in enumerate(nBBang_data, start=1):
+                print(f"{i}. {entry[0]}")
+                print(f"n빵 명단: {entry[1]}")
+            edit = input("수정할 내역을 선택하세요 (숫자, n은 메인메뉴로): ")
+            if edit.lower() != 'n':
+                try:
+                    edit = int(edit)-1 #인덱스 위치로 보정
+                    if 0 <= edit < len(nBBang_data):
+                        edit_nBBang(edit)
+                    else:
+                        print("잘못된 번호입니다.")
+                except ValueError:
+                    print("잘못된 입력입니다.")
+    except FileNotFoundError:
+        print("n빵 파일이 없습니다.")
+    except json.JSONDecodeError:
+        print("n빵 파일이 잘못된 형식입니다.")
+
+#n빵 내역 수정 함수
+def edit_nBBang(edit):
+    with open(nBBang_file, 'r') as file:
+        nBBang_data = json.load(file)
+    # 선택한 내역 출력
+    entry = nBBang_data[edit]
+    print(f"{entry[0]}")
+    print(f"n빵 명단: {entry[1]}")
+    # n빵을 완료한 사람 입력
+    end = input("n빵을 완료한 사람을 입력하세요(x는 삭제): ")
+    if end.lower() == 'x':
+        # 선택한 내역 삭제
+        del nBBang_data[edit]
+        print("선택한 내역이 삭제되었습니다.")
+    else:
+        # 입력한 사람을 명단에서 제거
+        end_list = end.split(' ') #복수의 입력을 위해 split 사용
+        end_person = []
+        for person in end_list:
+            if person in entry[1]:
+                entry[1].remove(person)
+                end_person.append(person)
+            else:
+                print(f"{person}는 명단에 없습니다.")
+        print(f"{end_person}은 n빵은 지불했습니다.")
+        entry[0]["amount"] -= len(end_person)*entry[2] #남은 금액 계산
+        #모두 n빵을 완료했을 경우 안내 및 지출내역을 수정하고 n빵내역 삭제
+        if len(entry[1]) == 0:
+            print("모두 n빵을 완료했습니다.")   
+            del nBBang_data[edit]
+
+        else:  
+            print(f"남은 금액: {entry[0]['amount']}원")
+            print(f"남은 사람: {entry[1]}")
+    # 수정한 내역 저장
+    with open(nBBang_file, 'w') as file:
+        json.dump(nBBang_data, file, ensure_ascii=False, indent=4)
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
@@ -591,14 +666,8 @@ def input_expense():
     }
     # 지출 내역을 파일에 저장
     save_expense(expense)
-    #금액에 /가 있는 경우 n빵인지 물어봄
-    if('/' in amount) :
-        answer = input ("n빵 인가요? (y/n)")
-        if(answer == 'y') :
-            name= input("n빵한 사람의 이름을 입력하세요: ")
-            nBBang=[expense,name]
-            save_nBBang(nBBang)
     print("지출 내역이 저장되었습니다.")
+
 # n빵 내역을 저장할 파일 이름
 nBBang_file = 'nBBang.json'
 
@@ -607,10 +676,15 @@ if not os.path.exists(nBBang_file):
     with open(nBBang_file, 'w') as file:
         json.dump([], file)
 
-#n빵 내역 저장
-def save_nBBang(nBBang) :
-    with open(nBBang_file, 'a') as file:
-        file.write(json.dumps(nBBang, ensure_ascii=False, indent=4) + "\n")
+def save_nBBang(nBBang):
+    # 파일을 열어 기존 데이터를 불러옴
+    with open(nBBang_file, 'r') as file:
+        data = json.load(file)
+    # 새 n빵 내역을 리스트에 추가
+    data.append(nBBang)
+    # 데이터를 파일에 저장
+    with open(nBBang_file, 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
@@ -771,11 +845,13 @@ while not b_is_exit:
         add_entry()
     elif func == "2":
         view_entries()
-    elif func == "3":
-        generate_monthly_report()
+    elif func == "3" :
+        view_nBBang()
     elif func == "4":
-        set_budget()
+        generate_monthly_report()
     elif func == "5":
+        set_budget()
+    elif func == "6":
         analyze_categories()
     elif func == "?":
         print_help()
