@@ -3,13 +3,18 @@ import os
 import json
 from datetime import datetime, date
 import pickle
+<<<<<<< HEAD
+from Account_book import Account_book # 'module을 제대로 불러오지 못하는 부분 수정'
+=======
 import Account_book
 import random
 import webbrowser
 import re
+>>>>>>> ede471891281543f5ca634b2e259b3666324fef8
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
-
+salary=0 # 기본 월급 설정 전 기본값
+minus=0 # 정기적인 지출 설정 전 기본값
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
@@ -293,6 +298,10 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 봉급 추가
+    7: 봉급 출력
+    8: 정기 지출 추가
+    9: 정기 수입 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -599,6 +608,29 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+<<<<<<< HEAD
+# 정기적인 월급 저장하는 함수
+def add_salary():
+    global salary
+    salary=int(input("월급 설정(만원)"))
+
+# 정기적인 월급 보여주는 함수
+def veiw_salary():
+    print(salary,"(만원)")
+
+# 정기적인 지출을 저장하는 함수
+def add_minus():
+    global minus
+    minus = int(input("지출 금액: (만원)"))
+
+# 정기적인 수입을 보여주는 함수
+def veiw_fullsallary():
+    fullsallary=salary-minus
+    if fullsallary <=0:
+        print(fullsallary, " 적자입니다")
+    else:
+        print(fullsallary, " 흑자입니다")
+=======
 monthly_goals = {}
 
 def set_monthly_goal(month, amount):
@@ -689,21 +721,7 @@ def modify_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
-
-# 환율을 계산하기 위한 함수
-def value1():
-    value=int(input("금액"))
-    cho=int(input("환률을 위한 국가 선택 1: 미국, 2: 중국, 3: 일본"))
-    if cho==1:
-        print(value/1385)
-
-    elif cho==2:
-        print(value/190.69)
-
-    elif cho==3:
-        print(value/8.81)
-
-
+>>>>>>> ede471891281543f5ca634b2e259b3666324fef8
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
@@ -738,7 +756,6 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
-    
 
 YU_Account() #프로그램 시작 화면
 
@@ -759,6 +776,14 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_salary()
+    elif func == "7":
+        veiw_salary()
+    elif func == "8":
+        add_minus()
+    elif func == "9":
+        veiw_fullsallary()
     elif func == "?":
         print_help()
     elif func == "exit":
@@ -766,9 +791,13 @@ while not b_is_exit:
     elif func == "메모장":
         add_memo()
         memo()
-    elif func == "환율":
-        value1()
     else:
+<<<<<<< HEAD
+        b_is_exit = not b_is_exit
+        
+        print("올바른 기능을 입력해 주세요.")
+=======
         b_is_exit = not b_is_exit 
 
         print("올바른 기능을 입력해 주세요.")
+>>>>>>> ede471891281543f5ca634b2e259b3666324fef8
