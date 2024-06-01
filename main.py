@@ -174,6 +174,51 @@ def validate_date(date_text):
     except ValueError:
         return False
 
+def recommend_financial_product(products):
+    # 사용자에게 입력 받은 여러 금융 상품 정보를 비교하여 가장 유리한 상품을 추천
+    # 이 함수는 각 상품의 이자율, 수수료 등을 비교하여 최적의 상품을 찾아냅니다.
+    # 이 코드는 사용자에게서 각 상품의 정보를 입력받는 것을 가정하고, 실제 데이터베이스나 외부 API로부터 데이터를 가져올 수도 있습니다.
+    best_product = None
+    best_interest_rate = 0
+    lowest_fee = float('inf')
+
+    for product in products:
+        interest_rate = product['interest_rate']
+        fee = product['fee']
+
+        # 이자율이 높고 수수료가 낮은 상품을 찾음
+        if interest_rate > best_interest_rate and fee < lowest_fee:
+            best_product = product
+            best_interest_rate = interest_rate
+            lowest_fee = fee
+
+    return best_product
+
+def get_products_from_user():
+    products = []
+    while True:
+        product_info = {}
+        product_info['interest_rate'] = float(input("금융 상품의 이자율을 입력하세요: "))
+        product_info['fee'] = float(input("금융 상품의 수수료를 입력하세요: "))
+        products.append(product_info)
+        more_products = input("더 입력하시겠습니까? (Y/N): ")
+        if more_products.lower() != 'y':
+            break
+    return products
+
+def main():
+    print("금융 상품을 비교하여 가장 유리한 상품을 추천해드립니다.")
+    products = get_products_from_user()
+    recommended_product = recommend_financial_product(products)
+    if recommended_product:
+        print("가장 유리한 상품은 다음과 같습니다:")
+        print(recommended_product)
+    else:
+        print("비교할 수 있는 상품이 없습니다.")
+
+if __name__ == "__main__":
+    main()
+
 def add_debt():
     """
     새로운 빚을 추가하는 함수. 대출 기관/사람, 금액, 상환 기한을 입력받고
