@@ -292,6 +292,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 교통비 기록      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -705,6 +706,28 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+#교통비 기록 기능 추가
+class TransportationRecorder:
+
+    def __init__(self):
+        self.this_month_expenses = {"버스": 0, "지하철": 0, "택시": 0}
+        self.last_month_expenses = {"버스": 0, "지하철": 0, "택시": 0}
+
+    def record_expense(self, mode, count):
+        if mode == "Taxi":
+            self.this_month_expenses[mode] += count
+        else:
+            self.this_month_expenses[mode] += count * 1500
+
+    def set_last_month_expenses(self, mode, amount):
+        self.last_month_expenses[mode] = amount
+
+    def get_this_month_expenses(self):
+        return sum(self.this_month_expenses.values())
+
+    def get_last_month_expenses(self):
+        return sum(self.last_month_expenses.values())
+    
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -742,6 +765,34 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        recorder = TransportationRecorder()
+        print("교통비 기록기를 시작합니다.")
+
+        while True:
+            sub_func = input("교통비 기록 기능 선택 (1: 기록, 2: 저번 달과 비교, 3: 종료): ")
+
+            if sub_func == "1":
+                mode = input("교통수단(버스, 지하철, 택시): ")
+                count = int(input("이번 달 사용 횟수: "))
+                recorder.record_expense(mode, count)
+                print("기록하였습니다!")
+            elif sub_func == "2":
+                this_month_expenses = recorder.get_this_month_expenses()
+                last_month_expenses = recorder.get_last_month_expenses()
+                print(f"This month's total expenses: {this_month_expenses}")
+                print(f"Last month's total expenses: {last_month_expenses}")
+
+                if last_month_expenses == 0:
+                    print("지난달 교통비가 아직 기록되지 않았습니다.")
+                else:
+                    change_percentage = ((this_month_expenses - last_month_expenses) / last_month_expenses) * 100
+                    print(f"전월대비 변동률: {change_percentage:.2f}%")
+            elif sub_func == "3":
+                print("교통비 기록기를 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 입력해 주세요.")
     elif func == "?":
         print_help()
     elif func == "exit":
