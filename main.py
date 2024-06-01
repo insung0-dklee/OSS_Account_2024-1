@@ -332,6 +332,17 @@ def add_entry():
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+
+    """
+    해당 카테고리에서 가장 적은 금액을 입력받으면, 가장 적은 값을 입력받았음을 출력해주는 기능
+    @Param
+        None
+    @Return
+        None
+    """
+     # 해당 카테고리에서 가장 작은 금액 찾기
+    min_amount_in_category = min((entry['amount'] for entry in ledger if entry['category'] == category), default=float('inf'))
+
     entry = {
         "date": date,
         "category": category,
@@ -340,6 +351,9 @@ def add_entry():
         "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
+    # 새로운 항목의 금액이 해당 카테고리에서 가장 큰 경우, 사용자에게 알림
+    if amount < min_amount_in_category:
+        print("카테고리 중에서 가장 적은 금액을 입력하셨습니다.")
     print("항목이 추가되었습니다.")
 
 # 항목 조회 함수
