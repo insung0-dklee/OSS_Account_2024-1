@@ -7,8 +7,27 @@ import Account_book
 import random
 import webbrowser
 import re
+from tkinter import Toplevel, Label
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+def show_ad_banner():
+    """
+    광고 배너를 표시하는 함수
+    새로운 Toplevel 윈도우를 생성하고, 광고 텍스트를 포함한 라벨을 추가
+    """
+    ad_window = Toplevel(window)  # 새로운 Toplevel 윈도우 생성
+    ad_window.title("광고 배너")  # 윈도우 제목 설정
+    ad_window.geometry("400x100")  # 윈도우 크기 설정
+
+    # 광고 텍스트를 포함한 라벨 추가
+    ad_label = Label(ad_window, text="광고판", font=("Arial", 24), bg="yellow", fg="red")
+    ad_label.pack(expand=True, fill=BOTH)  # 라벨을 윈도우에 배치
+
+# 광고 배너 버튼 추가
+button_ad_banner = Button(window, text="광고를 보시겠습니까?", command=show_ad_banner)
+button_ad_banner.pack(side=LEFT)
+
+
+
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
