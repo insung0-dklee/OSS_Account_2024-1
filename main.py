@@ -35,18 +35,23 @@ def user_reg():  # 회원가입
         print("회원가입이 완료되었습니다!")
         break
 
+
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
-
-# 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
+        self.friends = [] # 친구 목록을 저장하는 리스트 추가
+    def add_friend(self, friend_name):
+        self.friends.append(friend_name)  # 친구 이름을 친구 목록에 추가
+        
+# 아이디, 비밀번호, 이름, 전화번호, 친구 목록을 저장해둘 딕셔너리
 userdata2 = {}
 # 이름과 아이디를 매핑하기 위한 딕셔너리
 usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
-def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+
+def user_reg_include_name_phone_and_friends():  # 이름, 전화번호, 친구 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
@@ -62,13 +67,27 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     h.update(pw.encode())  # sha256으로 암호화
     pw_data = h.hexdigest()  # 16진수로 변환
 
-    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+    user = User(name)  # User 객체 생성
+
+    # 친구 추가
+    while True:
+        add_friend = input("친구를 추가하시겠습니까? (y/n): ")
+        if add_friend.lower() == 'y':
+            friend_name = input("친구 이름을 입력하세요: ")
+            user.add_friend(friend_name)
+        elif add_friend.lower() == 'n':
+            break
+        else:
+            print("잘못된 입력입니다. 다시 입력해주세요.")
+
+    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends': user.friends}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
     usernames[name] = id  # 이름과 아이디 매핑
     userphones[phone] = id  # 전화번호와 아이디 매핑
 
     with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+            friends_str = ", ".join(user_info["friends"])
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호, 친구 목록 값을 차례로 login.txt파일에 저장
 
 
 """
