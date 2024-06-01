@@ -496,8 +496,9 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    categories = ["음식", "여행", "쇼핑", "운동"]# 카테고리 리스트
     date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
+    category = create_category_app(categories) # 카테고리를 라디오 버튼을 이용하여 선택할 수 있게 수정함.
     description = input("설명: ")
     score = day_evaluation()
     value_=create_scroll_app() # 금액을 스크롤 바를 이용하여 입력할 수 있게 수정함.
@@ -639,6 +640,41 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+"""
+category_on_confirm : 라디오 버튼으로 선택된 카테고리 값을 가져오는 기능
+@Parm
+    category_var : category_var.get()으로 값 가져오기
+    root : root.destroy()를 호출하여 GUI 어플리케이션을 종료함
+@Return
+    None
+"""
+def category_on_confirm(category_var, root):
+    selected_category = category_var.get()
+    print(f"선택된 카테고리: {selected_category}")
+    root.destroy()# GUI 어플리케이션 종료
+"""
+create_category_app : 라디오 버튼으로 카테고리를 선택할 수 있는 기능
+@Parm
+    categories : 카테고리 리스트
+@Return
+    None
+"""
+def create_category_app(categories):
+    # 기본 창 생성
+    root = tk.Tk()
+    root.title("카테고리 선택")
+
+    selected_category_var = tk.StringVar(value="음식")  # 선택된 카테고리를 저장할 변수, 기본 선택 = 음식
+
+    #라디오 버튼 생성
+    for category in categories:
+        tk.Radiobutton(root, text=category, variable=selected_category_var, value=category).pack(anchor=tk.W)
+
+    #확인 버튼
+    confirm_button_ = tk.Button(root, text="확인", command=lambda: category_on_confirm(selected_category_var, root))
+    confirm_button_.pack(pady=10)
+    root.mainloop()
+    return selected_category_var.get() # 선택된 카테고리 반환
 """
 update_label : scroll bar 값이 변경될 때 호출되어 label 값을 업데이트하는 기능
 @Parm
