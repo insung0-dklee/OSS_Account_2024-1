@@ -1159,6 +1159,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        b_is_exit = not b_is_exit
-
         print("올바른 기능을 입력해 주세요.")
