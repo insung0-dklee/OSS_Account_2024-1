@@ -325,6 +325,16 @@ def get_valid_amount_input():
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+def calculate_tax(amount):
+    """
+    월급에 대한 세금을 계산하는 함수.
+    예시로, 20%의 세율을 적용.
+    실제 세율은 국가나 지역에 따라 다를 수 있음.
+    """
+    tax_rate = 0.2  # 세율 20%라 가정
+    tax_amount = amount * tax_rate
+    return tax_amount
+
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
@@ -332,6 +342,14 @@ def add_entry():
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+
+# 월급 카테고리일 경우, 세금을 계산
+    if category == "월급":
+        tax = calculate_tax(amount)
+        net_amount = amount - tax  # 순수입 계산
+        print(f"세금: {tax}원, 순수입: {net_amount}원")
+    else:
+        net_amount = amount
     entry = {
         "date": date,
         "category": category,
@@ -339,6 +357,7 @@ def add_entry():
         "amount": amount,
         "score": score  # 평가 점수 추가
     }
+    return entry  # 수정된 부분: 항목을 반환
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
