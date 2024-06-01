@@ -3,6 +3,12 @@ from tkinter import *
 
 """
  US달러와 KR원을 환율에 따라 계산해주는 환율 계산기
+__init__(self, master) : 클래스 초기화 메소드 (GUI 생성)
+- 프레임, 환율, USD, KRW 입력 엔트리 위젯, 라벨 생성
+- USD-> KRW, KRW-> USD 변환 가능한 버튼 생성
+convert_USD_KRW(self) : USD를 KRW로 변환하는 함수
+convert_KRW_USD(self) : KRW를 USD로 변환하는 함수
+
  """
 class USD_KRW_ExchangeCalculator(): 
 
