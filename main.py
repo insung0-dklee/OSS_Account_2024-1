@@ -294,6 +294,7 @@ def print_help():
     5: 지출 카테고리 분석
     ?: 도움말 출력
     work: 돈 버는 방법 중 하나 출력
+    quiz: 가계부 관련 퀴즈 실행
     exit: 종료
     """)
 
@@ -720,6 +721,49 @@ def work_recommend():
     work_re = random.sample(work, 2)
     result = ', '.join(work_re)
     print("오늘의 추천:", result)
+    
+# 가계부와 관련한 퀴즈 풀기
+def quiz_account():
+    
+    print("가계부의 주요 목적은 무엇인가요?")
+    print("a: 체중 관리, b: 시간 관리, c: 재정 관리, d: 여행 관리")
+    ans = input()
+    if (ans == 'c'):
+        print("정답입니다.")
+    else:
+        print("틀렸습니다.")
+    
+    print("계속 하시겠습니까? (y/n)")
+    yn = input()
+    if(yn == 'y'):
+        print("가계부를 작성할 때 포함해야 할 항목은 무엇인가요?")
+        print("a: 수입과 지출, b: 식사 메뉴, c: 휴가 계획, d: 읽을 책 목록")
+        ans = input()
+        if(ans == 'a'):
+            print("정답입니다.")
+        else:
+            print("틀렸습니다.")
+    else:
+        print("퀴즈를 종료합니다.")
+        return 0
+            
+    print("계속 하시겠습니까? (y/n)")
+    yn = input()
+    if(yn == 'y'):
+        print("가계부를 통해 알 수 있는 것은 무엇인가요?")
+        print("a: 하루 운동 시간, b: 월별 지출 패턴, c: 친구의 생일, d: 주간 식단")
+        ans = input()
+        if(ans == 'b'):
+            print("정답입니다.")
+        else:
+            print("틀렸습니다.")
+            
+    else:
+        print("퀴즈를 종료합니다.")
+        return 0
+    
+    print("모든 문제를 푸셨습니다.")
+    
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -767,6 +811,8 @@ while not b_is_exit:
         memo()
     elif func == "work":
         work_recommend()
+    elif func == "quiz":
+        quiz_account()
     else:
         b_is_exit = not b_is_exit 
 
