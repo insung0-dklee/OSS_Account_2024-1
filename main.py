@@ -333,7 +333,7 @@ def add_entry():
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
     """
-    카테고리에서 가장 큰 금액을 지출한 경우 가장 큰 금액을 지출했음을 알려주는 문구 출력
+    카테고리에서 가장 큰 금액을 지출한 경우 가장 큰 금액을 입력했음을 알려주는 문구 출력
     @Parm
         None
     @return
@@ -354,7 +354,7 @@ def add_entry():
 
     # 새로운 항목의 금액이 해당 카테고리에서 가장 큰 경우, 사용자에게 알림
     if amount > max_amount_in_category:
-        print("카테고리 중에서 가장 큰 금액을 지출하셨습니다.")
+        print("카테고리 중에서 가장 큰 금액을 입력하셨습니다.")
     
     print("항목이 추가되었습니다.")
 
