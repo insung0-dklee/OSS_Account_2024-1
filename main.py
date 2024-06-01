@@ -292,6 +292,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 적금 계산기 실행
     ?: 도움말 출력
     exit: 종료
     """)
@@ -467,6 +468,26 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+
+def calculate_savings(interest_rate, months, monthly_deposit):
+    # 함수 정의: 이자율, 개월 수, 월 납입액을 계산하여 최종 금액을 반환
+    monthly_interest_rate = interest_rate / 12 / 100  # 월 이자율로 변환
+    total_amount = 0  # 총액 초기화
+
+    for _ in range(months):
+        total_amount = (total_amount + monthly_deposit) * (1 + monthly_interest_rate)
+
+    return total_amount
+
+def Installment_savings():
+    # 사용자로부터 필요한 정보 입력받기
+    interest_rate = float(input("연 이율을 입력하세요 (%): "))
+    months = int(input("적금 기간을 입력하세요 (개월): "))
+    monthly_deposit = float(input("매월 납입 금액을 입력하세요: "))
+
+    # 입력받은 정보를 바탕으로 함수 호출
+    total_amount = calculate_savings(interest_rate, months, monthly_deposit)
+    print(f"만기 시 받게 될 총액: {total_amount:,.2f} 원")
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -742,6 +763,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        Installment_savings()
     elif func == "?":
         print_help()
     elif func == "exit":
