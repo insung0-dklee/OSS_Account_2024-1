@@ -350,20 +350,26 @@ def view_entries():
             print(f"평가 점수: {entry['score']}")
 
 
+class InCorrectInputError(Exception):
+    pass
+
+# 사용자로부터 그날의 평가를 입력 받음
 def day_evaluation():
-    # 사용자로부터 그날의 평가를 입력 받음
-    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-    try:
-        evaluation = float(evaluation)
-        if 0 <= evaluation <= 10:
-            print(f"오늘의 평가는 {evaluation}점입니다.")
-            return evaluation
-        else:
-            print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
-    except ValueError:
-        print("올바른 숫자를 입력하세요.")
-        return None
+    while True: # 평가점수에 0~10까지 올바른 숫자가 들어올 때까지 입력받기
+        try:
+            evaluation = float(input("오늘의 평가를 입력하세요 (0에서 10까지): "))
+            if 0 <= evaluation <= 10:
+                print(f"오늘의 평가는 {evaluation}점입니다.")
+                return evaluation
+            else:
+                # 숫자가 들어왔지만 0~10 사이의 숫자가 아닌 경우 예외처리
+                raise InCorrectInputError("평가는 0에서 10 사이의 숫자여야 합니다.")
+        except ValueError:
+            # 숫자가 아닌 문자나 다른 값들이 들어왔을 때의 예외처리
+            print("올바른 숫자를 입력하세요.")
+        except InCorrectInputError as e:
+            print(e)
+    
 
 def calculate_average_score(scores):
     if scores:
