@@ -352,6 +352,7 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
+    #0~10사이가 아니거나 숫자가 아닌 문자를 입력 시 다시 입
     evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
     try:
         evaluation = float(evaluation)
