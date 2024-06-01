@@ -291,6 +291,22 @@ while not b_is_exit:
         # 월별 목표 금액을 저장할 딕셔너리
 monthly_goals = {}
 
+def calculate_compound_interest(principal, annual_rate, years, compounding_frequency):
+    """
+    복리 이자와 최종 금액을 계산합니다.
+
+    :param principal: 초기 적금 금액 (예금 원금)
+    :param annual_rate: 연이율 (소수점 형태, 예: 5%는 0.05로 입력)
+    :param years: 적금 기간(년)
+    :param compounding_frequency: 연간 이자 계산 빈도 (예: 매월 계산 = 12)
+    :return: 이자가 포함된 최종 금액과 얻은 이자
+    """
+    # 최종 금액 계산
+    final_amount = principal * (1 + annual_rate / compounding_frequency) ** (compounding_frequency * years)
+    # 얻은 이자 계산
+    interest_earned = final_amount - principal
+    return final_amount, interest_earned
+
 def set_monthly_goal(month, amount):
     """월별 목표 금액을 설정합니다."""
     monthly_goals[month] = amount
