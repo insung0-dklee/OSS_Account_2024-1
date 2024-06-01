@@ -162,7 +162,7 @@ def import_account():
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             account_data = json.load(file)
-        new_account = Account_book(account_data['name'], account_data['balance'])
+        new_account = Account_book.Account_book(account_data['name'], account_data['balance'])
         new_account.history = account_data['history']
         Account_list.append(new_account)
         print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
@@ -233,8 +233,6 @@ def memo():
     else:
         print("잘못된 선택입니다.")
 
-
-
 def guide_link():
     webbrowser.open("https://help.3o3.co.kr/hc/ko/articles/15516331018521")
 
@@ -258,7 +256,7 @@ def open_account_info(user_id):
     해당 유저의 id, 잔고, 지출/수입 내역이 담긴 dictionary를 return.
     """
     try:
-        user_id_clean = re.sub(r'[^a-zA-Z)-9]', '-', user_id)
+        user_id_clean = re.sub(r'[^a-zA-Z0-9]', '-', user_id)
         with open(f'{user_id_clean}.txt', 'rb') as info:
             user_dict = pickle.load(info)
         return user_dict
@@ -268,17 +266,10 @@ def open_account_info(user_id):
 
 def calculator():
     try:
-        # 사용자가 계산할 수식을 입력받는다.
         expr = input("계산할 수식을 입력하세요 (예: 2 + 3 * 4): ")
-
-        # eval() 함수를 사용하여 입력된 수식을 평가하고 결과를 result에 저장한다.
-        # eval() 함수는 입력된 문자열을 파이썬 표현식으로 계산해준다.
         result = eval(expr)
-
-        # 계산 결과를 출력한다.
         print(f"결과: {result}")
     except Exception as e:
-        # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
 # 가계부 데이터 저장 변수
@@ -292,6 +283,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 세금 및 보험 계산
+    7: 계정 정보 조회
+    8: 메모장
     ?: 도움말 출력
     exit: 종료
     """)
@@ -302,13 +296,10 @@ def print_help():
 """
 def reset_data():
     global ledger, userdata
-    # 가계부 데이터와 사용자 데이터를 초기화
     ledger = []
     userdata = {}
-    # 지출 내역 파일을 초기화
     with open(expenses_file, 'w') as file:
         json.dump([], file)
-    # 로그인 파일이 존재하는 경우 삭제
     if os.path.exists('login.txt'):
         os.remove('login.txt')
     print("모든 데이터가 초기화되었습니다.")
@@ -349,9 +340,7 @@ def view_entries():
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
 
-
 def day_evaluation():
-    # 사용자로부터 그날의 평가를 입력 받음
     evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
     try:
         evaluation = float(evaluation)
@@ -374,18 +363,6 @@ def calculate_average_score(scores):
         return None
 
 def compare_financial_goal(user1, user2, goal):
-    """
-    두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
-    
-    @Param
-        user1 : User object : 비교할 첫 번째 사용자 객체.
-        user2 : User object : 비교할 두 번째 사용자 객체.
-        goal : float : 달성하고자 하는 목표 금액.
-    @Return
-        None
-    @Raises
-        목표 금액이 음수이거나 0일 경우, 오류 메시지를 출력하고 함수를 종료합니다.
-    """
     if goal <= 0:
         print("목표 금액은 양수여야 합니다.")
         return
@@ -485,18 +462,6 @@ def add_memo():
     new_f.close()
 
 def calculate_monthly_savings(target_amount, target_date):
-    """
-    목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
-    
-    @Param
-        target_amount : 목표 금액.
-        target_date : 목표 날짜 (YYYY-MM-DD 형식).
-    @Return
-        monthly_savings : 매월 저축해야 할 금액.
-        months_left : 남은 달 수.
-    @Raises
-        날짜 관련 연산에서 예외가 발생할 경우 에러 메시지를 출력합니다.
-    """
     today = date.today()
     target_date = datetime.strptime(target_date, "%Y-%m-%d").date()
 
@@ -507,23 +472,7 @@ def calculate_monthly_savings(target_amount, target_date):
     print(f"매월 저축해야 할 금액: {monthly_savings:.2f}원, 남은 달 수: {months_left}개월")
     return monthly_savings, months_left
 
-
 def track_savings(savings, target_amount, months_left):
-    """
-    현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
-    
-    @Param
-        savings : 현재까지 저축된 금액.
-        target_amount : 목표 금액.
-        monthly_savings : 매월 저축해야 할 금액.
-        months_left : 남은 달 수.
-    @Return
-        remaining_amount : 남은 금액.
-        updated_monthly_savings : 수정된 월간 저축액.
-    @Raises
-        날짜 관련 연산에서 예외가 발생할 경우 에러 메시지를 출력합니다.
-    """
-
     remaining_amount = target_amount - savings
     updated_monthly_savings = remaining_amount / months_left
 
@@ -539,53 +488,37 @@ if not os.path.exists(expenses_file):
         json.dump([], file)
 
 def save_expense(expense):
-    # 파일을 열어 기존 데이터를 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
-    # 새 지출 내역을 리스트에 추가
     data.append(expense)
-    # 데이터를 파일에 저장
     with open(expenses_file, 'w') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
-# 저장된 지출 내역을 조회하는 함수
 def view_expenses():
-    # 파일을 열어 데이터를 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
         if data:
-            # 데이터가 존재하면 각 지출 내역을 출력
             for idx, expense in enumerate(data, start=1):
                 print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원")
         else:
-            # 데이터가 비어 있으면 해당 메시지 출력
             print("저장된 지출 내역이 없습니다.")
 
-# 지출 내역을 입력받는 함수
 def input_expense():
-    # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
-    # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
         'date': date,
         'item': item,
         'amount': amount
     }
-    # 지출 내역을 파일에 저장
     save_expense(expense)
     print("지출 내역이 저장되었습니다.")
 
-# 기능 3: 지출 내역 삭제
 def delete_expense():
-    # 삭제할 지출 항목의 인덱스를 입력받음
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
-
-    # 저장된 지출 내역을 불러옴
     with open(expenses_file, 'r') as file:
         data = json.load(file)
-    # 입력받은 인덱스가 유효한지 확인하고 삭제
     try:
         index = int(index)
         if 1 <= index <= len(data):
@@ -598,89 +531,37 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-monthly_goals = {}
-
-def set_monthly_goal(month, amount):
-    """월별 목표 금액을 설정합니다."""
-    monthly_goals[month] = amount
-    print(f"{month}의 목표 금액이 {amount}원으로 설정되었습니다.")
-
-def get_monthly_goal(month):
-    """월별 목표 금액을 반환합니다."""
-    return monthly_goals.get(month, "해당 월에 대한 목표 금액이 설정되지 않았습니다.")
-
-def show_all_goals():
-    """모든 월별 목표 금액을 출력합니다."""
-    if not monthly_goals:
-        print("설정된 목표 금액이 없습니다.")
-    else:
-        for month, amount in monthly_goals.items():
-            print(f"{month}: {amount}원")
-
-# 날짜 형식 검사 함수
-# 날짜가 달력상 날짜인지 확인
-def validate_date(date):
-    try:
-        datetime.strptime(date, '%Y-%m-%d')
-        return True
-    except ValueError:
-        print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
-        return False
-
-# 금액 형식 검사 함수 (소수점 포함)
-def validate_amount(amount):
-    try:
-        float(amount)
-        return True
-    except ValueError:
-        print("금액은 숫자 또는 소수점으로 입력하세요.")
-        return False
-
-
 # 지출 내역을 수정하는 함수
 def modify_expense():
-    # 저장된 지출 내역이 없는 경우
     if not ledger:
         print("저장된 지출 내역이 없습니다.")
         return
 
-    # 저장된 지출 내역을 출력하여 사용자가 선택할 수 있도록 함
     print("저장된 지출 내역:")
     for idx, expense in enumerate(ledger, start=1):
         print(f"{idx}. 날짜: {expense['date']}, 카테고리: {expense['category']}, 설명: {expense['description']}, 금액: {expense['amount']}원")
 
-    # 사용자로부터 수정할 지출 항목의 번호를 입력받음
     index = input("수정할 지출 항목의 번호를 입력하세요: ")
 
     try:
         index = int(index)
-        #사용자에게 입력 받은 수정할 지출 항목의 내역을 출력한다
         if 1 <= index <= len(ledger):
             expense = ledger[index - 1]
             print(f"수정하고자 하는 지출 내역: {expense}")
 
             while True:
-                # 새로운 값들을 입력 받음
                 date = input(f"새 지출 날짜 (현재값: {expense['date']}) : ")
-                # 입력 받은 값이  날짜 형식인지 검사
                 if date and not validate_date(date):
-                    continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
+                    continue
                 category = input(f"새 카테고리 (현재값: {expense['category']}) : ")
                 description = input(f"새 설명 (현재값: {expense['description']}) : ")
-
                 amount = input(f"새 금액 (현재값: {expense['amount']}) : ")
-
-                # 입력 받은 금액 값이  숫자 형식 인지 검사
                 if amount and not validate_amount(amount):
-                    continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
-
-                # 데이터 형식에 맞게 입력 받았다면 입력 받은 값으로 업데이트
+                    continue
                 expense['date'] = date if date else expense['date']
                 expense['category'] = category if category else expense['category']
                 expense['description'] = description if description else expense['description']
                 expense['amount'] = amount if amount else expense['amount']
-
-                # 입력 받은 값이 모두 유효한 경우 반복문 종료
                 break
 
             print("지출 내역이 수정되었습니다.")
@@ -689,41 +570,169 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-#가계부 초깃값 임의로 설정
-#Account_book.py의 Account book 모듈을 불러오므로 Account.
-a = Account_book.Account_book("가계부 1",1000000)
-b = Account_book.Account_book("가계부 2",2000000)
-c = Account_book.Account_book("가계부 3",3000000)
+monthly_goals = {}
 
-Account_list = [a,b,c] #가계부 리스트
-i=0
+def set_monthly_goal(month, amount):
+    monthly_goals[month] = amount
+    print(f"{month}의 목표 금액이 {amount}원으로 설정되었습니다.")
 
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose 
+def get_monthly_goal(month):
+    return monthly_goals.get(month, "해당 월에 대한 목표 금액이 설정되지 않았습니다.")
 
-"""
-YU_Account : 프로그램 시작 화면 출력
-@Parm
-    None
-@return
-    None
-"""
-def YU_Account():
-    welcome_message = """=======================================
-*                                     *
-*           YU_Account_Book           *
-*                                     *
-=======================================
--이 프로그램은 사용자가 재정을 효과적 
-으로 관리할 수 있도록 도와줍니다.
-    """
-    print(welcome_message)
+def show_all_goals():
+    if not monthly_goals:
+        print("설정된 목표 금액이 없습니다.")
+    else:
+        for month, amount in monthly_goals.items():
+            print(f"{month}: {amount}원")
 
-YU_Account() #프로그램 시작 화면
+def validate_date(date):
+    try:
+        datetime.strptime(date, '%Y-%m-%d')
+        return True
+    except ValueError:
+        print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
+        return False
+
+def validate_amount(amount):
+    try:
+        float(amount)
+        return True
+    except ValueError:
+        print("금액은 숫자 또는 소수점으로 입력하세요.")
+        return False
+
+def calculate_tax(income):
+    if income <= 14000000:
+        return income * 0.06
+    elif income <= 50000000:
+        return 14000000 * 0.06 + (income - 14000000) * 0.15
+    elif income <= 88000000:
+        return 14000000 * 0.06 + 36000000 * 0.15 + (income - 50000000) * 0.24
+    elif income <= 150000000:
+        return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + (income - 88000000) * 0.35
+    elif income <= 300000000:
+        return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + (income - 150000000) * 0.38
+    elif income <= 500000000:
+        return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 300000000) * 0.40
+    elif income <= 1000000000:
+        return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (income - 500000000) * 0.42
+    else:
+        return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + 500000000 * 0.42 + (income - 1000000000) * 0.45
+
+# 종합소득세 계산 함수
+def calculate_comprehensive_income_tax():
+    business_income = float(input("사업소득을 입력하세요 (원): "))
+    earned_income = float(input("근로소득을 입력하세요 (원): "))
+    interest_income = float(input("이자소득을 입력하세요 (원): "))
+    dividend_income = float(input("배당소득을 입력하세요 (원): "))
+    pension_income = float(input("연금소득을 입력하세요 (원): "))
+    other_income = float(input("기타소득을 입력하세요 (원): "))
+
+    total_income = business_income + earned_income + interest_income + dividend_income + pension_income + other_income
+
+    earned_income_deduction = calculate_earned_income_deduction(earned_income)
+    taxable_income = total_income - earned_income_deduction
+    pre_tax = calculate_tax(taxable_income)
+    after_tax = pre_tax - calculate_tax_deductions(pre_tax)
+
+    print(f"총 소득: {total_income} 원")
+    print(f"근로소득공제: {earned_income_deduction} 원")
+    print(f"과세 표준: {taxable_income} 원")
+    print(f"세금 공제 전: {pre_tax} 원")
+    print(f"세금 공제 후: {after_tax} 원")
+
+def calculate_earned_income_deduction(earned_income):
+    if earned_income <= 5000000:
+        return earned_income * 0.7
+    elif earned_income <= 15000000:
+        return 3500000 + (earned_income - 5000000) * 0.4
+    elif earned_income <= 45000000:
+        return 7500000 + (earned_income - 15000000) * 0.15
+    elif earned_income <= 100000000:
+        return 12000000 + (earned_income - 45000000) * 0.05
+    else:
+        return 14750000 + (earned_income - 100000000) * 0.02
+
+def calculate_tax_deductions(pre_tax):
+    return pre_tax * 0.07
+
+# 근로소득세 계산 함수
+def calculate_wage_income_tax():
+    total_income = float(input("총 소득을 입력하세요 (원): "))
+    earned_income_deduction = calculate_earned_income_deduction(total_income)
+    taxable_income = total_income - earned_income_deduction
+    pre_tax = calculate_tax(taxable_income)
+    after_tax = pre_tax - calculate_tax_deductions(pre_tax)
+
+    print(f"총 소득: {total_income} 원")
+    print(f"근로소득공제: {earned_income_deduction} 원")
+    print(f"과세 표준: {taxable_income} 원")
+    print(f"세금 공제 전: {pre_tax} 원")
+    print(f"세금 공제 후: {after_tax} 원")
+
+# 부가가치세 계산 함수
+def calculate_vat():
+    price_with_vat = float(input("부가가치세가 포함된 물품의 가격을 입력하세요 (원): "))
+    vat = price_with_vat * 0.1
+    price_without_vat = price_with_vat / 1.1
+
+    print(f"물품 가격 (부가가치세 포함): {price_with_vat} 원")
+    print(f"물품 가격 (부가가치세 제외): {price_without_vat:.2f} 원")
+    print(f"부가가치세: {vat:.2f} 원")
+
+# 4대 보험 계산 함수
+def calculate_insurance():
+    total_income = float(input("총 소득을 입력하세요 (원): "))
+    health_insurance = total_income * 0.03495
+    long_term_care = health_insurance * 0.1227
+    national_pension = total_income * 0.045
+    employment_insurance = total_income * 0.008
+
+    total_deductions = health_insurance + long_term_care + national_pension + employment_insurance
+    after_deductions = total_income - total_deductions
+
+    print(f"총 소득: {total_income} 원")
+    print(f"건강보험료: {health_insurance:.2f} 원")
+    print(f"노인장기요양보험료: {long_term_care:.2f} 원")
+    print(f"국민연금: {national_pension:.2f} 원")
+    print(f"고용보험료: {employment_insurance:.2f} 원")
+    print(f"총 공제액: {total_deductions:.2f} 원")
+    print(f"공제 후 금액: {after_deductions:.2f} 원")
+
+# 연말정산 시뮬레이션 함수
+def year_end_settlement_simulation():
+    print("연말정산 시뮬레이션 기능입니다.")
+    total_income = float(input("총 소득을 입력하세요 (원): "))
+    health_insurance = total_income * 0.03495
+    long_term_care = health_insurance * 0.1227
+    national_pension = total_income * 0.045
+    employment_insurance = total_income * 0.008
+    insurance_deductions = health_insurance + long_term_care + national_pension + employment_insurance
+    income_after_deductions = total_income - insurance_deductions
+
+    standard_deduction = 1500000
+    special_deduction = 0.12 * income_after_deductions
+    total_deductions = standard_deduction + special_deduction
+    taxable_income = income_after_deductions - total_deductions
+
+    pre_tax = calculate_tax(taxable_income)
+    tax_deductions = calculate_tax_deductions(pre_tax)
+    after_tax = pre_tax - tax_deductions
+
+    print(f"총 소득: {total_income} 원")
+    print(f"건강보험료: {health_insurance:.2f} 원")
+    print(f"노인장기요양보험료: {long_term_care:.2f} 원")
+    print(f"국민연금: {national_pension:.2f} 원")
+    print(f"고용보험료: {employment_insurance:.2f} 원")
+    print(f"총 보험 공제액: {insurance_deductions:.2f} 원")
+    print(f"보험 공제 후 소득: {income_after_deductions:.2f} 원")
+    print(f"기본공제: {standard_deduction} 원")
+    print(f"특별공제: {special_deduction:.2f} 원")
+    print(f"총 공제액: {total_deductions:.2f} 원")
+    print(f"과세 표준: {taxable_income:.2f} 원")
+    print(f"세금 공제 전: {pre_tax:.2f} 원")
+    print(f"세금 공제 후: {after_tax:.2f} 원")
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -742,14 +751,39 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n선택: ")
+        if tax_func == "1":
+            calculate_comprehensive_income_tax()
+        elif tax_func == "2":
+            calculate_wage_income_tax()
+        elif tax_func == "3":
+            calculate_vat()
+        elif tax_func == "4":
+            calculate_insurance()
+        elif tax_func == "5":
+            year_end_settlement_simulation()
+        else:
+            print("올바른 선택이 아닙니다.")
+    elif func == "7":
+        user_id = input("사용자 ID를 입력하세요: ")
+        user_info = open_account_info(user_id)
+        if user_info:
+            print(f"사용자 ID: {user_info['user_id']}")
+            print(f"잔고: {user_info['bal']}")
+            if user_info['history']:
+                print("지출/수입 내역:")
+                for date, transactions in user_info['history'].items():
+                    print(f"날짜: {date}")
+                    for amount, description in transactions:
+                        print(f"    금액: {amount}, 내용: {description}")
+            else:
+                print("지출/수입 내역이 없습니다.")
+    elif func == "8":
+        memo()
     elif func == "?":
         print_help()
     elif func == "exit":
         b_is_exit = True
-    elif func == "메모장":
-        add_memo()
-        memo()
     else:
-        b_is_exit = not b_is_exit 
-
         print("올바른 기능을 입력해 주세요.")
