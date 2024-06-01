@@ -520,18 +520,19 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
-    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-    try:
-        evaluation = float(evaluation)
-        if 0 <= evaluation <= 10:
-            print(f"오늘의 평가는 {evaluation}점입니다.")
-            return evaluation
-        else:
-            print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
-    except ValueError:
-        print("올바른 숫자를 입력하세요.")
-        return None
+    # 사용자로부터 그날의 평가를 입력 받음
+    while True:
+        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        try:
+            evaluation = float(evaluation)
+            if 0 <= evaluation <= 10:
+                print(f"오늘의 평가는 {evaluation}점입니다.")
+                break  # 올바른 입력을 받으면 루프를 탈출
+            else:
+                print("평가는 0에서 10 사이의 숫자여야 합니다.")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+
 
 def calculate_average_score(scores):
     if scores:
@@ -1005,6 +1006,11 @@ def view_d_day():
             print("이미 지난 디데이입니다.")
     else:
         print("저장된 디데이 정보가 없습니다.")
+
+
+
+
+
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
