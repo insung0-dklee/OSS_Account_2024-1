@@ -328,6 +328,8 @@ def get_valid_amount_input():
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
+    if favorites:
+        show_favorites()
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
@@ -360,6 +362,14 @@ def add_favorite_category(category): #즐겨찾기 항목에 추가.
         print(f"'{category}' 카테고리가 즐겨찾기에 추가되었습니다.")
     else:
         print(f"'{category}' 카테고리는 이미 즐겨찾기에 있습니다.")
+
+def show_favorites():
+    if not favorites:
+        print("즐겨찾기 카테고리 목록이 비어 있습니다.")
+    else:
+        print("즐겨찾는 카테고리 목록:")
+        for category in favorites:
+            print(f"- {category}")
 
 # 항목 조회 함수
 def view_entries():
