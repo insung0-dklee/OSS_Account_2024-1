@@ -753,3 +753,60 @@ while not b_is_exit:
         b_is_exit = not b_is_exit 
 
         print("올바른 기능을 입력해 주세요.")
+
+
+# 카테고리 할당 기능추가
+class AccountBook:
+    def __init__(self):
+        self.balance = 0
+        self.transactions = []
+
+    def deposit(self, amount):
+        self.balance += amount
+        self.transactions.append(("Deposit", amount))
+
+    def withdraw(self, amount, category=None):
+        if amount > self.balance:
+            print("Insufficient funds")
+        else:
+            self.balance -= amount
+            self.transactions.append(("Withdrawal", amount, category))
+
+    def categorize_expense(self, amount, description):
+        # 지출 내용을 분석하여 카테고리 할당
+        keywords = {
+            "food": ["식비", "음식", "식료품", "식사"],
+            "transportation": ["교통", "버스", "지하철", "택시"],
+            "entertainment": ["문화", "영화", "공연", "놀이"],
+            "shopping": ["쇼핑", "상점", "마트", "구매"],
+            "utilities": ["요금", "공과금", "전기", "수도"]
+        }
+        
+        # 카테고리 할당
+        category = "uncategorized"
+        for key, values in keywords.items():
+            for value in values:
+                if value in description:
+                    category = key
+                    break
+        return category
+
+    def show_balance(self):
+        print(f"Current balance: {self.balance}")
+
+    def show_transactions(self):
+        print("Transaction history:")
+        for transaction in self.transactions:
+            print(transaction)
+
+# 가계부 인스턴스 생성
+account_book = AccountBook()
+
+# 지출 기록
+account_book.deposit(2000)
+account_book.withdraw(300, category=account_book.categorize_expense(300, "편의점에서 음료 구매"))
+account_book.withdraw(500, category=account_book.categorize_expense(500, "영화 관람"))
+
+# 잔액 및 거래 내역 출력
+account_book.show_balance()
+account_book.show_transactions()
