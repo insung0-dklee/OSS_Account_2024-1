@@ -604,6 +604,13 @@ def generate_monthly_report():
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
 
+ # 예산 초과 여부 확인
+    global budget
+    if monthly_total > budget:
+        print("너무 많은 지출!")  # 예산 초과 메시지 출력
+    else:
+        print("예산 내 지출입니다.")  # 예산 내 지출 메시지 출력
+
 budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
