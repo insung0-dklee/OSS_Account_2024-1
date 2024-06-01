@@ -1,0 +1,49 @@
+#두 개의 월을 입력받아 각 월의 지출 내역을 비교하는 함수.
+
+def generate_monthly_report(month):
+  """
+  월별 보고서 내용은  월별 지출 비교 함수구현 코드와 똑같다.
+  변경된 점은, 매개변수로 month를 입력받아서 특정 월에 대한 지출 보고서를 작성한다.
+  """
+  monthly_total = 0
+  for entry in ledger:
+      if entry["date"].startswith(month):
+          monthly_total += entry["amount"]
+          print(entry)
+  print(f"{month}월 총 지출: {monthly_total} 원")
+  return monthly_total
+
+def compare_two_months():
+
+  month1 = input("비교할 첫 번째 월을 입력하세요 (YYYY-MM): ")
+
+  month2 = input("비교할 두 번째 월을 입력하세요 (YYYY-MM): ")
+
+    # 각 월에 대한 지출 보고서를 생성하고 총 지출 금액을 반환받음
+  print(f"\n{month1} 월의 지출 내역:")
+  total1 = generate_monthly_report(month1)
+
+  print(f"\n{month2} 월의 지출 내역:")
+  total2 = generate_monthly_report(month2)
+
+  # 두 달의 지출을 비교하여 결과를 출력
+  print("\n지출 비교 결과:")
+  if total1 > total2:
+      print(f"{month1} 월의 지출이 {month2} 월의 지출보다 {total1 - total2} 원 더 많습니다.")
+  elif total1 < total2:
+      print(f"{month2} 월의 지출이 {month1} 월의 지출보다 {total2 - total1} 원 더 많습니다.")
+  else:
+      print(f"{month1} 월과 {month2} 월의 지출이 동일합니다.")
+
+ '''''
+전역 변수 ledger는 아래와 같이 정의되어 있다고 가정합니다.
+ ledger = [
+  {"date": "2023-05-01", "amount": 10000},
+  {"date": "2023-05-15", "amount": 5000},
+  {"date": "2023-06-01", "amount": 20000},
+  # 더 많은 지출 내역을 추가할 수 있습니다.
+ ]
+
+ # 함수 실행 예제
+ compare_two_months()
+ '''''
