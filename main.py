@@ -342,6 +342,25 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+    category_count = sum(1 for e in ledger if e["category"] == category)
+
+    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
+        response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
+        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
+            add_favorite_category(category)
+        else:
+            print("카테고리에 추가되지 않았습니다.")
+
+
+favorites = []
+
+def add_favorite_category(category): #즐겨찾기 항목에 추가.
+    if category not in favorites:  #카테고리가 즐겨찾기에 존재하지 않는다면, 즐겨찾기 추가. 그렇지 않다면, 경고창 출력.
+        favorites.append(category)
+        print(f"'{category}' 카테고리가 즐겨찾기에 추가되었습니다.")
+    else:
+        print(f"'{category}' 카테고리는 이미 즐겨찾기에 있습니다.")
+
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
