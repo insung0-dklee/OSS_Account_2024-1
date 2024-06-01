@@ -109,21 +109,6 @@ for i in range(1, 5):
     window.grid_rowconfigure(i, weight=1)
     window.grid_columnconfigure(i, weight=1)
 
-#window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
