@@ -460,6 +460,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 대출 상환
     ?: 도움말 출력
     exit: 종료
     """)
@@ -570,6 +571,20 @@ def compare_financial_goal(user1, user2, goal):
         print(f"{user2.name}의 목표 달성률이 더 높습니다.")
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
+
+def calculate_loan_payment():
+    loan_amount = float(input("대출 금액을 입력하세요: ")) # 대출 금액 입력
+    interest_rate = float(input("대출 이자율을 입력하세요 (%): ")) / 100 # 이자율 입력 및 백분율로 변환
+    num_months = int(input("대출 기간(월)을 입력하세요: ")) # 대출 기간 입력
+
+    monthly_interest_rate = interest_rate / 12 # 월 이자율 계산
+
+    # 매달 갚아야 하는 이자와 원금 합계 계산
+    monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** num_months) / ((1 + monthly_interest_rate) ** num_months - 1)
+    total_payment = monthly_payment * num_months
+
+    print(f"매달 갚아야 하는 금액: {monthly_payment:.2f} 원")
+    print(f"총 갚아야 하는 금액: {total_payment:.2f} 원")
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
@@ -1059,6 +1074,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        calculate_loan_payment()
     elif func == "?":
         print_help()
     elif func == "exit":
