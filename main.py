@@ -459,6 +459,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 가계부 초기화(이름, 잔액 설정)
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1019,6 +1020,27 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
+    return choose 
+
+def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
+    if(num < 0):#오류 검출
+      print("잘못 입력하셨습니다.(0이하수 입력)")
+    else:
+      bal = input("남기고 싶은 잔액을 입력하세요. (x 입력시 현재잔액을 입력)") #주의 - 잔액 설정시 char형으로 저장 -> int형으로 변환해야 함
+      if(bal == "x"):
+        print("잔액을 그대로 가져옵니다.")
+        bal = Account_list[num-1].bal
+      else:
+        if(bal.isnumeric()): #숫자를 표현하는지 확인
+          bal = int(bal) 
+        else:
+          print("잘못 입력하셨습니다.(잔액 이상)")
+          return 0
+      print(f"가계부 {num}번을 초기화 합니다.")
+      name = Account_list[num-1].name #원래 저장소에서 이름 가져오기(배열은 0~n-1로 이루어짐)
+      Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
+      print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
+
     return choose 
 
 """
