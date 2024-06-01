@@ -292,6 +292,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 구매항목 월별 납부금액 계산
+    
     ?: 도움말 출력
     exit: 종료
     """)
@@ -370,6 +372,7 @@ def calculate_average_score(scores):
         total_score = sum(scores)
         average_score = total_score / len(scores)
         return average_score
+    
     else:
         return None
 
@@ -705,6 +708,25 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+def add_purchase_plan():
+    """
+    사용자로부터 구매 예정항목의 이름, 금액, 그리고 몇 개월 동안 모을 것인지를 입력 받고,
+    매달 얼마씩 모아야 하는지 출력합니다.
+    """
+    # 구매 예정항목 정보 입력 받기
+    item = input("구매 예정항목의 이름을 입력하세요: ")
+    amount = int(input("예정항목의 총 금액을 입력하세요: "))
+    months = int(input("몇 개월 동안 모을 것인지 입력하세요: "))
+    
+    # 매달 모을 금액 계산
+    saving_per_month = amount / months
+    
+    # 결과 출력
+    print(f"\n구매 예정항목: {item}")
+    print(f"총 금액: {amount}원")
+    print(f"{months}개월 동안 모으면 매달 {saving_per_month:.2f}원씩 모아야 합니다.")
+
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -742,6 +764,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_purchase_plan()
+        
     elif func == "?":
         print_help()
     elif func == "exit":
