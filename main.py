@@ -460,6 +460,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 날짜별 반복되는 카테고리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1045,6 +1046,26 @@ YU_Account() #프로그램 시작 화면
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
+def find_repeated_categories_by_day():
+    # 카테고리별로 지출된 날짜를 추적하기 위한 딕셔너리
+    days_by_category = {}
+    # 모든 지출 항목에 대해 반복
+    for entry in ledger:
+        date = entry["date"]
+        category = entry["category"]
+        # 해당 카테고리에 대해 이미 딕셔너리에 날짜가 존재하는지 확인하고 없으면 추가
+        if category not in days_by_category:
+            days_by_category[category] = []
+        # 해당 카테고리에 지출된 날짜 추가
+        days_by_category[category].append(date)
+    # 결과 출력
+    if days_by_category:
+        print("카테고리별로 지출된 날짜:")
+        for category, dates in days_by_category.items():
+            print(f"{category} 카테고리의 지출 날짜:", dates)
+    else:
+        print("날짜별로 반복되는 카테고리가 없습니다.")
+
 # 메인 루프
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
@@ -1059,6 +1080,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        find_repeated_categories_by_day()
     elif func == "?":
         print_help()
     elif func == "exit":
