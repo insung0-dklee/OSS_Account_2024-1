@@ -1006,6 +1006,37 @@ def view_d_day():
     else:
         print("저장된 디데이 정보가 없습니다.")
 
+# 매일의 명언을 담은 리스트
+daily_quotes = [
+    "위대한 일을 하는 유일한 방법은 당신이 하는 일을 사랑하는 것입니다. - 스티브 잡스",
+    "당신이 다른 계획을 세우는 동안 삶이 일어납니다. - 존 레논",
+    "결국, 중요한 것은 당신의 삶 속에 있는 것입니다. - 에이브러햄 링컨",
+    "인생은 단 한 번뿐입니다. 하지만 올바르게 살면 한 번이면 충분합니다. - 메이 웨스트",
+    "삶에서 가장 큰 영광은 결코 넘어지지 않는 것이 아니라 매번 넘어질 때마다 일어서는 데 있습니다. - 넬슨 만델라",
+    # 필요에 따라 명언 추가
+]
+
+def get_daily_quote():
+    """
+    매일의 명언 중 무작위로 하나를 선택하여 반환합니다.
+    
+    Returns:
+        str: 무작위로 선택된 매일의 명언.
+    """
+    return random.choice(daily_quotes)
+
+# 매일의 명언을 표시하는 함수
+def display_daily_quote():
+    """
+    매일의 명언을 출력합니다.
+    """
+    print("매일의 명언:")
+    print(get_daily_quote())
+
+
+
+
+
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
 a = Account_book.Account_book("가계부 1",1000000)
@@ -1066,6 +1097,9 @@ while not b_is_exit:
     elif func == "메모장":
         add_memo()
         memo()
+
+    elif func == "6":  # 매일 명언 출력 기능
+        display_daily_quote()
     else:
         b_is_exit = not b_is_exit 
 
