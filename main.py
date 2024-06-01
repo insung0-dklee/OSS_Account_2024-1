@@ -461,6 +461,8 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 날짜별 반복되는 카테고리
+    7: 예산 미리 작성
+    8: 예산 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1066,6 +1068,32 @@ def find_repeated_categories_by_day():
     else:
         print("날짜별로 반복되는 카테고리가 없습니다.")
 
+planned_expenses = []  # 전역 변수로 선언하고 초기화
+
+def add_planned_expense():
+    global planned_expenses  # 전역 변수로 선언
+
+    date = input("날짜 (YYYY-MM-DD): ")
+    amount = float(input("예상 지출 금액: "))
+    category = input("카테고리: ")
+    description = input("설명: ")
+    
+    planned_expense = {
+        "date": date,
+        "amount": amount,
+        "category": category,
+        "description": description
+    }
+    
+    planned_expenses.append(planned_expense)
+    print("예상 지출이 추가되었습니다.")
+
+def view_planned_expenses():
+    print("예상 지출 목록:")
+    for index, planned_expense in enumerate(planned_expenses, start=1):
+        print(f"{index}. 날짜: {planned_expense['date']}, 금액: {planned_expense['amount']}, 카테고리: {planned_expense['category']}, 설명: {planned_expense['description']}")
+
+
 # 메인 루프
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
@@ -1082,6 +1110,10 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         find_repeated_categories_by_day()
+    elif func == "7":
+        add_planned_expense()
+    elif func == "8":
+        view_planned_expenses()
     elif func == "?":
         print_help()
     elif func == "exit":
