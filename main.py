@@ -293,6 +293,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
+    work: 돈 버는 방법 중 하나 출력
     exit: 종료
     """)
 
@@ -705,6 +706,21 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+# 돈을 버는 여러 방법들 저장
+work = [
+    "정규직 및 계약직", "프리랜서", "아르바이트",
+    "주식", "부동산", "채권", "펀드", "암호화폐",
+    "창업", "프랜차이즈", "전자상거래",
+    "유튜브", "블로그 및 컨텐츠 제작", "소셜 미디어 마케팅", "온라인 강의",
+    "책 출판", "음악 및 예술활동", "과외 및 학원"
+]
+
+# 돈을 버는 여러 방법 중 두개 랜덤하게 출력
+def work_recommend():
+    work_re = random.sample(work, 2)
+    result = ', '.join(work_re)
+    print("오늘의 추천:", result)
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -749,6 +765,8 @@ while not b_is_exit:
     elif func == "메모장":
         add_memo()
         memo()
+    elif func == "work":
+        work_recommend()
     else:
         b_is_exit = not b_is_exit 
 
