@@ -1,0 +1,47 @@
+"""
+정기적 지출 및 수입 설정 기능 추가
+정기적 구독 등으로 인한 지출, 월급 등 정기적인 수입을 달마다 일일히 추가하지 않고 한번에 입력하는 기능
+<사용방법>
+지출 금액 설정 : add_monthly_expenses(시작 달, 마지막 달, 지출 금액)
+수입 금액 설정 : add_monthly_income(시작 달, 마지막 달, 수입 금액)
+"""
+
+
+month_expenses = {month: 0 for month in range(1, 13)} #지출 딕셔너리 초기화
+month_income={month: 0 for month in range(1, 13)} #수입 딕셔너리 초기화
+
+#정기적인 지출 금액 설정하기
+def add_monthly_expenses(start, end, expenses_money):
+    if (start>=1 and start<=12)and(end>=1 and end<=12)and(start!=end)and(start<end):
+        for x in range(start,end+1):
+            month_expenses[x] += expenses_money
+        print(f"{start}월부터 {end}월까지 {expenses_money}원 정기지출금액을 추가하였습니다.") #추가 완료 안내문
+        print("달 별 지출액",month_expenses) #지출 내역 추가됐는지 확인
+        end =0
+        start=0 #다음 명령 때 오류가 나는 것을 방지하기 위해 시작 달과 끝나는 달을 초기화 시켜준다.
+    elif(start>12 and start<1): #시작하는 달이 1~12월을 벗어나는 값을 가질 경우
+        print("지출 시작 달을 잘못입력하셨습니다. 다시 확인해주세요.")
+    elif(end>12 and end<1): #마지막 달이 1~12월을 벗어나는 값을 가질 경우
+        print("지출 마지막 달을 잘못입력하셨습니다. 다시 확인해주세요.")
+    elif(start==end): #시작하는 달과 마지막 달이 같을 경우
+        print("지출 시작 달과 마지막 달이 같습니다. 다시 확인해주세요.")
+    elif(start>end): #마지막 달이 시작하는 달보다 빠른 경우
+        print("지출 마지막 달이 시작 달 보다 빠릅니다. 다시 확인해주세요.")
+        
+#정기적인 수입 금액 설정하기
+def add_monthly_income(start, end, income_money):
+    if (start>=1 and start<=12)and(end>=1 and end<=12)and(start!=end)and(start<end):
+        for x in range(start,end+1):
+            month_income[x] += income_money
+        print(f"{start}월부터 {end}월까지 {income_money}원 정기수입금액을 추가하였습니다.")#추가 완료 안내문
+        print("달 별 수입액",month_income) #수입 내역 추가됐는지 확인
+        end=0
+        start=0 #다음 명령 때 오류가 나는 것을 방지하기 위해 시작 달과 끝나는 달을 초기화 시켜준다.
+    elif(start>12 and start<1): #시작하는 달이 1~12월을 벗어나는 값을 가질 경우
+        print("수입 시작 달을 잘못입력하셨습니다. 다시 확인해주세요.")
+    elif(end>12 and end<1): #마지막 달이 1~12월을 벗어나는 값을 가질 경우
+        print("수입 마지막 달을 잘못입력하셨습니다. 다시 확인해주세요.")
+    elif(start==end): #시작하는 달과 마지막 달이 같을 경우
+        print("수입 시작 달과 마지막 달이 같습니다. 다시 확인해주세요.")
+    elif(start>end): #마지막 달이 시작하는 달보다 빠른 경우
+        print("수입 마지막 달이 시작 달 보다 빠릅니다. 다시 확인해주세요.")
