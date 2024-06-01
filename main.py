@@ -8,6 +8,18 @@ import random
 import webbrowser
 import re
 
+# 파이 차트를 위한 모듈 임포트
+import matplotlib.pyplot as plt
+from matplotlib import font_manager, rc
+
+# 한글 글리프가 현재 폰트에 없다는 경고 메세지로 인해
+# 한글 지원 폰트로 명시적 변경해줌
+# Windows 환경에서 한글 폰트 설정
+font_path = "C:/Windows/Fonts/malgun.ttf"  # '맑은 고딕' 폰트의 경로
+font_name = font_manager.FontProperties(fname=font_path).get_name()
+rc('font', family=font_name)
+
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
@@ -636,6 +648,29 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+
+    """
+    category와 total을 이용하여 categories 생성
+    Y일 경우, total값에 따라 파이차트를 그리는 함수
+    """
+    response = input("그래프로 보시겠습니까?[Y/N] ")
+    if response.upper() == 'Y':
+        # 파이 차트 데이터 준비
+        categories = list(category_totals.keys())
+        totals = list(category_totals.values())
+        
+        # 파이 차트 그리기
+        plt.figure(figsize=(10, 7))
+        plt.pie(totals, labels=categories, autopct='%1.1f%%', startangle=140)
+        plt.title('지출 카테고리별 분석')
+        plt.show()
+    elif response.upper() == 'N':
+        print("분석을 종료합니다.")
+        return
+    else:
+        print("잘못된 입력입니다. 분석을 종료합니다.")
+
+
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
