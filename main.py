@@ -12,17 +12,28 @@ userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
-    pw = input("password 입력: ")
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
-    h = hashlib.sha256()
-    h.update(pw.encode())
-    pw_data = h.hexdigest()
+        """
+        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+        """
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
 
-    userdata[id] = pw_data
+        h = hashlib.sha256()
+        h.update(pw.encode())
+        pw_data = h.hexdigest()
 
-    with open('login.txt', 'a', encoding='UTF-8') as fw:
-        for user_id, user_pw in userdata.items():
-            fw.write(f'{user_id} : {user_pw}\n')
+        userdata[id] = pw_data
+
+        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
+            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+        print("회원가입이 완료되었습니다!")
+        break
 
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
@@ -81,6 +92,16 @@ def modify_user_info():
         print("해당 아이디를 가진 사용자가 없습니다.")
         return
 
+    # 비밀번호 확인
+    pw = input("현재 비밀번호 입력: ")
+    h = hashlib.sha256()
+    h.update(pw.encode())
+    pw_data = h.hexdigest()
+
+    if pw_data != userdata2[id_to_modify]['pw']:
+        print("비밀번호가 일치하지 않습니다.")
+        return
+
     # 수정할 정보 입력
     new_name = input("새로운 이름 입력: ")  # 새로운 이름 입력
     new_phone = input("새로운 전화번호 입력: ")  # 새로운 전화번호 입력
@@ -113,6 +134,153 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
+class Debt:
+    def __init__(self, lender, amount, due_date):
+        """
+        초기화 함수. 빚의 대출 기관/사람, 금액, 상환 기한을 설정하고 상환된 금액은 0으로 초기화.
+        """
+        self.lender = lender
+        self.amount = amount
+        self.due_date = due_date
+        self.paid_amount = 0
+        self.payment_history = []  # 상환 내역을 저장할 리스트
+
+    def pay_debt(self, amount):
+        """
+        빚 상환 함수. 상환된 금액을 더하고 남은 빚 금액을 계산하여 반환.
+        상환 내역에 기록을 추가.
+        """
+        self.paid_amount += amount
+        self.amount -= amount
+        self.payment_history.append((datetime.now(), amount))  # 상환 내역에 추가
+        return self.amount
+
+    def get_payment_history(self):
+        """
+        상환 내역을 반환하는 함수.
+        """
+        return self.payment_history
+
+debts = []
+
+def validate_date(date_text):
+    """
+    날짜 형식이 올바른지 확인하는 함수. 'YYYY-MM-DD' 형식이어야 함.
+    """
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
+def add_debt():
+    """
+    새로운 빚을 추가하는 함수. 대출 기관/사람, 금액, 상환 기한을 입력받고
+    올바른 형식의 상환 기한이 입력될 때까지 반복.
+    """
+    lender = input("대출 기관/사람: ")
+    amount = float(input("대출 금액: "))
+
+    while True:
+        due_date = input("상환 기한 (YYYY-MM-DD): ")
+        if validate_date(due_date):
+            break
+        else:
+            print("잘못된 날짜 형식입니다. 다시 입력해 주세요.")
+
+    new_debt = Debt(lender, amount, due_date)
+    debts.append(new_debt)
+    print("새 빚이 추가되었습니다.")
+
+def view_debts():
+    """
+    등록된 빚 목록을 출력하는 함수. 등록된 빚이 없으면 해당 메시지를 출력.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+    for debt in debts:
+        print(f"대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+
+def pay_debt():
+    """
+    빚 상환 함수. 사용자가 상환할 빚을 선택하고 상환 금액을 입력받아 상환 처리.
+    상환 금액이 남은 빚 금액을 초과하지 않도록 검증.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+        return
+
+    # 등록된 빚 목록 출력
+    for idx, debt in enumerate(debts):
+        print(f"{idx + 1}. 대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+
+    # 상환할 빚 선택
+    debt_index = int(input("상환할 빚 번호를 입력하세요: ")) - 1
+    selected_debt = debts[debt_index]
+
+    # 상환 금액 입력받아 검증
+    while True:
+        amount = float(input("상환 금액: "))
+        if amount > selected_debt.amount:
+            print(f"상환 금액이 남은 빚 금액을 초과할 수 없습니다. 남은 금액: {selected_debt.amount}")
+        else:
+            break
+
+    # 빚 상환 처리
+    remaining_amount = selected_debt.pay_debt(amount)
+
+    # 남은 금액에 따라 메시지 출력
+    if remaining_amount <= 0:
+        print("모든 빚이 상환되었습니다.")
+        debts.pop(debt_index)
+    else:
+        print(f"남은 금액: {remaining_amount}")
+
+def view_debt_payment_history():
+    """
+    특정 빚의 상환 내역을 조회하는 함수.
+    남아 있는 빚이 있는 경우 상환 내역을 조회 할 수 있다.
+    """
+    if not debts:
+        print("등록된 빚이 없습니다.")
+        return
+
+    # 등록된 빚 목록 출력
+    for idx, debt in enumerate(debts):
+        print(f"{idx + 1}. 대출 기관/사람: {debt.lender}, 남은 금액: {debt.amount}, 상환 기한: {debt.due_date}, 상환된 금액: {debt.paid_amount}")
+
+    # 상환 내역을 조회할 빚 선택
+    debt_index = int(input("상환 내역을 조회할 빚 번호를 입력하세요: ")) - 1
+    selected_debt = debts[debt_index]
+
+    # 상환 내역 출력
+    payment_history = selected_debt.get_payment_history()
+    if not payment_history:
+        print("상환 내역이 없습니다.")
+    else:
+        print(f"{selected_debt.lender}의 상환 내역:")
+        for date, amount in payment_history:
+            print(f"날짜: {date}, 금액: {amount}")
+
+def debt_management():
+    """
+    빚 관리 기능 함수. 사용자 입력에 따라 빚 추가, 목록 보기, 상환, 상환 내역 조회 기능을 호출.
+    """
+    while True:
+        debt_func = input("빚 관리 기능 입력 (1: 빚 추가, 2: 빚 목록 보기, 3: 빚 상환, 4: 상환 내역 조회, exit: 종료) : ")
+        if debt_func == "1":
+            add_debt()
+        elif debt_func == "2":
+            view_debts()
+        elif debt_func == "3":
+            pay_debt()
+        elif debt_func == "4":
+            view_debt_payment_history()
+        elif debt_func == "exit":
+            break
+        else:
+            print("올바른 기능을 입력해 주세요.")
 
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
@@ -306,7 +474,7 @@ def reset_data():
     ledger = []
     userdata = {}
     # 지출 내역 파일을 초기화
-    with open(expenses_file, 'w') as file:
+    with open(expenses_file, 'w', encoding='utf-8') as file:
         json.dump([], file)
     # 로그인 파일이 존재하는 경우 삭제
     if os.path.exists('login.txt'):
@@ -540,18 +708,18 @@ if not os.path.exists(expenses_file):
 
 def save_expense(expense):
     # 파일을 열어 기존 데이터를 불러옴
-    with open(expenses_file, 'r') as file:
+    with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
     # 새 지출 내역을 리스트에 추가
     data.append(expense)
     # 데이터를 파일에 저장
-    with open(expenses_file, 'w') as file:
+    with open(expenses_file, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
 # 저장된 지출 내역을 조회하는 함수
 def view_expenses():
     # 파일을 열어 데이터를 불러옴
-    with open(expenses_file, 'r') as file:
+    with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         if data:
             # 데이터가 존재하면 각 지출 내역을 출력
@@ -583,7 +751,7 @@ def delete_expense():
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
 
     # 저장된 지출 내역을 불러옴
-    with open(expenses_file, 'r') as file:
+    with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
     # 입력받은 인덱스가 유효한지 확인하고 삭제
     try:
@@ -688,6 +856,155 @@ def modify_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+
+# 엔화와 달러의 환율 정보를 정적으로 저장합니다.
+exchange_rate = {
+    "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
+    "JPY": 0.1      # 1엔화 = 10원 (가상의 환율)
+}
+
+def convert_currency(amount, currency):
+    """
+    입력된 금액을 선택한 통화로 환전하는 함수
+    :param amount: 원화로 입력된 금액
+    :param currency: 환전할 통화 (USD 또는 JPY)
+    :return: 환전된 금액
+    """
+    if currency in exchange_rate:
+        # 선택한 통화의 환율로 원화를 환전합니다.
+        converted_amount = amount * exchange_rate[currency]
+        return converted_amount
+    else:
+        return None
+
+# 환율 계산을 실행하는 부분
+def calculate_exchange():
+    amount = float(input("환전할 금액(원): "))
+    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    converted_amount = convert_currency(amount, currency)
+    if converted_amount is not None:
+        print(f"{amount}원을 {currency}로 환전한 금액은 {converted_amount}입니다.")
+    else:
+        print("지원되지 않는 통화입니다.")
+
+# 가계부 기능에 환율 계산 추가
+def add_entry_with_exchange():
+    # 기존의 지출 항목 추가 함수(add_entry())와 비슷하게 작성하되,
+    # 추가로 환전할 통화와 금액을 입력받고, 해당 통화로 환전된 금액을 함께 저장합니다.
+    date = input("날짜 (YYYY-MM-DD): ")
+    category = input("카테고리: ")
+    description = input("설명: ")
+    amount = float(input("금액(원): "))
+    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    converted_amount = convert_currency(amount, currency)
+    if converted_amount is not None:
+        # 환전된 금액과 통화 정보를 함께 저장합니다.
+        entry = {
+            "date": date,
+            "category": category,
+            "description": description,
+            "amount": amount,
+            "currency": currency,
+            "converted_amount": converted_amount
+        }
+        ledger.append(entry)
+        print("항목이 추가되었습니다.")
+    else:
+        print("지원되지 않는 통화입니다.")
+
+def load_expenses():
+    """
+    지출 내역을 expenses.json 파일에서 불러오는 함수
+    db처럼 지출 정보를 파일에 저장하는 input_expense() 함수를 활용
+    """
+    try: 
+        #expenses.json파일 오픈
+        with open('expenses.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        print(f"An error occurred while loading expenses: {e}")
+        return []
+
+def analyze_and_advise():
+    """
+    지출 내역을 분석하여 지출을 줄일 수 있는 조언을 제공하는 함수
+    """
+    expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
+    if not expenses: # 저장된 지출이 없음
+        print("지출 없음")
+        return
+
+    category_totals = {}  # 카테고리 별로 지출 총액을 저장할 딕셔너리
+    for expense in expenses:
+        category = expense["item"]  # 지출 항목
+        amount = float(expense["amount"])  # 문자열로 저장된 금액을 float로 변환
+        if category not in category_totals:
+            category_totals[category] = 0  # 카테고리가 없으면 초기화
+        category_totals[category] += amount  # 카테고리별 지출 금액 합산
+
+    total_expense = sum(category_totals.values())  # 총 지출 금액 계산
+    print(f"총 지출: {total_expense} 원")
+
+    advice = []  # 조언을 저장할 리스트
+    for category, total in category_totals.items():
+        percentage = (total / total_expense) * 100  # 카테고리별 지출 비율 계산
+        #비율에 따라 조언 다르게 생성
+        if percentage > 30:
+            advice.append(f"{category}에서 지출이 총 지출의 {percentage:.2f}%를 차지합니다. {category}에서 절약할 수 있는 방법을 찾아보세요.")
+        elif percentage > 20:
+            advice.append(f"{category}에서 지출이 총 지출의 {percentage:.2f}%를 차지합니다. 조금 더 신경 써서 지출을 줄여보세요.")
+
+    if advice:
+        #조언 출력
+        print("지출을 줄일 수 있는 조언:")
+        for a in advice:
+            print(a)
+    else:
+        print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
+
+#디데이 기능
+d_day_file = 'd_day.json' 
+
+def save_d_day(target_date_str):
+    with open(d_day_file, 'w') as file:
+        json.dump({"target_date": target_date_str}, file)
+
+def load_d_day():
+    if os.path.exists(d_day_file):
+        with open(d_day_file, 'r') as file:
+            data = json.load(file)
+        return data.get("target_date", None)
+    return None
+
+def add_d_day():
+    try:
+        target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
+        today = datetime.today()
+        d_day = (target_date - today).days
+        if d_day >= 0:
+            print(f"D-Day: {d_day}일 남았습니다.")
+            save_d_day(target_date_str)
+        else:
+            print("이미 지난 날짜입니다.")
+    except ValueError:
+        print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
+
+def view_d_day():
+    target_date_str = load_d_day()
+    if target_date_str:
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
+        today = datetime.today()
+        d_day = (target_date - today).days
+        if d_day >= 0:
+            print(f"D-Day: {d_day}일 남았습니다.")
+        else:
+            print("이미 지난 디데이입니다.")
+    else:
+        print("저장된 디데이 정보가 없습니다.")
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
