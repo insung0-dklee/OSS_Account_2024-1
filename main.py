@@ -320,18 +320,28 @@ def get_valid_amount_input():
     """
     while True:
         amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
+        #(n빵인 경우를 위해 /가 입력 가능하도록 수정)
+        if '/' in amount and amount.replace('/', '').isdigit(): # 입력이 숫자와 '/' 문자로만 이루어져 있는지 확인
+            total, people =  amount.split('/') # '/' 문자를 기준으로 문자열을 분리하고, 각 부분을 float로 변환
+            return float(total), int(people) # 총 금액과 인원 수를 반환
+        elif amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
+            return float(total) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    people=1
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    total,people = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    amount = total / people #금액 입력에/가 있고 n빵이 아닌 경우 나눈 값을 입력 가능하도록 수정
+    if(people!=1) :
+        isnBBang = input ("n빵 인가요? (y/n)")
+        if(isnBBang == 'y') :
+            amount = total
     entry = {
         "date": date,
         "category": category,
@@ -340,7 +350,13 @@ def add_entry():
         "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
+    #금액에 /가 있는 경우 n빵인지 물어봄
     print("항목이 추가되었습니다.")
+    if(isnBBang == 'y') :
+        name= input(f"n빵한 {people}명의 이름을 입력하세요: ")
+        nBBang=[entry,name]
+        save_nBBang(nBBang)
+        print("n빵이 저장되었습니다.")
 
 # 항목 조회 함수
 def view_entries():
