@@ -577,6 +577,7 @@ def generate_monthly_report():
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
+
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += float(entry["amount"])
@@ -587,22 +588,27 @@ def generate_monthly_report():
             print(entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
+
     print(f"{month}월 총 지출: {monthly_total} 원")
     print(f"{month}월 각 카테고리별 지출 내역:")
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
     average_score = calculate_average_score(scores)
+
     if category_totals:
         max_category = max(category_totals, key=category_totals.get)
+        min_category = min(category_totals, key=category_totals.get)
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+        print(f"가장 지출이 적은 카테고리: {min_category} ({category_totals[min_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
+
 
 budget = None #전역변수 budget의 기본값 설정
 
