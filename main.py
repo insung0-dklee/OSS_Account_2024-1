@@ -724,6 +724,19 @@ def YU_Account():
     print(welcome_message)
 
 YU_Account() #프로그램 시작 화면
+"""
+Time() : 현재 시간과 날짜를 출력해주는 기능
+@Parm
+    None
+@return
+    None
+"""
+from datetime import datetime
+def Time():
+    now_time = datetime.now()
+    print("현재 날짜 : ", now_time.date())
+    print("현재 시간 : ", now_time.hour, "시", now_time.minute, "분", now_time.second, "초\n")
+Time() #시간함수 실행
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
