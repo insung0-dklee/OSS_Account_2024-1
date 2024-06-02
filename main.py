@@ -1422,12 +1422,15 @@ class User:
 
 # 재정 목표를 관리하는 루프 함수입니다.
 def financial_goal_loop(user):
+    banks_interest_rate = {}
     while True:
         print("\n--- 재정 목표 관리 ---")
         print("1: 새로운 목표 추가")
         print("2: 목표 목록 확인")
         print("3: 목표 저축액 추가")
         print("4: 목표 진행 상황 확인")
+        print("5: 은행 이자율 설정")
+        print("6: 은행에 저축하기")
         print("0: 메인 메뉴로 돌아가기")
 
         # 사용자로부터 기능 선택을 입력받습니다.
@@ -1478,6 +1481,23 @@ def financial_goal_loop(user):
                     selected_goal.check_progress()
                 else:
                     print("올바른 목표를 선택하세요.")
+          # 은행 이자율을 설정하는 기능입니다.
+        elif choice == "5":
+            bank_name = input("은행 이름을 입력하세요: ")
+            interest_rate = float(input("이자율을 입력하세요 (소수점으로 입력하세요): "))
+            banks_interest_rate[bank_name] = interest_rate
+            print(f"{bank_name}의 이자율이 {interest_rate * 100}%로 설정되었습니다.")
+
+        # 은행에 저축하는 기능입니다.
+        elif choice == "6":
+            bank_name = input("은행 이름을 입력하세요 : ")
+            if bank_name in banks_interest_rate:
+                amount = int(input("저축할 금액을 입력하세요: "))
+                interest_rate = banks_interest_rate[bank_name]
+                interest = amount * interest_rate
+                print(f"이자율: {interest_rate * 100}%, 이자: {interest}원")
+            else:
+                print("올바른 은행을 선택하세요.")
         #메인 메뉴로 돌아가는 기능입니다.
         elif choice == "0":
             print("메인 메뉴로 돌아갑니다.")
