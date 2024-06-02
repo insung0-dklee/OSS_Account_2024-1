@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 시급 계산기      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1533,16 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 시급 계산기
+        try:
+            hourly_wage = float(input("시급을 입력하세요: "))
+            days_worked = int(input("이번 달 출근일수를 입력하세요: "))
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+            continue
+
+        total_wage = hourly_wage * days_worked
+        print(f"이번 달 총 임금은 {total_wage}원입니다.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
