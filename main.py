@@ -36,9 +36,33 @@ def user_reg():  # 회원가입
         print("회원가입이 완료되었습니다!")
         break
 
-class User:    # 사용자 정보 저장 (이름)
-    def __init__(self, name):
+class User:    # 사용자 정보 저장 (이름, 포인트, 레벨, 경험치)
+    def __init__(self, id, name):
+        self.id=id
         self.name = name
+        self.points = 0
+        self.level = 1
+        self.exp = 0
+
+    def add_points(self, points):
+        """
+        포인트와 경험치를 추가하고 레벨업을 체크하는 함수
+        """
+        self.points += points
+        self.exp += points
+        self.check_level_up()
+
+    def check_level_up(self):
+        """
+        경험치에 따라 레벨을 업그레이드하는 함수
+        """
+        required_exp = self.level * 100  # 레벨 업에 필요한 경험치
+        while self.exp >= required_exp:
+            self.level += 1
+            self.exp -= required_exp
+            required_exp = self.level * 100
+            print(f"축하합니다! {self.name}님이 레벨 {self.level}에 도달했습니다!")
+        
 
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
@@ -388,6 +412,7 @@ def add_memo():
     str_title = input()
     if not str_title.endswith(".txt"):
         str_title += ".txt"
+
     if '/' in str_title:
         print("메모장 제목에 경로 정보가 포함되었습니다.")
     try:
@@ -419,6 +444,7 @@ def list_memo():
     """
     현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
     """
+
     memo_files = []
     for directory in memo_directory:
         try:
@@ -462,6 +488,7 @@ def delete_memo():
 
 def memo():
     while True:
+
         print("-----------------------")
         print("user:",user.name) # 현재 user가 누구인지 출력
         print("""
@@ -888,13 +915,14 @@ def view_expenses():
             print("저장된 지출 내역이 없습니다.")
 
 # 지출 내역을 입력받는 함수
-def input_expense():
+def input_expense(user_id):
     # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
     # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
+        'id': user_id,
         'date': date,
         'item': item,
         'amount': amount
@@ -1112,15 +1140,16 @@ def load_expenses():
         print(f"An error occurred while loading expenses: {e}")
         return []
 
-def analyze_and_advise():
+def analyze_and_advise(user):
     """
     지출 내역을 분석하여 지출을 줄일 수 있는 조언을 제공하는 함수
     """
-    expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
-    if not expenses: # 저장된 지출이 없음
+    all_expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
+    if not all_expenses: # 저장된 지출이 없음
         print("지출 없음")
         return
-
+    expenses = [expense for expense in all_expenses if expense["id"] == user.id]  # 현재 사용자의 지출 내역만 추출
+    
     category_totals = {}  # 카테고리 별로 지출 총액을 저장할 딕셔너리
     for expense in expenses:
         category = expense["item"]  # 지출 항목
@@ -1142,12 +1171,17 @@ def analyze_and_advise():
             advice.append(f"{category}에서 지출이 총 지출의 {percentage:.2f}%를 차지합니다. 조금 더 신경 써서 지출을 줄여보세요.")
 
     if advice:
-        #조언 출력
+        # 조언 출력
         print("지출을 줄일 수 있는 조언:")
         for a in advice:
             print(a)
+            
+        # 포인트 및 경험치 적립
+        user.add_points(10)
+        print(f"{user.name}님이 10포인트를 획득했습니다! 현재 포인트: {user.points}, 레벨: {user.level}, 경험치: {user.exp}")
     else:
-        print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
+        print("지출이 잘 관리되고 있습니다!")  # 조언이 없을 때
+    
 
 #디데이 기능
 d_day_file = 'd_day.json' 
@@ -1277,6 +1311,7 @@ def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
 
 def Login_interface(): #로그인 인터페이스
+
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
     if len(login_info)==0 : 
         print("로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
@@ -1312,7 +1347,8 @@ def Login_interface(): #로그인 인터페이스
 
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
                 print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
-                return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+                return User(login_info[i][0], login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
                 break
@@ -1357,6 +1393,7 @@ YU_Account() #프로그램 시작 화면
 
 version = "1.0.0"  # 프로그램 버전
 print(f"프로그램 버전: {version}")
+
 
 #########################################################
 # 사용자로부터 날짜를 입력받는 함수입니다.
@@ -1406,10 +1443,30 @@ class FinancialGoal:
 
 # 사용자 정보를 담는 클래스입니다.
 # 사용자의 이름을 설정하고, 사용자의 재정 목표 리스트를 빈 리스트로 초기화합니다.
-class User:
-    def __init__(self, name):
+class User:    # 사용자 정보 저장 (이름, 포인트, 레벨, 경험치)
+    def __init__(self, id, name):
+        self.id=id
         self.name = name
-        self.goals = []
+        self.points = 0
+        self.level = 1
+        self.exp = 0
+    def add_points(self, points):
+        """
+        포인트와 경험치를 추가하고 레벨업을 체크하는 함수
+        """
+        self.points += points
+        self.exp += points
+        self.check_level_up()
+    def check_level_up(self):
+        """
+        경험치에 따라 레벨을 업그레이드하는 함수
+        """
+        required_exp = self.level * 100  # 레벨 업에 필요한 경험치
+        while self.exp >= required_exp:
+            self.level += 1
+            self.exp -= required_exp
+            required_exp = self.level * 100
+            print(f"축하합니다! {self.name}님이 레벨 {self.level}에 도달했습니다!")
 
 
     # 목표 리스트에서 특정 인덱스의 목표를 가져오는 메서드입니다.
@@ -1523,7 +1580,8 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+        # add_entry()
+        input_expense(user.id)
     elif func == "2":
         view_entries()
     elif func == "3":
@@ -1531,7 +1589,7 @@ while not b_is_exit:
     elif func == "4":
         set_budget()
     elif func == "5":
-        analyze_categories()
+        analyze_and_advise(user)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
