@@ -1510,7 +1510,30 @@ def save_user_acc(user):
     with open('user_accdata.txt', 'w', encoding='UTF-8') as fw:
         fw.write(f'{user} : {user_acc_data[user]}\n')
     
-save_user_acc(user)
+def read_user_acc():
+    with open("user_accdata.txt",'r',encoding='UTF-8') as f:
+        user_accinfo = []#파일 정보 저장
+    #한줄씩 읽어 온 후 리스트에 저장
+        while True:
+            line = f.readline()
+            if line.startswith(user): #user 값으로 시작하면 True를 반환    
+                line = line.replace('\n','')#필요없는 값 삭제 - space는 삭제 불가능(user_accname 일 수 있음) + 나중에 Acc이름 나누기 위함
+                line = line.replace(',','')
+                line = line.replace("'",'')
+                line = line.replace('[','')
+                line = line.replace(']','')
+                line = line.split(" : ")
+            #파일에서 딕셔너리로 복구 시켜주는 코드
+        
+                user_accinfo.append(line)
+                user_name = str(line[0])
+                user_acc = line[1]
+                user_acc = user_acc[:-2] #마지막의 ' /' 제거
+                
+                user_accinfo = {f"{user_name}" : user_acc.split(" / ")} 
+                break
+            
+    return user_accinfo #이후 유저 어카운트 호출을 위한 return
 
 
 
