@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 메모장 실행
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,14 +1533,14 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_memo()
+        memo()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
     else:
         
         print("올바른 기능을 입력해 주세요.")
