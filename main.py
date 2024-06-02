@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -373,6 +373,84 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
+
+def last_day_of_month(year, month):
+    # 다음 달의 첫 번째 날에서 하루를 빼서 현재 달의 마지막 날을 구함
+    if month == 12:
+        return datetime(year, month, 31)
+    next_month_first = datetime(year, month + 1, 1)
+    last_day_current_month = next_month_first - timedelta(days=1)
+    return last_day_current_month
+
+def fixed_spending_income():
+    """
+    고정 수입/지출을 기록하고 지정된 기간 내에 해당 일자에 해당하는 수입/지출을 기록.
+    현재 수입/지출을 기록하는 함수인 add_entry의 함수에 맞추어 일부 변형됨.
+    last_day_of_month 함수를 사용함.
+
+    parameters -
+    None
+    """
+
+    start_date = datetime.strptime(input("고정 수입/지출이 시작된 일자(YYYY-MM-DD) : "), '%Y-%m-%d')
+    end_date_input = input("고정 수입/지출이 끝난 일자(YYYY-MM-DD)(미기재 시 현재 일자) : ")
+    end_date = datetime.strptime(end_date_input, '%Y-%m-%d') if end_date_input else datetime.now()
+    fixed_day = input("고정 수입/지출이 있는 날은 언제입니까? (1. 첫날, 2. 마지막날, 3. 시작일과 동일) : ")
+
+    category = input("카테고리 : ")
+    description = input("설명 : ")
+    print("해당 고정 수입/지출의 평균 점수를 입력합니다.", end=" ")
+    score = day_evaluation()
+    amount = get_valid_amount_input()
+
+    # 고정 수입/지출 기록 시작 전 날짜 조정
+    current_date = start_date
+
+    if fixed_day == '1':
+        current_date = current_date.replace(day=1)
+    elif fixed_day == '2':
+        current_date = last_day_of_month(current_date.year, current_date.month)
+    elif fixed_day == '3':
+        pass
+    else:
+        print("잘못된 입력입니다. 고정 수입/지출 입력을 종료합니다.")
+        return
+
+    # 고정 수입/지출 기록 시작
+    while current_date <= end_date: # 마지막 일자 전까지 반복
+        date = current_date.strftime('%Y-%m-%d')
+        # date를 설정하여 add_entry 함수에서 사용한 것과 같이 ledger 리스트에 지출 내역을 추가함.
+        entry = {
+            "date": date,
+            "category": category,
+            "description": description,
+            "amount": amount,
+            "score": score
+        }
+        ledger.append(entry)
+
+        # 다음 달로 이동
+        year = current_date.year
+        month = current_date.month + 1
+        if month > 12:
+            month = 1
+            year += 1
+
+        # 고정 일자가 언제인지에 따라 날짜를 조정
+        if fixed_day == '1':
+            current_date = current_date.replace(year=year, month=month, day=1)
+        elif fixed_day == '2':
+            current_date = last_day_of_month(year, month)
+        elif fixed_day == '3':
+            # 시작 일자를 고정 일자로 하였을 경우, 31일 등 타 달에는 없는 일자 존재 가능.
+            # 따라서 해당 일자는 각 달의 마지막 일자로 교환하여 기록 진행.
+            day = start_date.day
+            try:
+                current_date = current_date.replace(year=year, month=month, day=day)
+            except ValueError:
+                current_date = last_day_of_month(year, month)
+
+    print("기록이 종료되었습니다.")
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -1523,7 +1601,15 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+        once_or_fixed = input("고정 수입 지출을 기록하고자 하는 경우 1을, 1회성 수입 지출을 기록하고자 하는 경우 2를 입력해주세요 : ")
+        if once_or_fixed == '1':
+            fixed_spending_income()
+        elif once_or_fixed == '2':
+            add_entry()
+        else:
+            print("올바른 입력이 아닙니다. 메인 화면으로 돌아갑니다.")
+            continue
+
     elif func == "2":
         view_entries()
     elif func == "3":
