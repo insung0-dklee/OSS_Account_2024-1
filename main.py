@@ -563,3 +563,109 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+# 지출 내역을 관리하는 기능
+
+import re
+from datetime import datetime  # 날짜와 시간을 처리하기 위한 모듈
+
+# 지출 내역을 저장할 리스트
+expense_records = []
+
+# 날짜 형식 확인 함수 (YYYY-MM-DD)
+def is_valid_date_format(date_str):
+    return bool(re.match(r"\d{4}-\d{2}-\d{2}", date_str))
+
+# 존재하는 날짜인지 확인하는 함수
+def is_real_date(date_str):
+    try:
+        datetime.strptime(date_str, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
+
+# 숫자인지 확인 함수
+def is_number(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+# 지출 내역 작성 함수
+def add_expense():
+    while True:
+        date = input("날짜를 입력하세요 (YYYY-MM-DD) : ")
+        if not is_valid_date_format(date):
+            print("지정된 날짜 입력 형식에 맞지 않습니다. 다시 입력 해주세요. (YYYY-MM-DD)")
+        elif not is_real_date(date):
+            print("존재하지 않는 날짜 입니다. 다시 입력해주세요.")
+        else:
+            break
+
+    category = input("지출 카테고리를 입력하세요 : ")
+
+    while True:
+        amount = input("지출 금액을 입력하세요 : ")
+        if is_number(amount):
+            amount = float(amount)
+            break
+        else:
+            print("숫자만 입력할 수 있습니다.")
+
+    details = input("상세 내역을 입력하세요 : ")
+
+    # 지출 내역을 리스트에 추가
+    expense_records.append({
+        "date": date,
+        "category": category,
+        "amount": amount,
+        "details": details
+    })
+    print("지출 내역 작성이 완료되었습니다.")
+
+# 지출 카테고리 조회 함수
+def view_expenses_by_category():
+    category = input("조회하고 싶은 지출 카테고리를 입력하세요: ").lower()
+
+    # 해당 카테고리의 지출 내역 찾기
+    filtered_expenses = [record for record in expense_records if record['category'].lower() == category]
+
+    if not filtered_expenses:
+        print("해당 카테고리의 지출 내역이 없습니다.")
+        return
+
+    # 날짜를 기준으로 오름차순 정렬
+    filtered_expenses.sort(key=lambda record: datetime.strptime(record['date'], '%Y-%m-%d'))
+
+    total_amount = 0
+
+    # 지출 내역 출력
+    for record in filtered_expenses:
+        print(f"날짜: {record['date']}, 금액: {record['amount']}, 상세 내역: {record['details']}")
+        total_amount += record['amount']
+
+    print(f"{category} 카테고리에서 총 {total_amount}원을 사용하셨습니다.")
+
+def main():
+    while True:
+        print("\n--- 지출 카테고리 관리 ---")
+        print("1. 지출 내역 작성하기")
+        print("2. 지출 카테고리 조회하기")
+        print("3. 종료")
+        choice = input("기능을 선택하세요 (1~3): ")
+
+        if choice == '1':
+            add_expense()
+        elif choice == '2':
+            view_expenses_by_category()
+        elif choice == '3':
+            print("지출 카테고리 관리를 종료합니다.")
+            break
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
+
+if __name__ == "__main__":
+    main()
