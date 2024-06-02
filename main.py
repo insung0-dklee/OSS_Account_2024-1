@@ -1380,9 +1380,7 @@ def Login_interface(): #로그인 인터페이스
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
                 print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
-            else:
-                print("비밀번호 오류입니다.")#아니면 끝
-                break
+
         cnt += 1
 
     if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
