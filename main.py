@@ -1,66 +1,91 @@
-class BudgetTracker:
-    def __init__(self, budget):
-        """
-        BudgetTracker 클래스의 생성자.
-        초기 예산을 설정하고 지출 목록을 초기화한다.
-        
-        Parameters:
-        budget (float): 초기 예산 금액
-        """
-        self.budget = budget
-        self.expenses = []
+import json
+from datetime import datetime
 
-    def add_expense(self, amount, description):
-        """
-        새로운 지출 항목을 추가한다.
-        지출을 추가한 후 예산 초과 여부를 확인한다.
-        
-        Parameters:
-        amount (float): 지출 금액
-        description (str): 지출 설명
-        """
-        self.expenses.append({'amount': amount, 'description': description})
-        self.check_budget()
+class BudgetManager:
+    def __init__(self):
+        self.balance = 0  # 잔액 초기화
+        self.transactions = []  # 트랜잭션 목록 초기화
+        self.goals = {}  # 목표 목록 초기화
+        self.points = 0  # 포인트 초기화
+        self.level = 1  # 레벨 초기화
+        self.badges = []  # 배지 목록 초기화
+    
+    def add_transaction(self, amount, category):
+        """ 트랜잭션 추가 메서드 """
+        self.transactions.append({'amount': amount, 'category': category, 'date': str(datetime.now())})
+        # 트랜잭션을 목록에 추가
+        self.balance += amount  # 잔액 업데이트
+        self._update_goals(amount)  # 목표 업데이트
+        self._check_goals()  # 목표 달성 여부 체크
+        self._add_points(amount)  # 포인트 적립
+    
+    def set_goal(self, name, target_amount):
+        """ 목표 설정 메서드 """
+        self.goals[name] = {'target_amount': target_amount, 'current_amount': 0}
+        # 목표를 목록에 추가
+    
+    def _update_goals(self, amount):
+        """ 트랜잭션에 따라 목표 업데이트 """
+        for goal in self.goals.values():
+            if amount < 0:
+                goal['current_amount'] += abs(amount)  # 지출은 목표 달성에 기여하지 않음
+            else:
+                goal['current_amount'] += amount  # 수입은 목표 달성에 기여
+    
+    def _check_goals(self):
+        """ 목표 달성 여부를 확인하고, 달성 시 보상 제공 """
+        for goal_name, goal in self.goals.items():
+            if goal['current_amount'] >= goal['target_amount']:
+                print(f"Goal '{goal_name}' achieved!")  # 목표 달성 메시지 출력
+                self.points += 100  # 목표 달성 보상으로 포인트 제공
+                self.award_badge(f"Goal '{goal_name}' Achieved")  # 목표 달성 배지 수여
+                self._level_up()  # 레벨 업 체크
+    
+    def _add_points(self, amount):
+        """ 지출액에 따른 포인트 적립 """
+        if amount < 0:
+            self.points += abs(amount) // 10  # 지출액의 10%를 포인트로 적립
+    
+    def _level_up(self):
+        """ 포인트에 따라 레벨 업 """
+        if self.points >= self.level * 100:
+            self.level += 1
+            print(f"Congratulations! You've reached level {self.level}.")  # 레벨 업 메시지 출력
+    
+    def award_badge(self, badge_name):
+        """ 배지 제공 메서드 """
+        if badge_name not in self.badges:
+            self.badges.append(badge_name)
+            print(f"Badge '{badge_name}' awarded!")  # 배지 수여 메시지 출력
+    
+    def save_data(self, filename):
+        """ 데이터를 파일에 저장 """
+        data = {
+            'balance': self.balance,
+            'transactions': self.transactions,
+            'goals': self.goals,
+            'points': self.points,
+            'level': self.level,
+            'badges': self.badges
+        }
+        with open(filename, 'w') as f:
+            json.dump(data, f)  # 데이터를 JSON 형식으로 저장
+    
+    def load_data(self, filename):
+        """ 파일에서 데이터 불러오기 """
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            self.balance = data['balance']
+            self.transactions = data['transactions']
+            self.goals = data['goals']
+            self.points = data['points']
+            self.level = data['level']
+            self.badges = data['badges']
 
-    def check_budget(self):
-        """
-        현재 총 지출 금액이 예산을 초과했는지 확인하고 메시지를 출력한다.
-        """
-        total_expenses = sum(expense['amount'] for expense in self.expenses)
-        if total_expenses > self.budget:
-            print(f"Warning: You have exceeded your budget by {total_expenses - self.budget:.2f}!")
-        else:
-            print(f"Total expenses: {total_expenses:.2f}, Budget remaining: {self.budget - total_expenses:.2f}")
-
-    def show_expenses(self):
-        """
-        지금까지 추가된 모든 지출 내역을 출력한다.
-        """
-        for expense in self.expenses:
-            print(f"{expense['description']}: {expense['amount']:.2f}")
-
-    def set_budget(self, new_budget):
-        """
-        예산을 변경하고 새로운 예산에 대해 초과 여부를 확인한다.
-        
-        Parameters:
-        new_budget (float): 새로운 예산 금액
-        """
-        self.budget = new_budget
-        self.check_budget()
-
-# 초기 예산을 1000으로 설정하여 BudgetTracker 객체 생성
-budget_tracker = BudgetTracker(1000.0)
-
-# 새로운 지출 항목 추가
-budget_tracker.add_expense(150.0, "Groceries")  # 식료품 지출 추가
-budget_tracker.add_expense(200.0, "Utilities")  # 공과금 지출 추가
-budget_tracker.add_expense(800.0, "Rent")       # 임대료 지출 추가
-
-# 모든 지출 내역 출력
-budget_tracker.show_expenses()
-
-# 예산을 1500으로 변경
-budget_tracker.set_budget(1500.0)
-# 새로운 지출 항목 추가
-budget_tracker.add_expense(100.0, "Entertainment")  # 오락비 지출 추가
+# 사용 예시
+manager = BudgetManager()
+manager.set_goal('Vacation', 1000)  # 휴가를 위한 저축 목표 설정
+manager.add_transaction(-50, 'Groceries')  # 식료품비 지출 추가
+manager.add_transaction(200, 'Salary')  # 월급 수입 추가
+manager.award_badge('First Transaction')  # 첫 트랜잭션 배지 수여
+manager.save_data('budget_data.json')  # 데이터를 파일에 저장
