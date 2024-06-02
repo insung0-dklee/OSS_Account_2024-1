@@ -13,6 +13,12 @@ userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
+
+    # 아이디 중복 체크 기능 추가
+    if id in userdata or id in userdata2:  # 수정됨!
+        print("이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.")
+        return
+        
     while True:
         pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
@@ -49,6 +55,12 @@ userphones = {}
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
+
+    # 아이디 중복 체크 기능 추가
+    if id in userdata or id in userdata2:  # 수정됨!
+        print("이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.")
+        return
+        
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
@@ -162,6 +174,7 @@ class Debt:
         상환 내역을 반환하는 함수.
         """
         return self.payment_history
+
 
 debts = []
 
@@ -306,6 +319,20 @@ class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 �
 
     def get_joint_tran(self):    # 거래 내역 반환
         return self.joint_tran
+
+    def view_joint_transactions(self):  # 거래 내역 보기 기능 추가
+        """
+        공동 계정의 거래 내역을 출력하는 함수.
+        거래 내역이 없으면 관련 메시지를 출력하고, 거래 내역이 있으면 각 거래 내역을 출력함.
+        """
+        if not self.joint_tran:
+            print("거래 내역이 없습니다.")
+        else:
+            print(f"{self.joint_account}의 거래 내역:")
+            for tran in self.joint_tran:
+                tran_type = "수입" if tran["type"] == "income" else "지출"
+                description = tran.get("income_description") if tran["type"] == "income" else tran.get("expense_description")
+                print(f"유형: {tran_type}, 금액: {tran['amount']}, 설명: {description}")
 
 def export_account(account):
     """
