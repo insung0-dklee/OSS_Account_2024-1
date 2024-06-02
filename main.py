@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -289,6 +289,101 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+class Subscription:
+    def __init__(self, name, amount, cycle_days):
+        self.name = name  # 구독 서비스의 이름
+        self.amount = amount  # 구독 금액
+        self.cycle_days = cycle_days  # 구독 주기 (일 단위)
+        self.next_payment_date = datetime.now()  # 다음 결제일 (초기값은 현재 날짜)
+
+    def update_next_payment_date(self):
+        # 다음 결제일을 구독 주기만큼 증가시킴
+        self.next_payment_date += timedelta(days=self.cycle_days)
+
+class SubscriptionManager:
+    def __init__(self, subscriptions):
+        self.subscriptions = subscriptions  # 구독 정보를 저장할 리스트
+
+    def add_subscription(self):
+        # 사용자로부터 구독 정보를 입력 받아 새로운 구독 추가
+        name = input("구독 서비스 이름을 입력하세요: ")
+        amount = float(input("구독 금액을 입력하세요: "))
+        cycle_days = int(input("구독 주기(일)를 입력하세요: "))
+        subscription = Subscription(name, amount, cycle_days)
+        self.subscriptions.append(subscription)
+        print(f"{name} 구독이 추가되었습니다.")
+
+    def remove_subscription(self):
+        # 사용자로부터 삭제할 구독 서비스 이름을 입력받아 해당 구독 삭제
+        name = input("삭제할 구독 서비스 이름을 입력하세요: ")
+        for subscription in self.subscriptions:
+            if subscription.name == name:
+                self.subscriptions.remove(subscription)
+                print(f"{name} 구독이 삭제되었습니다.")
+                return
+        print(f"{name} 구독을 찾을 수 없습니다.")
+
+    def update_subscription(self):
+        # 사용자로부터 수정할 구독 서비스 이름과 새로운 금액, 주기를 입력받아 해당 구독 정보 수정
+        name = input("수정할 구독 서비스 이름을 입력하세요: ")
+        for subscription in self.subscriptions:
+            if subscription.name == name:
+                new_amount = float(input("새로운 구독 금액을 입력하세요: "))
+                new_cycle_days = int(input("새로운 구독 주기(일)를 입력하세요: "))
+                subscription.amount = new_amount
+                subscription.cycle_days = new_cycle_days
+                print(f"{name} 구독이 수정되었습니다.")
+                return
+        print(f"{name} 구독을 찾을 수 없습니다.")
+
+    def process_payments(self):
+        today = datetime.now().date()  # 현재 날짜 가져오기
+        for subscription in self.subscriptions:
+            if subscription.next_payment_date.date() <= today:
+                # 다음 결제일이 오늘 이전이면 결제 처리
+                print(f"Processing payment for {subscription.name}: ₩{subscription.amount}")
+                subscription.update_next_payment_date()  # 다음 결제일 업데이트
+
+    def display_subscriptions(self):
+        # 현재 구독 목록 출력
+        print("현재 구독 목록:")
+        for subscription in self.subscriptions:
+            print(f"- {subscription.name} (₩{subscription.amount}, {subscription.cycle_days}일 주기)")
+
+def call_subscription(subscription):
+    # 구독 관리 기능을 담당하는 함수
+    manager = SubscriptionManager(subscriptions)  # SubscriptionManager 객체 생성
+
+    while True:
+        # 메뉴 옵션 출력
+        print("\n구독 관리 옵션:\n")
+        print("1. 구독 추가")
+        print("2. 구독 삭제")
+        print("3. 구독 수정")
+        print("4. 지출 처리")
+        print("5. 구독 목록 보기")
+        print("6. 종료")
+
+        choice = input("\n옵션을 선택하세요 (1-6): ")
+
+        if choice == "1":
+            manager.add_subscription()  # 구독 추가
+        elif choice == "2":
+            manager.remove_subscription()  # 구독 삭제
+        elif choice == "3":
+            manager.update_subscription()  # 구독 수정
+        elif choice == "4":
+            manager.process_payments()  # 지출 처리
+        elif choice == "5":
+            manager.display_subscriptions()  # 구독 목록 보기
+        elif choice == "6":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("잘못된 옵션입니다. 다시 선택해주세요.")
+
+subscriptions = []  # 구독 정보를 저장할 리스트
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
@@ -554,6 +649,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 구독 항목 추가
     ?: 도움말 출력
     exit: 종료
     """)
@@ -637,7 +733,6 @@ def view_entries():
         print(entry)
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
-
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
@@ -1532,6 +1627,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        call_subscription(subscriptions)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
