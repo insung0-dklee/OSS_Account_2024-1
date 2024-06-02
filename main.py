@@ -47,8 +47,17 @@ usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
+def is_valid_input(user_input):# 영문과 숫자 포함 8글자 이상 체크하는 함수
+    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', user_input):
+        return True
+    else:
+        return False
+
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
+    while not is_valid_input(id):
+        print("ID는 영문과 숫자를 포함하여 8글자 이상이어야 합니다.")
+        id = input("id 입력: ")
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
@@ -63,7 +72,16 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        if id == pw:
+            print("ID와 비밀번호는 같을 수 없습니다. 다시 입력해 주세요.")
+            continue
+        # 비밀번호 유효성 검사: 영문과 숫자와 특수문자를 포함하여 8글자 이상이어야 함.
+        if not (len(pw) >= 8 and re.search(r'[A-Za-z]', pw) and re.search(r'\d', pw) and re.search(r'[!@#$%^&*(),.?":{}|<>]', pw)):
+            print("비밀번호는 영문과 숫자, 특수문자를 포함하여 8글자 이상이어야 합니다.")
+            continue
+        break
 
     h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
     h.update(pw.encode())  # sha256으로 암호화
