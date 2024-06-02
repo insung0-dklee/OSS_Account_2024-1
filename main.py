@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -554,6 +556,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 수입/지출 그래프 시각화
     ?: 도움말 출력
     exit: 종료
     """)
@@ -692,6 +695,22 @@ def get_products_from_user():
         if more_products.lower() != 'y':
             break
     return products
+
+def visualize_expenses():
+    dates = []
+    amounts = []
+    for entry in ledger:
+        dates.append(datetime.strptime(entry["date"])
+        amounts.append(entry["amount"])
+
+    plt.figure(figsize=(10, 5))
+    plt.bar(dates, amounts, color=colors)
+    plt.xlabel('날짜')
+    plt.ylabel('금액')
+    plt.title('수입과 지출 내역')
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.show()
 
 def average():
     나이 = input("나이 입력: ")
@@ -1532,6 +1551,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        visualize_income_expense()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
