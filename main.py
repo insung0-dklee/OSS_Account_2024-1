@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+from datetime import datetime
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1199,6 +1200,25 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
+def backup_ledger():
+    backup_data = {
+        'ledger': ledger,
+        'accounts': []
+    }
+    
+    for account in Account_list:
+        account_data = {
+            'name': account.name,
+            'balance': account.balance,
+            'history': account.history
+        }
+        backup_data['accounts'].append(account_data)
+
+    backup_filename = f'backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+    with open(backup_filename, 'w', encoding='utf-8') as backup_file:
+        json.dump(backup_data, backup_file, ensure_ascii=False, indent=4)
+    print(f"백업이 {backup_filename} 파일에 저장되었습니다.")
+
 def choose_Account(func):#가계부 선택 함수
     print("가계부 선택(번호로 입력)")
     for i in range(0,len(Account_list)):#가계부 리스트 출력
@@ -1540,6 +1560,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "백업":
+        backup_ledger()
     else:
         
         print("올바른 기능을 입력해 주세요.")
