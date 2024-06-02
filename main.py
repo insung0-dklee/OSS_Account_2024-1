@@ -71,6 +71,60 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
 
+"""
+비밀번호 변경 기능
+"""
+def change_password():
+    # 사용자의 ID를 입력받음
+    id = input("id 입력: ")
+    if id not in userdata2:
+        # 사용자가 존재하지 않으면 에러 메시지 출력 후 종료
+        print("해당 아이디를 가진 사용자가 없습니다.")
+        return
+
+    # 현재 비밀번호 입력받음
+    old_pw = input("현재 비밀번호 입력: ")
+    h = hashlib.sha256()
+    h.update(old_pw.encode())
+    old_pw_data = h.hexdigest()
+
+    # 입력받은 비밀번호가 기존 비밀번호와 일치하는지 확인
+    if old_pw_data != userdata2[id]['pw']:
+        # 비밀번호가 일치하지 않으면 에러 메시지 출력 후 종료
+        print("비밀번호가 일치하지 않습니다.")
+        return
+
+    while True:
+        # 새로운 비밀번호 입력받음
+        new_pw = input("새로운 password 입력: ")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", new_pw):
+            # 새로운 비밀번호에 특수문자가 포함되어 있는지 확인
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
+
+        # 새로운 비밀번호를 해시로 변환
+        h = hashlib.sha256()
+        h.update(new_pw.encode())
+        new_pw_data = h.hexdigest()
+
+        # 새로운 비밀번호로 업데이트
+        userdata2[id]['pw'] = new_pw_data
+        print("비밀번호가 성공적으로 변경되었습니다.")
+
+        # 모든 사용자 정보를 파일에서 읽어옴
+        with open('login.txt', 'r', encoding='UTF-8') as fr:
+            lines = fr.readlines()
+
+        # 파일을 덮어쓰기 모드로 열고, 변경된 사용자 정보로 갱신
+        with open('login.txt', 'w', encoding='UTF-8') as fw: #수정됨!
+            for line in lines:
+                stored_id, stored_pw, *rest = line.strip().split(" : ")
+                if stored_id == id:
+                    # 비밀번호 변경
+                    stored_pw = new_pw_data
+                # 변경된 정보를 파일에 씀
+                fw.write(f'{stored_id} : {stored_pw} : {" : ".join(rest)}\n')
+        break
 
 """
 전화번호를 통해 아이디를 찾는 함수
