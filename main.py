@@ -71,6 +71,46 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
 
+def calculate_emergency_fund():
+    print("긴급 자금 계산기에 오신 것을 환영합니다.")
+
+    try:
+        # 월별 고정 지출 금액 입력 받기
+        monthly_expenses = float(input("월별 고정 지출 금액을 입력하세요 (원): "))
+        
+        # 예상되는 긴급 상황의 비용 입력 받기
+        emergency_expenses = float(input("예상되는 긴급 상황의 비용을 입력하세요 (원): "))
+        
+        # 권장 긴급 자금 계산
+        # 권장 긴급 자금 = 월별 고정 지출의 6배 + 예상되는 긴급 상황 비용
+        recommended_emergency_fund = (monthly_expenses * 6) + emergency_expenses
+        print(f"권장 긴급 자금: {recommended_emergency_fund:.2f}원")
+
+        # 사용자가 목표로 하는 긴급 자금 금액 입력 받기
+        saving_goal = float(input("목표로 하는 긴급 자금 금액을 입력하세요 (원): "))
+        
+        # 현재 저축액 입력 받기
+        current_savings = float(input("현재 저축액을 입력하세요 (원): "))
+        
+        # 필요한 추가 저축액 계산
+        additional_savings_needed = saving_goal - current_savings
+        if additional_savings_needed > 0:
+            # 월별 저축 가능액 입력 받기
+            monthly_saving_amount = float(input("월별 저축 가능액을 입력하세요 (원): "))
+            
+            # 목표 금액에 도달하기 위해 필요한 저축 기간 계산
+            months_needed = additional_savings_needed / monthly_saving_amount
+            
+            # 결과 출력
+            print(f"추가로 필요한 저축액: {additional_savings_needed:.2f}원")
+            print(f"목표 긴급 자금에 도달하기 위해서는 {months_needed:.2f}개월 동안 매월 {monthly_saving_amount:.2f}원씩 저축해야 합니다.")
+        else:
+            # 이미 목표 긴급 자금에 도달한 경우 메시지 출력
+            print("축하합니다! 이미 목표 긴급 자금에 도달했습니다.")
+    
+    # 입력 값이 유효하지 않을 경우 예외 처리
+    except ValueError:
+        print("올바른 숫자를 입력하세요.")
 
 """
 전화번호를 통해 아이디를 찾는 함수
