@@ -7,6 +7,7 @@ import Account_book
 import random
 import webbrowser
 import re
+import PriceReflection
 <<<<<<< HEAD
 
 import Add_function  # 새로운 기능이 추가된 파일 import
@@ -1395,6 +1396,12 @@ while not b_is_exit:
         Add_function.analyze_expenses_in_period()
     elif func == "9":  # 지출 패턴 예측 기능
         Add_function.predict_future_expenses()
+    elif func == "10":  # 물가 반영 기능 추가
+        PriceReflection.get_inflation_adjusted_value()
+    elif func == "11":  # 물가 상승률 저장 기능 추가
+        year = int(input("물가 상승률을 저장할 연도를 입력하세요: "))
+        rate = float(input(f"{year}년의 물가 상승률을 입력하세요 (%): "))
+        PriceReflection.save_inflation_rate(year, rate)
     elif func == "?":
         print_help()
     elif func == "exit":
