@@ -10,6 +10,7 @@ import Add_function
 import Account_book  # 이 부분을 추가하여 Account_book 모듈을 임포트합니다.
 import time  # 새로운 모듈 임포트
 from Add_function import set_daily_limit, check_daily_limit, analyze_expenses_in_period, predict_future_expenses, add_fixed_expense, view_fixed_expenses, apply_fixed_expenses
+from datetime import datetime, timedelta  # 날짜와 시간 관련 기능을 제공하는 datetime 모듈을 임포트
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -572,6 +573,7 @@ def print_help():
     8: 고정 지출 항목 적용
     9: 아이디 찾기
     10: 비밀번호 찾기
+    11: 지난달과 이번달 지출 비교
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1059,25 +1061,55 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-# 엔화와 달러의 환율 정보를 정적으로 저장합니다.
-exchange_rate = {
-    "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
-    "JPY": 0.1      # 1엔화 = 10원 (가상의 환율)
-}
+# 특정 날짜 범위 내의 지출 합계를 계산하는 함수
+def get_expenses_in_date_range(start_date, end_date):
+    total_expense = 0
+    for entry in ledger:
+        entry_date = datetime.strptime(entry['date'], "%Y-%m-%d")
+        if start_date <= entry_date <= end_date:
+            total_expense += entry['amount']
+    return total_expense
 
-def convert_currency(amount, currency):
-    """
-    입력된 금액을 선택한 통화로 환전하는 함수
-    :param amount: 원화로 입력된 금액
-    :param currency: 환전할 통화 (USD 또는 JPY)
-    :return: 환전된 금액
-    """
-    if currency in exchange_rate:
-        # 선택한 통화의 환율로 원화를 환전합니다.
-        converted_amount = amount * exchange_rate[currency]
-        return converted_amount
+# 지난달의 지출 합계를 계산하는 함수
+def get_last_month_expense(year, month):
+    if month == 1:
+        last_month = 12
+        last_month_year = year - 1
     else:
-        return None
+        last_month = month - 1
+        last_month_year = year
+
+    first_day_of_last_month = datetime(last_month_year, last_month, 1)
+    last_day_of_last_month = (first_day_of_last_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    return get_expenses_in_date_range(first_day_of_last_month, last_day_of_last_month)
+
+# 이번 달의 지출 합계를 계산하는 함수
+def get_this_month_expense(year, month):
+    first_day_of_this_month = datetime(year, month, 1)
+    last_day_of_this_month = (first_day_of_this_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    return get_expenses_in_date_range(first_day_of_this_month, last_day_of_this_month)
+
+# 지난달과 이번달 지출을 비교하는 함수
+def compare_monthly_expenses():
+    year = int(input("이번달의 연도를 입력하세요 (예: 2024): "))
+    month = int(input("이번달의 월을 입력하세요 (예: 06): "))
+
+    last_month_expense = get_last_month_expense(year, month)
+    this_month_expense = get_this_month_expense(year, month)
+    difference = this_month_expense - last_month_expense
+
+    if last_month_expense == 0:
+        if this_month_expense == 0:
+            print("이번 달과 지난 달 모두 지출이 없습니다.")
+        else:
+            print(f"이번 달은 지난 달보다 {this_month_expense:.2f}원 더 지출하였습니다. (지난달 지출 0원)")
+    else:
+        if difference > 0:
+            print(f"이번 달은 지난 달보다 {difference:.2f}원 더 지출하였습니다.")
+        elif difference < 0:
+            print(f"이번 달은 지난 달보다 {-difference:.2f}원 덜 지출하였습니다.")
+        else:
+            print("이번 달과 지난 달의 지출이 동일합니다.")
 
 # 환율 계산을 실행하는 부분
 def calculate_exchange():
@@ -1619,6 +1651,8 @@ while not b_is_exit:
         find_id_by_phone()
     elif func == "10":
         change_pw_by_phone()
+    elif func == "11":
+        compare_monthly_expenses()  # 지난달과 이번달 지출 비교 함수 호출
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func == "종료":
