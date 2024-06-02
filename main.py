@@ -587,10 +587,45 @@ def get_valid_amount_input():
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+def choose_category():
+    """
+    사용자가 카테고리를 선택하도록 메뉴를 제공, 선택된 카테고리를 반환.
+    """
+    categories = {
+        1: "식비",
+        2: "주거비",
+        3: "교통비",
+        4: "의료비",
+        5: "교육비",
+        6: "통신비",
+        7: "의류비",
+        8: "여가 및 오락",
+        9: "생활용품",
+        10: "직접입력"
+    }
+
+    print("카테고리를 선택하세요:")
+    for key, value in categories.items():
+        print(f"{key}. {value}")
+    """
+    1~10번을 입력하여 카테고리를 선택
+    만약 10번을 선택 시, 직접 카테고리를 입력하도록 기능 설정
+    """
+    while True:
+        choice = input("번호를 입력하세요: ")
+        if choice.isdigit():
+            choice = int(choice)
+            if 1 <= choice <= 10:
+                if choice == 10:
+                    return input("카테고리를 입력하세요: ")
+                else:
+                    return categories[choice]
+        print("틀린 입력입니다! 1~10사이에 번호를 입력하세요.")
+
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
+    category = choose_category()  # 카테고리 선택 함수 호출
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
