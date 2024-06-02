@@ -287,3 +287,47 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+import csv
+
+# 가계부 데이터 저장 리스트
+expense_data = []
+
+# 가계부 데이터 입력 함수
+def add_expense(date, category, item, amount):
+    expense_data.append({
+        "date": date,
+        "category": category,
+        "item": item,
+        "amount": amount
+    })
+
+# 가계부 데이터 필터링 함수
+def filter_expenses(category=None, item=None):
+    filtered_data = expense_data
+    if category:
+        filtered_data = [expense for expense in filtered_data if expense["category"] == category]
+    if item:
+        filtered_data = [expense for expense in filtered_data if expense["item"] == item]
+    return filtered_data
+
+# 가계부 데이터 출력 함수
+def print_expenses(expenses):
+    print("날짜\t카테고리\t항목\t금액")
+    print("-" * 50)
+    for expense in expenses:
+        print(f"{expense['date']}\t{expense['category']}\t{expense['item']}\t{expense['amount']}")
+
+# 사용 예시
+add_expense("2023-05-01", "식비", "식당 식사", 30000)
+add_expense("2023-05-02", "교통비", "지하철 요금", 3000)
+add_expense("2023-05-03", "식비", "편의점 간식", 5000)
+add_expense("2023-05-04", "생활용품", "세제 구매", 10000)
+
+# 카테고리로 필터링
+filtered_expenses = filter_expenses(category="식비")
+print_expenses(filtered_expenses)
+
+# 항목으로 필터링
+filtered_expenses = filter_expenses(item="지하철 요금")
+print_expenses(filtered_expenses)
