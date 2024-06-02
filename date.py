@@ -29,6 +29,15 @@ class EventManager:
         else:
             print(f"기념일 '{name}'을(를) 찾을 수 없습니다. 잘못 입력하셨습니다.")
 
+    def edit_event(self, old_name, new_name, new_date):
+        for event in self.events:
+            if event['name'] == old_name:
+                event['name'] = new_name
+                event['date'] = new_date
+                print(f"기념일 '{old_name}'이(가) '{new_name}'으로 {new_date.strftime('%Y-%m-%d')}에 수정되었습니다.")
+                return
+        print(f"기념일 '{old_name}'을(를) 찾을 수 없습니다.")
+
 def main():
     manager = EventManager()
 
@@ -37,7 +46,8 @@ def main():
         print("1. 기념일 추가")
         print("2. 다가오는 기념일 보기")
         print("3. 기념일 삭제")
-        print("4. 종료")
+        print("4. 기념일 수정")
+        print("5. 종료")
         choice = input("원하는 작업을 선택하세요: ")
 
         if choice == '1':
@@ -60,6 +70,18 @@ def main():
         elif choice == '3':
             name = input("삭제할 기념일 이름을 입력하세요: ")
             manager.delete_event(name)
+        elif choice == '4':
+            old_name = input("수정할 기념일 이름을 입력하세요: ")
+            new_name = input("새 기념일 이름을 입력하세요: ")
+            date_str = input("새 기념일 날짜를 입력하세요 (YYYY-MM-DD): ")
+            try:
+                new_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                manager.edit_event(old_name, new_name, new_date)
+            except ValueError:
+                print("날짜 입력이 올바르지 않습니다. 다시 시도하세요.")
+
+        elif choice == '5':
+            break
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
 
