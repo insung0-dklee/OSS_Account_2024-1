@@ -1495,6 +1495,22 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
+user = "Kim"# 임의의 user 값 추가 - 이후 삭제
+
+def save_user_acc(user):
+    x = []
+    
+    for i in Account_list:
+        x.append(i.name)
+        x.append("/") #계좌를 쉽게 구분하기 위해 '/' 추가 - 이후 read_user_acc에서 사용 편하게 하기 위함
+        
+    user_acc_data = {f"{user}" : x} #key 값을 지정할 때 user_acc_data[user] = x - 사용 불가능함(리스트 객체)
+    
+    with open('user_accdata.txt', 'w', encoding='UTF-8') as fw:
+        fw.write(f'{user} : {user_acc_data[user]}\n')
+    
+save_user_acc(user)
 
 
 
