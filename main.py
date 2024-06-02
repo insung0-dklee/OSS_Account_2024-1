@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 주식/경제 뉴스
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1533,11 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        print("주식 시장 뉴스: https://kr.investing.com/news/stock-market-news")
+        print("증권 뉴스: https://www.hani.co.kr/arti/economy/stock")
+        print("매일 경제 뉴스: https://www.mk.co.kr/")
+        print("한국 경제 뉴스: https://www.hankyung.com/")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
