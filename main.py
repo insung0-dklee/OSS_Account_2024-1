@@ -36,10 +36,6 @@ def user_reg():  # 회원가입
         print("회원가입이 완료되었습니다!")
         break
 
-class User:    # 사용자 정보 저장 (이름)
-    def __init__(self, name):
-        self.name = name
-
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
 # 이름과 아이디를 매핑하기 위한 딕셔너리
@@ -1314,10 +1310,10 @@ def Login_interface(): #로그인 인터페이스
             login_info = [line.strip().split(":") for line in f.readlines()]
     except FileNotFoundError:
         print("로그인 정보 파일을 찾을 수 없습니다.")
-        return 0
+        return []
     except Exception as e:
         print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
-        return 0
+        return None
     
     cnt = 0
 
@@ -1333,7 +1329,7 @@ def Login_interface(): #로그인 인터페이스
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
-                break
+                return 0
         cnt += 1
 
     if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
