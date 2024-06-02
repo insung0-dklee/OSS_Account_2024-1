@@ -484,6 +484,34 @@ def filter_expenses_by_date(start_date, end_date):
         if start_date <= entry['date'] <= end_date:
             print(entry)
 
+
+def sort_entries_by_date():
+    """
+    지출 내역을 날짜순으로 정렬하여 출력하는 함수
+    """
+    if not ledger:
+        print("저장된 지출 내역이 없습니다.")
+        return
+
+    sorted_entries = sorted(ledger, key=lambda x: x['date'])
+    print("지출 내역 (날짜순):")
+    for entry in sorted_entries:
+        print(entry)
+
+def sort_entries_by_amount():
+    """
+    지출 내역을 금액순으로 정렬하여 출력하는 함수
+    """
+    if not ledger:
+        print("저장된 지출 내역이 없습니다.")
+        return
+
+    sorted_entries = sorted(ledger, key=lambda x: x['amount'])
+    print("지출 내역 (금액순):")
+    for entry in sorted_entries:
+        print(entry)
+
+
 def calculator():
     try:
         # 사용자가 계산할 수식을 입력받는다.
@@ -510,9 +538,12 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 지출 내역 날짜순 정렬
+    7: 지출 내역 금액순 정렬
     ?: 도움말 출력
     exit: 종료
     """)
+
 
 """
 가계부 데이터 및 사용자 데이터를 초기화하는 함수.
@@ -1294,9 +1325,10 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 
 
 # 메인 루프
+# 메인 루프
 while not b_is_exit:
     print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
+    print("user:", user.name)  # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1309,6 +1341,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        sort_entries_by_date()
+    elif func == "7":
+        sort_entries_by_amount()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x":
@@ -1318,5 +1354,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
