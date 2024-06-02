@@ -8,7 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
-import daily_budget
+import Automation
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -555,6 +555,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 자동화 규칙 추가
+    7: 자동화 규칙 실행
+    8: 자동화 규칙 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1533,10 +1536,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":  # 일일 예산 설정 기능 추가
-        daily_budget.set_daily_budget()
-    elif func == "7":  # 일일 예산 확인 기능 추가
-        daily_budget.check_daily_budget()
+    elif func == "6":
+        Automation.add_automation_rule()
+    elif func == "7":
+        Automation.execute_automation_rules(ledger)
+    elif func == "8":
+        Automation.view_automation_rules()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1548,4 +1553,3 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
-  
