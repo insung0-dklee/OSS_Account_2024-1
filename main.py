@@ -1620,7 +1620,7 @@ while user == 0:  # 유저 입력할 때까지 무한 루프 도는 인터페이
 while not b_is_exit:
     if user:
         print("-----------------------")
-        print("user:", user)  # 현재 user가 누구인지 출력
+        print("user:", user.name)  # 현재 user가 누구인지 출력
         func = input("기능 입력 (? 입력시 도움말) : ")
 
         if func == "1":
