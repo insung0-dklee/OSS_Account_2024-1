@@ -36,10 +36,6 @@ def user_reg():  # 회원가입
         print("회원가입이 완료되었습니다!")
         break
 
-class User:    # 사용자 정보 저장 (이름)
-    def __init__(self, name):
-        self.name = name
-
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
 # 이름과 아이디를 매핑하기 위한 딕셔너리
@@ -47,8 +43,17 @@ usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
+def is_valid_input(user_input):# 영문과 숫자 포함 8글자 이상 체크하는 함수
+    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', user_input):
+        return True
+    else:
+        return False
+
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
+    while not is_valid_input(id):
+        print("ID는 영문과 숫자를 포함하여 8글자 이상이어야 합니다.")
+        id = input("id 입력: ")
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
@@ -63,7 +68,16 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        if id == pw:
+            print("ID와 비밀번호는 같을 수 없습니다. 다시 입력해 주세요.")
+            continue
+        # 비밀번호 유효성 검사: 영문과 숫자와 특수문자를 포함하여 8글자 이상이어야 함.
+        if not (len(pw) >= 8 and re.search(r'[A-Za-z]', pw) and re.search(r'\d', pw) and re.search(r'[!@#$%^&*(),.?":{}|<>]', pw)):
+            print("비밀번호는 영문과 숫자, 특수문자를 포함하여 8글자 이상이어야 합니다.")
+            continue
+        break
 
     h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
     h.update(pw.encode())  # sha256으로 암호화
@@ -1296,10 +1310,10 @@ def Login_interface(): #로그인 인터페이스
             login_info = [line.strip().split(":") for line in f.readlines()]
     except FileNotFoundError:
         print("로그인 정보 파일을 찾을 수 없습니다.")
-        return 0
+        return []
     except Exception as e:
         print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
-        return 0
+        return None
     
     cnt = 0
 
@@ -1315,7 +1329,7 @@ def Login_interface(): #로그인 인터페이스
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
-                break
+                return 0
         cnt += 1
 
     if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
