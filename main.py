@@ -555,6 +555,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
+    추천: 사용자가 원하는 카테고리에 대해 추천
     exit: 종료
     """)
 
@@ -1514,7 +1515,20 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
-
+        
+    
+# 사용자가 원하는 관심사나 필요에 맞는 정보 제공
+def recomm():
+    num = int(input("1: 절약, 2: 저축, 3: 주식 | : "))
+    if num == 1:
+        print("카카오톡 오픈채팅방의 거지방 가입을 추천드려요")
+    elif num == 2:
+        print("저축 챌린지에 도전하는 것을 추천드려요")
+    elif num == 3:
+        print("주식투자 커뮤니티 가입을 추천드려요")
+    else:
+        print("잘못된 입력입니다.")
+        
 
 # 메인 루프
 while not b_is_exit:
@@ -1540,6 +1554,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == '추천':
+        recomm()
     else:
         
         print("올바른 기능을 입력해 주세요.")
