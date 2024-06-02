@@ -543,6 +543,61 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+# 여행 경비를 저장할 파일 이름
+travel_expenses_file = 'travel_expenses.json'
+
+# 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
+if not os.path.exists(travel_expenses_file):
+    with open(travel_expenses_file, 'w') as file:
+        json.dump([], file)
+
+def save_travel_expense(expense):
+    # 파일을 열어 기존 데이터를 불러옴
+    with open(travel_expenses_file, 'r') as file:
+        data = json.load(file)
+    # 새 여행 경비를 리스트에 추가
+    data.append(expense)
+    # 데이터를 파일에 저장
+    with open(travel_expenses_file, 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+# 저장된 여행 경비를 조회하는 함수
+def view_travel_expenses():
+    # 파일을 열어 데이터를 불러옴
+    with open(travel_expenses_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            # 데이터가 존재하면 각 여행 경비를 출력
+            for idx, expense in enumerate(data, start=1):
+                print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원")
+        else:
+            # 데이터가 비어 있으면 해당 메시지 출력
+            print("저장된 여행 경비가 없습니다.")
+
+# 여행 경비를 입력받는 함수
+def input_travel_expense():
+    # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
+    date = input("여행 날짜 (예: 2024-07-15): ")
+    item = input("지출 항목: ")
+    amount = input("지출 금액: ")
+    # 입력받은 데이터를 딕셔너리 형태로 저장
+    expense = {
+        'date': date,
+        'item': item,
+        'amount': amount
+    }
+    # 여행 경비를 파일에 저장
+    save_travel_expense(expense)
+    print("여행 경비가 저장되었습니다.")
+
+# 기능 6: 여행 경비 입력
+def input_travel_expenses():
+    input_travel_expense()
+
+# 기능 7: 여행 경비 조회
+def view_travel_expenses():
+    view_travel_expenses()
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +609,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 여행 경비 입력
+    7: 여행 경비 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1589,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        input_travel_expenses()
+    elif func == "7":
+        view_travel_expenses()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
