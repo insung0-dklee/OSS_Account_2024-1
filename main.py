@@ -1597,7 +1597,20 @@ def calculate_present_value(future_value, inflation_rate, years):
     present_value = future_value / ((1 + inflation_rate / 100) ** years)
     return present_value
 
-
+def check_progress_with_inflation(goal, inflation_rate):
+    """
+    인플레이션율을 고려한 목표 진행 상황 확인 함수
+    :param goal: FinancialGoal 객체
+    :param inflation_rate: 연평균 인플레이션율 (백분율)
+    """
+    years_left = (goal.due_date - datetime.now()).days / 365
+    present_value_target = calculate_present_value(goal.target_amount, inflation_rate, years_left)
+    remaining_amount = present_value_target - goal.saved_amount
+    days_left = (goal.due_date - datetime.now()).days
+    if remaining_amount <= 0:
+        print(f"축하합니다! '{goal.name}' 목표를 달성했습니다! \n 목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n")
+    else:
+        print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
