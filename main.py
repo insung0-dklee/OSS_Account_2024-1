@@ -1212,6 +1212,18 @@ def Login_interface(): #로그인 인터페이스
     PW = input("PW: ")
 
     h = hashlib.sha256()
+
+# 파일 읽기 관련 예외 처리
+    try:
+        with open("login.txt", "r", encoding="UTF-8") as f:
+            login_info = [line.strip().split(":") for line in f.readlines()]
+    except FileNotFoundError:
+        print("로그인 정보 파일을 찾을 수 없습니다.")
+        return 0
+    except Exception as e:
+        print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
+        return 0
+    
     cnt = 0
 
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
