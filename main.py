@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import ASCII_art
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -381,6 +382,17 @@ def add_memo():
     if not str_title.endswith(".txt"):
         str_title += ".txt"
     new_f = open(str_title,"w",encoding="utf8")
+    
+    
+    ASCII_num = int(input("아스키아트 번호( 0~8 / 그 외: 아스키아트 출력X"))
+    if (ASCII_num >= 0 and ASCII_num <= 8):
+        # 하나의 아스키아트 선택
+        selected_art = ASCII_art.ascii_art_list[ASCII_num]
+    
+        # 선택된 아스키아트 출력
+        new_f.write(selected_art)
+    
+
     print("내용 입력: ")
     str_memo = input()
     new_f.write(str_memo)

@@ -66,5 +66,6 @@ class Account_book: # 가계부 클래스
     print("당신의 신용점수를 입력하세요:", end = " ")
     self.credit_score = int(input())
     
+  # 신용점수를 리턴
   def get_credit_score(self):
     return self.credit_score
