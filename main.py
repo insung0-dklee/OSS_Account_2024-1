@@ -50,6 +50,7 @@ usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
+
 # 전화번호가 000-0000-0000 형식인지 확인하는 함수
 def is_valid_phone(phone):
     pattern = re.compile(r'^\d{3}-\d{4}-\d{4}$')
@@ -59,11 +60,10 @@ def is_valid_phone(phone):
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     while True:
         id = input("id 입력: ")  # 회원가입 시의 id 입력
-        if id in userdata2: # 아이디 검증
+        if id in userdata2:  # 아이디 검증
             print("이미 존재하는 id입니다. 다른 id를 입력해주세요.")
         else:
             break
-
 
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
@@ -697,9 +697,8 @@ def show_favorites():
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
-        print(entry)
-        if "score" in entry:
-            print(f"평가 점수: {entry['score']}")
+        print(f"날짜 : {entry['date']}\n카테고리 : {entry['category']}\n설명 : {entry['description']}\n금액 : ${entry['amount']:.2f}\n평가 점수 : {entry['score']}\n")
+        print("=" * 20)
 
 
 def day_evaluation():
@@ -827,7 +826,7 @@ def generate_monthly_report():
             if category not in category_totals:
                 category_totals[category] = 0
             category_totals[category] += entry["amount"]
-            print(entry)
+            print(f"날짜 : {entry['date']}\n카테고리 : {entry['category']}\n설명 : {entry['description']}\n금액 : ${entry['amount']:.2f}\n평가 점수 : {entry['score']}\n")
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
     print(f"{month}월 총 지출: {monthly_total} 원")
