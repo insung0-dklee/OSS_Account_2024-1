@@ -22,7 +22,23 @@ class ACC_BOOK:
 
     # 1. 내역 추가 기능
     def add_statement(self):
-        pass
+        print("작성 형식: 2024-06-02-1\n(마지막 숫자는 같은 날짜의 내역서를 구분하기 위한 번호)") 
+        date = input("날짜: ")
+        self.date.append(date)
+
+        print("\n작성 형식: 월 또는 월요일")
+        day_of_week = input("요일: ")
+        self.day_of_week.append(day_of_week)
+
+        print("\n작성 형식: 10000")
+        expense = int(input("금액: "))
+        self.expense.append(expense)
+
+        print("\n작성 형식: 식비, 카페, 쇼핑, 이체, 교통 등")
+        category = input("카테고리: ")
+        self.category.append(category)
+
+        print("\n가계부에 내역서가 추가되었습니다.\n")
 
     # 2. 내역 수정 기능
     def edit_statement(self):
@@ -64,7 +80,8 @@ def income_spending(type, statement):
         if sel_num == 0:
             break
         elif sel_num == 1:
-            pass
+            print(f"======= {type} 내역 추가 =======")
+            statement.add_statement()
         elif sel_num == 2:
             pass
         elif sel_num == 3:
