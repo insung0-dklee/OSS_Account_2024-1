@@ -1199,11 +1199,11 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(func):#가계부 선택 함수
+def choose_Account(accounts):#가계부 선택 함수
     print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
+    for i in range(0,len(accounts)):#가계부 리스트 출력
+      print(f"{accounts[i].name}번")
+    choose = int(input())
     return choose
 
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
