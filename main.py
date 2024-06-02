@@ -546,6 +546,115 @@ def calculator():
 # 가계부 데이터 저장 변수
 ledger = []
 
+ledger = [
+    {
+        "date": "2024-01-15",
+        "category": "식비",
+        "description": "점심 식사",
+        "amount": 12000,
+        "score": 8.0
+    },
+    {
+        "date": "2024-01-16",
+        "category": "교통비",
+        "description": "지하철 요금",
+        "amount": 1500,
+        "score": 9.0
+    },
+    {
+        "date": "2024-01-17",
+        "category": "쇼핑",
+        "description": "의류 구매",
+        "amount": 45000,
+        "score": 7.5
+    },
+    {
+        "date": "2024-01-18",
+        "category": "식비",
+        "description": "저녁 식사",
+        "amount": 20000,
+        "score": 8.5
+    },
+    {
+        "date": "2024-01-19",
+        "category": "기타",
+        "description": "영화 관람",
+        "amount": 10000,
+        "score": 8.0
+    },
+    {
+        "date": "2024-02-01",
+        "category": "식비",
+        "description": "커피",
+        "amount": 5000,
+        "score": 9.5
+    },
+    {
+        "date": "2024-02-02",
+        "category": "교통비",
+        "description": "버스 요금",
+        "amount": 1300,
+        "score": 8.0
+    },
+    {
+        "date": "2024-02-03",
+        "category": "쇼핑",
+        "description": "책 구매",
+        "amount": 30000,
+        "score": 8.5
+    },
+    {
+        "date": "2024-02-04",
+        "category": "식비",
+        "description": "아침 식사",
+        "amount": 8000,
+        "score": 8.0
+    },
+    {
+        "date": "2024-02-05",
+        "category": "기타",
+        "description": "친구와의 만남",
+        "amount": 25000,
+        "score": 9.0
+    },
+    {
+        "date": "2024-03-10",
+        "category": "식비",
+        "description": "점심 식사",
+        "amount": 15000,
+        "score": 8.0
+    },
+    {
+        "date": "2024-03-11",
+        "category": "교통비",
+        "description": "지하철 요금",
+        "amount": 1600,
+        "score": 9.0
+    },
+    {
+        "date": "2024-03-12",
+        "category": "쇼핑",
+        "description": "신발 구매",
+        "amount": 60000,
+        "score": 7.5
+    },
+    {
+        "date": "2024-03-13",
+        "category": "식비",
+        "description": "저녁 식사",
+        "amount": 22000,
+        "score": 8.5
+    },
+    {
+        "date": "2024-03-14",
+        "category": "기타",
+        "description": "공연 관람",
+        "amount": 20000,
+        "score": 8.0
+    }
+]
+
+
 # 도움말 출력 함수
 def print_help():
     print("""
@@ -554,6 +663,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 키워드로 가계부 내역 검색
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1487,6 +1597,18 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 
+def search_entries():
+    keyword = input("검색할 키워드: ")
+    found_entries = [entry for entry in ledger if keyword in entry['description'] or keyword in entry['category']]
+    if found_entries:
+        print("검색 결과:")
+        for entry in found_entries:
+            print(entry)
+    else:
+        print("검색 결과가 없습니다.")
+
+
+
 
 
 
@@ -1532,6 +1654,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        search_entries()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
