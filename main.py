@@ -39,6 +39,22 @@ def user_reg():  # 회원가입
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
+        self.friends = []  # 친구 목록
+
+    def add_friend(self, friend_name):
+        if friend_name not in self.friends:
+            self.friends.append(friend_name)
+
+class Friend:
+    def __init__(self, name):
+        self.name = name
+        self.expenses = []
+
+    def add_expense(self, amount, description):
+        self.expenses.append({"amount": amount, "description": description})
+
+    def total_expense(self):
+        return sum(expense["amount"] for expense in self.expenses)
 
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
@@ -46,6 +62,10 @@ userdata2 = {}
 usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
+# 친구 목록 저장
+friends = {} 
+# 사용자 지출 내역 저장
+expenses = {}  
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
@@ -69,14 +89,69 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     h.update(pw.encode())  # sha256으로 암호화
     pw_data = h.hexdigest()  # 16진수로 변환
 
+    user = User(name)  # User 객체 생성
+
+     # 친구 추가
+    while True:
+        add_friend = input("친구를 추가하시겠습니까? (y/n): ")
+        if add_friend.lower() == 'y':
+            friend_name = input("친구 이름을 입력하세요: ")
+            user.add_friend(friend_name)
+            friends[friend_name] = Friend(friend_name)
+        elif add_friend.lower() == 'n':
+            break
+        else:
+            print("잘못된 입력입니다. 다시 입력해주세요.")
+
     userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
     usernames[name] = id  # 이름과 아이디 매핑
     userphones[phone] = id  # 전화번호와 아이디 매핑
 
     with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+            friends_str = ", ".join(user_info["friends"])
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
 
+def submit_expense(user_name):
+    """
+    사용자로부터 지출 금액, 지출 설명을 입력받아 저장.
+    """
+    if user_name not in expenses:
+        expenses[user_name] = []
+
+    amount = float(input("지출 금액을 입력하세요: "))
+    description = input("지출 설명을 입력하세요: ")
+    expenses[user_name].append({"amount": amount, "description": description})
+    print(f"{user_name}님의 지출이 추가되었습니다.")
+
+def compare_expenses():
+    """
+    사용자와 친구의 지출 내역을 비교하는 함수.
+    """
+    if not friends:
+        print("친구 목록이 없습니다. 먼저 친구를 추가하세요.")
+        return
+
+    for friend_name, friend in friends.items():
+        print(f"\n{friend_name}의 지출 내역:")
+        total_friend_expense = sum(expense["amount"] for expense in friend.expenses)
+        print(f"총 지출: {total_friend_expense}원")
+        for expense in friend.expenses:
+            print(f" - {expense['description']}: {expense['amount']}원")
+
+    for user_name, user_expenses in expenses.items():
+        print(f"\n{user_name}님의 지출 내역:")
+        total_user_expense = sum(expense["amount"] for expense in user_expenses)
+        print(f"총 지출: {total_user_expense}원")
+        for expense in user_expenses:
+            print(f" - {expense['description']}: {expense['amount']}원")
+
+    if friends and expenses:
+        max_expense_friend = max(friends.values(), key=lambda x: sum(e["amount"] for e in x.expenses))
+        max_expense_user = max(expenses.items(), key=lambda x: sum(e["amount"] for e in x[1]))
+
+        print(f"\n가장 많이 지출한 친구: {max_expense_friend.name} ({sum(e['amount'] for e in max_expense_friend.expenses)}원)")
+        print(f"가장 많이 지출한 사용자: {max_expense_user[0]} ({sum(e['amount'] for e in max_expense_user[1])}원)")
 
 """
 전화번호를 통해 아이디를 찾는 함수
