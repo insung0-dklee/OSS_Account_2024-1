@@ -1278,9 +1278,9 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
     interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
 
     if interface == "1":
-        user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
-    elif interface == "2":
         user_reg_include_name_phone() #회원가입 함수 - 이미 존재
+    elif interface == "2":
+        user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
     elif interface == "3":
         find_id_by_phone() #id 찾기 - 이미 존재
     elif interface == "4": 
