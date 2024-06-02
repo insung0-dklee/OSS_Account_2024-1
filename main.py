@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import calender
+
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1486,6 +1488,32 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+
+def notify_total_expenses_on_last_day():
+    # 오늘의 날짜를 가져옴
+    today = datetime.today()
+    # 현재 연도와 월을 가져옴
+    year = today.year
+    month = today.month
+    # 현재 연도와 월의 마지막 날을 계산
+    last_day = calendar.monthrange(year, month)[1]
+
+    # 오늘의 날짜가 해당 월의 마지막 날과 같은지 확인
+    if today.day == last_day:
+        # 지출 내역 파일을 열고 데이터를 불러옴
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            if data:
+                # 파일에 데이터가 있는 경우, 모든 지출 내역의 금액을 합산
+                total_expenses = sum(expense['amount'] for expense in data)
+                # 총 지출 금액을 출력
+                print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 이번 달 총 지출 금액은 {total_expenses}원입니다.")
+            else:
+                # 파일에 데이터가 없는 경우, 해당 메시지 출력
+                print("저장된 지출 내역이 없습니다.")
+    else:
+        # 오늘이 마지막 날이 아닌 경우, 해당 메시지 출력
+        print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 오늘은 총 지출 금액을 알리는 날이 아닙니다.")
 
 
 
