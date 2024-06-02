@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import pandas
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -634,10 +635,11 @@ def show_favorites():
 
 # 항목 조회 함수
 def view_entries():
-    for entry in ledger:
-        print(entry)
-        if "score" in entry:
-            print(f"평가 점수: {entry['score']}")
+    if not ledger:
+        print("조회할 항목이 없습니다.")
+    else:
+        df = pandas.DataFrame(ledger)
+        print(df.set_index('date'))
 
 
 def day_evaluation():
