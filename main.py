@@ -810,3 +810,90 @@ account_book.withdraw(500, category=account_book.categorize_expense(500, "영화
 # 잔액 및 거래 내역 출력
 account_book.show_balance()
 account_book.show_transactions()
+
+# 지출예산 설정 및 알림 기능
+class AccountBook:
+    def __init__(self):
+        self.balance = 0
+        self.transactions = []
+        self.budgets = {}
+        self.spending = {}
+
+    def deposit(self, amount):
+        self.balance += amount
+        self.transactions.append(("Deposit", amount))
+
+    def withdraw(self, amount, description=""):
+        category = self.categorize_expense(description)
+        if amount > self.balance:
+            print(f"Insufficient funds. Available balance: {self.balance}원")
+        else:
+            self.balance -= amount
+            self.transactions.append(("Withdrawal", amount, category, description))
+            self.spending[category] = self.spending.get(category, 0) + amount
+            self.check_budget(category)
+
+    def set_budget(self, category, amount):
+        self.budgets[category] = amount
+        print(f"Budget for {category} set to {amount}원")
+
+    def check_budget(self, category):
+        if category in self.budgets and self.spending.get(category, 0) > self.budgets[category]:
+            print(f"Alert: You have exceeded the budget for {category}! (Budget: {self.budgets[category]}원, Spending: {self.spending[category]}원)")
+
+    def categorize_expense(self, description):
+        keywords = {
+            "food": ["식비", "음식", "식료품", "식사"],
+            "transportation": ["교통", "버스", "지하철", "택시"],
+            "entertainment": ["문화", "영화", "공연", "놀이"],
+            "shopping": ["쇼핑", "상점", "마트", "구매"],
+            "utilities": ["요금", "공과금", "전기", "수도"]
+        }
+        category = "uncategorized"
+        for key, values in keywords.items():
+            for value in values:
+                if value in description:
+                    category = key
+                    break
+            if category != "uncategorized":
+                break
+        return category
+
+    def show_balance(self):
+        print(f"Current balance: {self.balance}원")
+
+    def show_transactions(self):
+        print("Transaction history:")
+        for transaction in self.transactions:
+            if transaction[0] == "Deposit":
+                print(f"{transaction[0]}: +{transaction[1]}원")
+            else:
+                print(f"{transaction[0]}: -{transaction[1]}원, Category: {transaction[2]}, Description: {transaction[3]}")
+
+    def show_budgets(self):
+        print("Budgets:")
+        for category, amount in self.budgets.items():
+            print(f"{category}: {amount}원")
+
+    def show_spending(self):
+        print("Spending:")
+        for category, amount in self.spending.items():
+            print(f"{category}: {amount}원")
+
+# 가계부 인스턴스 생성
+account_book = AccountBook()
+
+# 입출금 기록 및 예산 설정
+account_book.deposit(5000)
+account_book.set_budget("food", 1000)
+account_book.set_budget("entertainment", 500)
+
+account_book.withdraw(300, "편의점에서 음료 구매")
+account_book.withdraw(800, "식사 비용")
+account_book.withdraw(600, "영화 관람")
+
+# 잔액, 거래 내역, 예산 및 지출 내역 출력
+account_book.show_balance()
+account_book.show_transactions()
+account_book.show_budgets()
+account_book.show_spending()
