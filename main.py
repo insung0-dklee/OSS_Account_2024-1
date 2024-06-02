@@ -593,6 +593,15 @@ def view_entries():
         print(entry)
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
+    #입력한 항목이 없는 경우, 입력한 항목이 없음을 알려줌
+    if not ledger:
+        print("입력한 항목이 없습니다.")
+        #항목을 추가할 것인지 물어보는 기능 추가
+        add = input("추가하시겠습니까?(y or n) : ")
+        if add == 'y' : #항목을 추가하기를 원하는 경우 추가하는 기능 연결해줌
+            add_entry()
+        elif add == 'n' :
+            return
 
 
 def day_evaluation():
