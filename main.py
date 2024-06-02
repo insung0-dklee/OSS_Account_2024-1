@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import calendar
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -924,6 +925,20 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 사용자로부터 년도와 월을 입력받아 해당하는 달력을 출력하는 함수입니다.
+# 사용자로부터 년도를 입력받습니다.
+# 사용자로부터 월을 입력받습니다.
+# 입력된 년도와 월에 해당하는 달력을 calendar.month() 함수를 사용하여 생성합니다.
+# 생성된 달력은 변수 cal에 저장되고, 이를 출력합니다.
+
+# 달력을 출력하는 함수
+def show_calendar():
+    year = int(input("년도를 입력하세요: "))
+    month = int(input("월을 입력하세요: "))
+    cal = calendar.month(year, month)
+    print(cal)
+
+
 monthly_goals = {}
 
 def set_monthly_goal(month, amount):
@@ -1532,6 +1547,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        show_calendar()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
