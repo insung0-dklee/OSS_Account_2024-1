@@ -557,6 +557,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 달력 보기
+    7: 특정 기간 지출 합계 구하기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -956,6 +957,23 @@ def show_expense_details(expenses_by_date):
                 print("해당 날짜에 지출 내역이 없습니다.")
         except ValueError:
             print("올바른 날짜를 입력하세요.")
+
+
+def sum_expenses_in_period(start_date, end_date):
+    expenses = load_expenses()
+    total_sum = 0
+    for expense in expenses:
+        expense_date = datetime.strptime(expense['date'], '%Y-%m-%d')
+        if start_date <= expense_date <= end_date:
+            total_sum += float(expense['amount'])
+    return total_sum
+
+def display_sum_expenses_in_period():
+    print("지출 내역 합계를 구할 기간을 입력하세요.")
+    start_date = input_date("시작 날짜 (YYYY-MM-DD): ")
+    end_date = input_date("종료 날짜 (YYYY-MM-DD): ")
+    total_sum = sum_expenses_in_period(start_date, end_date)
+    print(f"{start_date.strftime('%Y-%m-%d')}부터 {end_date.strftime('%Y-%m-%d')}까지의 지출 합계: {total_sum:.2f}원")
 
 # 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
 if not os.path.exists(expenses_file):
@@ -1617,7 +1635,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
+    print("user:", user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1632,9 +1650,11 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         show_calendar()
+    elif func == "7":  # 추가된 기능 호출
+        display_sum_expenses_in_period()
     elif func == "?":
         print_help()
-    elif func == "exit" or func == "x" or func =="종료":
+    elif func == "exit" or func == "x" or func == "종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
     elif func == "memo":
