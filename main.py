@@ -37,7 +37,8 @@ def user_reg():  # 회원가입
         break
 
 class User:    # 사용자 정보 저장 (이름, 포인트, 레벨, 경험치)
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id=id
         self.name = name
         self.points = 0
         self.level = 1
@@ -867,13 +868,14 @@ def view_expenses():
             print("저장된 지출 내역이 없습니다.")
 
 # 지출 내역을 입력받는 함수
-def input_expense():
+def input_expense(user_id):
     # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
     date = input("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
     # 입력받은 데이터를 딕셔너리 형태로 저장
     expense = {
+        'id': user_id,
         'date': date,
         'item': item,
         'amount': amount
@@ -1069,11 +1071,12 @@ def analyze_and_advise(user):
     """
     지출 내역을 분석하여 지출을 줄일 수 있는 조언을 제공하는 함수
     """
-    expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
-    if not expenses: # 저장된 지출이 없음
+    all_expenses = load_expenses()  # 지출 내역을 expenses.json에서 불러옴
+    if not all_expenses: # 저장된 지출이 없음
         print("지출 없음")
         return
-
+    expenses = [expense for expense in all_expenses if expense["id"] == user.id]  # 현재 사용자의 지출 내역만 추출
+    
     category_totals = {}  # 카테고리 별로 지출 총액을 저장할 딕셔너리
     for expense in expenses:
         category = expense["item"]  # 지출 항목
@@ -1251,7 +1254,7 @@ def Login_interface(): #로그인 인터페이스
 
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
                 print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
-                return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+                return User(login_info[i][0], login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
                 break
@@ -1329,6 +1332,7 @@ while not b_is_exit:
 
     if func == "1":
         add_entry()
+        # input_expense(user.id)
     elif func == "2":
         view_entries()
     elif func == "3":
