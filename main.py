@@ -385,6 +385,26 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+
+
+"""
+
+공동 계정 정보 관리를 위한 JointAccount 클래스
+__init__(self, accout_name) : account_name을 공동 계정 이름으로 초기화 및 계정 잔액 0으로 초기화
+add_joint_user(self, joint_user) : 공동 계정에 사용자 추가하는 함수
++ joint_users 리스트에 사용자 추가
+add_joint_income(self, amount, joint_desc="") : 수입에 관한 거래를 계정에 추가하는 함수
++ 거래 내역 리스트(joint_tran)에 수입 타입, 수입 금액, 설명(메모)이 있는 딕셔너리 추가
++ 잔액에 수입 금액을 더함
+add_joint_expense(self, amount, joint_desc="") : 지출에 관한 거래를 계정에 추가하는 함수
++ 거래 내역 리스트(joint_tran)에 지출 타입, 지출 금액, 설명(메모)이 있는 딕셔너리 추가
++ 계정의 잔액에서 지출 금액을 뺌
+get_joint_bal(self) : 현재의 잔액을 반환하는 함수
+get_joint_tran(self) : 지금까지의 거래 내역 반환하는 함수
+
+"""
+
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
