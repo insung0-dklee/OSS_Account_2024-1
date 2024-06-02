@@ -182,30 +182,56 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-# 소득세 계산 함수
+# 근로소득세 계산 함수
 def calculate_income_tax():
     income = float(input("총 소득을 입력하세요 (원): "))
-    tax = 0
-
-    if income <= 14000000:
-        tax = income * 0.06
-    elif income <= 50000000:
-        tax = 14000000 * 0.06 + (income - 14000000) * 0.15
-    elif income <= 88000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + (income - 50000000) * 0.24
-    elif income <= 150000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + (income - 88000000) * 0.35
-    elif income <= 300000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + (income - 150000000) * 0.38
-    elif income <= 500000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 300000000) * 0.40
-    elif income <= 1000000000:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (income - 500000000) * 0.42
+    
+    # 근로소득공제 계산
+    if income <= 500000:
+        deduction = income * 0.7
+    elif income <= 15000000:
+        deduction = 350000 + (income - 500000) * 0.4
+    elif income <= 45000000:
+        deduction = 5150000 + (income - 15000000) * 0.15
+    elif income <= 100000000:
+        deduction = 9150000 + (income - 45000000) * 0.05
     else:
-        tax = 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (income - 1000000000) * 0.45
+        deduction = 9150000 + (income - 45000000) * 0.05
+        deduction += (income - 100000000) * 0.02
+        if deduction > 20000000:
+            deduction = 20000000
+
+    taxable_income = income - deduction
+
+    # 기본 세율에 따른 세금 계산
+    tax = 0
+    if taxable_income <= 12000000:
+        tax = taxable_income * 0.06
+    elif taxable_income <= 46000000:
+        tax = 12000000 * 0.06 + (taxable_income - 12000000) * 0.15
+    elif taxable_income <= 88000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + (taxable_income - 46000000) * 0.24
+    elif taxable_income <= 150000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + (taxable_income - 88000000) * 0.35
+    elif taxable_income <= 300000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + (taxable_income - 150000000) * 0.38
+    elif taxable_income <= 500000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (taxable_income - 300000000) * 0.40
+    elif taxable_income <= 1000000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (taxable_income - 500000000) * 0.42
+    else:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (taxable_income - 1000000000) * 0.45
+
+    # 표준 세액 공제
+    tax_credit = min(tax * 0.07, 740000)
+
+    tax -= tax_credit
 
     print(f"총 소득: {income} 원")
-    print(f"예상 소득세: {tax} 원")
+    print(f"근로소득공제: {deduction} 원")
+    print(f"과세 표준: {taxable_income} 원")
+    print(f"세금 공제 전: {tax + tax_credit} 원")
+    print(f"세금 공제 후: {tax} 원")
 
 # 부가가치세 계산 함수
 def calculate_vat():
@@ -245,7 +271,7 @@ def calculate_insurance():
 # 세금 및 보험 계산 메뉴 함수
 def tax_and_insurance_menu():
     print("세금 및 보험 계산 항목을 선택하세요: ")
-    print("1: 소득세 계산")
+    print("1: 근로소득세 계산")
     print("2: 부가가치세 계산")
     print("3: 4대 보험 계산")
     choice = input("선택: ")
