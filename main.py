@@ -1,96 +1,77 @@
 import json
 import os
-from datetime import datetime, timedelta
 
-# 저축 파일 초기화
-savings_file = 'savings.json'
-if not os.path.exists(savings_file):
-    with open(savings_file, 'w') as file:
-        json.dump({"total_savings": 0, "last_saved_date": str(datetime.now().date())}, file)
+# 구독 파일 초기화
+subscriptions_file = 'subscriptions.json'
+if not os.path.exists(subscriptions_file):
+    with open(subscriptions_file, 'w') as file:
+        json.dump([], file)
 
-# 저축 설정 저장 함수
-def save_savings_settings(amount, frequency):
-    settings = {
-        "amount": amount,
-        "frequency": frequency
+# 구독 정보 저장 함수
+def save_subscription(subscription):
+    with open(subscriptions_file, 'r') as file:
+        data = json.load(file)
+    data.append(subscription)
+    with open(subscriptions_file, 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+    print("구독 내역이 저장되었습니다.")
+
+# 구독 정보 입력 함수
+def input_subscription():
+    name = input("구독 서비스 이름 (예: 유튜브 프리미엄, 넷플릭스): ")
+    amount = float(input(f"{name} 구독 금액 (원): "))
+    next_payment_date = input(f"{name} 다음 결제일 (예: 2024-06-30): ")
+    subscription = {
+        'name': name,
+        'amount': amount,
+        'next_payment_date': next_payment_date
     }
-    with open('savings_settings.json', 'w') as file:
-        json.dump(settings, file, ensure_ascii=False, indent=4)
+    save_subscription(subscription)
 
-# 저축 설정 로드 함수
-def load_savings_settings():
-    if not os.path.exists('savings_settings.json'):
-        return None
-    with open('savings_settings.json', 'r') as file:
-        settings = json.load(file)
-    return settings
+# 구독 정보 보기 함수
+def view_subscriptions():
+    with open(subscriptions_file, 'r') as file:
+        data = json.load(file)
+        if data:
+            for idx, subscription in enumerate(data, start=1):
+                print(f"{idx}. {subscription['name']} - {subscription['amount']}원, 다음 결제일: {subscription['next_payment_date']}")
+        else:
+            print("저장된 구독 내역이 없습니다.")
 
-# 자동 저축 실행 함수
-def auto_save():
-    with open(savings_file, 'r') as file:
-        savings_data = json.load(file)
-
-    settings = load_savings_settings()
-    if not settings:
-        print("저축 설정이 없습니다. 먼저 설정을 해주세요.")
-        return
-
-    last_saved_date = datetime.strptime(savings_data["last_saved_date"], "%Y-%m-%d").date()
-    today = datetime.now().date()
-
-    if settings["frequency"] == "daily":
-        delta = timedelta(days=1)
-    elif settings["frequency"] == "weekly":
-        delta = timedelta(weeks=1)
-    elif settings["frequency"] == "monthly":
-        delta = timedelta(days=30)
+# 구독 정보 삭제 함수
+def delete_subscription():
+    with open(subscriptions_file, 'r') as file:
+        data = json.load(file)
+    view_subscriptions()
+    index = int(input("삭제할 구독 항목의 번호를 입력하세요: "))
+    if 1 <= index <= len(data):
+        deleted_subscription = data.pop(index - 1)
+        with open(subscriptions_file, 'w') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+        print(f"다음 구독이 삭제되었습니다: {deleted_subscription}")
     else:
-        print("잘못된 주기 설정입니다.")
-        return
-
-    while last_saved_date + delta <= today:
-        last_saved_date += delta
-        savings_data["total_savings"] += settings["amount"]
-
-    savings_data["last_saved_date"] = str(last_saved_date)
-    with open(savings_file, 'w') as file:
-        json.dump(savings_data, file, ensure_ascii=False, indent=4)
-
-    print(f"현재 총 저축 금액: {savings_data['total_savings']} 원")
-
-# 저축 설정 함수
-def set_savings():
-    amount = float(input("저축할 금액 (원): "))
-    frequency = input("저축 주기 (daily, weekly, monthly): ")
-    save_savings_settings(amount, frequency)
-    print("저축 설정이 완료되었습니다.")
+        print("잘못된 번호입니다. 다시 시도하세요.")
 
 # 도움말 출력 함수
 def print_help():
     print("""
-    1: 저축 설정
-    2: 자동 저축 실행
-    3: 현재 저축한 금액 조회
+    1: 구독 항목 추가
+    2: 구독 항목 조회
+    3: 구독 항목 삭제
     ?: 도움말 출력
     exit: 종료
     """)
-
-# 현재 저축 금액 조회 함수
-def view_savings():
-    with open(savings_file, 'r') as file:
-        savings_data = json.load(file)
-    print(f"현재 총 저축 금액: {savings_data['total_savings']} 원")
 
 # 메인 코드
 while True:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        set_savings()
+        input_subscription()
     elif func == "2":
-        auto_save()
+        view_subscriptions()
     elif func == "3":
-        view_savings()
+        delete_subscription()
     elif func == "?":
         print_help()
     elif func == "exit":
