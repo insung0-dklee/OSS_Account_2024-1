@@ -1,13 +1,16 @@
-import hashlib #hashlib 사용
+import hashlib
 import os
 import json
 from datetime import datetime, date
 import pickle
-import Account_book
 import random
 import webbrowser
 import re
 import Add_function
+import Account_book  # 이 부분을 추가하여 Account_book 모듈을 임포트합니다.
+import time  # 새로운 모듈 임포트
+from Add_function import set_daily_limit, check_daily_limit, analyze_expenses_in_period, predict_future_expenses, add_fixed_expense, view_fixed_expenses, apply_fixed_expenses
+from datetime import datetime, timedelta  # 날짜와 시간 관련 기능을 제공하는 datetime 모듈을 임포트
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -141,6 +144,17 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
+# 사용자 마지막 활동 시간 저장 변수
+last_activity_time = time.time()
+timeout_duration = 30  # 자동 로그아웃까지의 시간 (초)
+
+def update_last_activity_time():
+    """
+    사용자의 마지막 활동 시간을 현재 시간으로 갱신하는 함수.
+    """
+    global last_activity_time
+    last_activity_time = time.time()
 
 class Debt:
     def __init__(self, lender, amount, due_date):
@@ -554,6 +568,12 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 고정 지출 항목 추가
+    7: 고정 지출 항목 조회
+    8: 고정 지출 항목 적용
+    9: 아이디 찾기
+    10: 비밀번호 찾기
+    11: 지난달과 이번달 지출 비교
     ?: 도움말 출력
     exit: 종료
     """)
@@ -716,7 +736,7 @@ def average():
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
-    
+
     @Param
         user1 : User object : 비교할 첫 번째 사용자 객체.
         user2 : User object : 비교할 두 번째 사용자 객체.
@@ -770,7 +790,7 @@ def generate_monthly_report():
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
@@ -813,7 +833,7 @@ def analyze_categories():
 def calculate_monthly_savings(target_amount, target_date):
     """
     목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
-    
+
     @Param
         target_amount : 목표 금액.
         target_date : 목표 날짜 (YYYY-MM-DD 형식).
@@ -837,7 +857,7 @@ def calculate_monthly_savings(target_amount, target_date):
 def track_savings(savings, target_amount, months_left):
     """
     현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
-    
+
     @Param
         savings : 현재까지 저축된 금액.
         target_amount : 목표 금액.
@@ -1041,25 +1061,55 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-# 엔화와 달러의 환율 정보를 정적으로 저장합니다.
-exchange_rate = {
-    "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
-    "JPY": 0.1      # 1엔화 = 10원 (가상의 환율)
-}
+# 특정 날짜 범위 내의 지출 합계를 계산하는 함수
+def get_expenses_in_date_range(start_date, end_date):
+    total_expense = 0
+    for entry in ledger:
+        entry_date = datetime.strptime(entry['date'], "%Y-%m-%d")
+        if start_date <= entry_date <= end_date:
+            total_expense += entry['amount']
+    return total_expense
 
-def convert_currency(amount, currency):
-    """
-    입력된 금액을 선택한 통화로 환전하는 함수
-    :param amount: 원화로 입력된 금액
-    :param currency: 환전할 통화 (USD 또는 JPY)
-    :return: 환전된 금액
-    """
-    if currency in exchange_rate:
-        # 선택한 통화의 환율로 원화를 환전합니다.
-        converted_amount = amount * exchange_rate[currency]
-        return converted_amount
+# 지난달의 지출 합계를 계산하는 함수
+def get_last_month_expense(year, month):
+    if month == 1:
+        last_month = 12
+        last_month_year = year - 1
     else:
-        return None
+        last_month = month - 1
+        last_month_year = year
+
+    first_day_of_last_month = datetime(last_month_year, last_month, 1)
+    last_day_of_last_month = (first_day_of_last_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    return get_expenses_in_date_range(first_day_of_last_month, last_day_of_last_month)
+
+# 이번 달의 지출 합계를 계산하는 함수
+def get_this_month_expense(year, month):
+    first_day_of_this_month = datetime(year, month, 1)
+    last_day_of_this_month = (first_day_of_this_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    return get_expenses_in_date_range(first_day_of_this_month, last_day_of_this_month)
+
+# 지난달과 이번달 지출을 비교하는 함수
+def compare_monthly_expenses():
+    year = int(input("이번달의 연도를 입력하세요 (예: 2024): "))
+    month = int(input("이번달의 월을 입력하세요 (예: 06): "))
+
+    last_month_expense = get_last_month_expense(year, month)
+    this_month_expense = get_this_month_expense(year, month)
+    difference = this_month_expense - last_month_expense
+
+    if last_month_expense == 0:
+        if this_month_expense == 0:
+            print("이번 달과 지난 달 모두 지출이 없습니다.")
+        else:
+            print(f"이번 달은 지난 달보다 {this_month_expense:.2f}원 더 지출하였습니다. (지난달 지출 0원)")
+    else:
+        if difference > 0:
+            print(f"이번 달은 지난 달보다 {difference:.2f}원 더 지출하였습니다.")
+        elif difference < 0:
+            print(f"이번 달은 지난 달보다 {-difference:.2f}원 덜 지출하였습니다.")
+        else:
+            print("이번 달과 지난 달의 지출이 동일합니다.")
 
 # 환율 계산을 실행하는 부분
 def calculate_exchange():
@@ -1225,6 +1275,16 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
+# 고정 지출 관리를 위한 함수 추가
+def add_fixed_expense_func():
+    add_fixed_expense()
+
+def view_fixed_expense_func():
+    view_fixed_expenses()
+
+def apply_fixed_expense_func():
+    apply_fixed_expenses()
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1243,17 +1303,57 @@ def YU_Account():
     """
     print(welcome_message)
 
-def print_Login_help(): #user interface 도움말
+def print_Login_help():
     print("""
     1: 회원가입
     2: 로그인
-    3. 아이디 찾기
-    4. 비밀번호 찾기
-    
+    3. 아이디 찾기 (로그인 후에도 사용 가능)
+    4. 비밀번호 찾기 (로그인 후에도 사용 가능)
+
     아무거나 입력시 프로그램 종료
-    
+
     ?: 로그인 도움말 출력
     """)
+
+# 아이디 찾기 함수
+def find_id_by_phone():
+    phone = input("찾고자 하는 사용자의 전화번호 입력: ")
+    if phone in userphones:
+        print(f'해당 전화번호로 등록된 아이디는 {userphones[phone]}입니다.')
+    else:
+        print("해당 전화번호를 가진 사용자가 없습니다.")
+
+# 비밀번호 찾기 함수
+def change_pw_by_phone():
+    check = 0
+
+    ID = input("찾고자 하는 사용자의 ID 입력: ")
+
+    if ID in userdata2:
+        print(f"{userdata2[ID]['name']}님, 전화번호를 입력해 주십시오.")
+        phone = input("전화번호 입력: ")
+
+        if phone in userphones:
+            while True:
+                P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
+
+                if check == "1":
+                    h = hashlib.sha256()
+                    h.update(P.encode())
+                    P = h.hexdigest()
+
+                    userdata2[ID]['pw'] = P
+
+                    with open('login.txt', 'w', encoding='UTF-8') as fw:
+                        for user_id, user_info in userdata2.items():
+                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
+                    break
+
+        else:
+            print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오")
+    else:
+        print("ID가 존재하지 않습니다.")
 
 def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     #파일 읽어 오기
@@ -1300,7 +1400,7 @@ def Login_interface(): #로그인 인터페이스
     except Exception as e:
         print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
         return 0
-    
+
     cnt = 0
 
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
@@ -1312,6 +1412,7 @@ def Login_interface(): #로그인 인터페이스
 
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
                 print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                update_last_activity_time()  # 로그인 성공 시 활동 시간 갱신
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
@@ -1518,9 +1619,17 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 
 # 메인 루프
 while not b_is_exit:
+    # 현재 시간과 마지막 활동 시간을 비교하여 타임아웃 체크
+    current_time = time.time()
+    if current_time - last_activity_time > timeout_duration:
+        print("자동 로그아웃되었습니다. 활동이 없어서 로그아웃됩니다.")
+        break  # 메인 루프 종료로 로그아웃
+
     print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
+    print("user:", user.name)  # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
+
+    update_last_activity_time()  # 활동 시간 갱신
 
     if func == "1":
         add_entry()
@@ -1532,14 +1641,25 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_fixed_expense_func()
+    elif func == "7":
+        view_fixed_expense_func()
+    elif func == "8":
+        apply_fixed_expense_func()
+    elif func == "9":
+        find_id_by_phone()
+    elif func == "10":
+        change_pw_by_phone()
+    elif func == "11":
+        compare_monthly_expenses()  # 지난달과 이번달 지출 비교 함수 호출
     elif func == "?":
         print_help()
-    elif func == "exit" or func == "x" or func =="종료":
+    elif func == "exit" or func == "x" or func == "종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
     elif func == "memo":
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
