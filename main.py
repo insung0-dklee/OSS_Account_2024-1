@@ -1384,6 +1384,7 @@ class FinancialGoal:
         self.target_amount = target_amount
         self.due_date = due_date
         self.saved_amount = 0
+        self.is_completed = False
 
     # 목표에 저축 금액을 추가하는 메서드입니다.
     # 목표의 현재 저축 금액에 입력된 금액을 더합니다.
@@ -1404,13 +1405,24 @@ class FinancialGoal:
             print(f"목표: {self.name}\n목표 금액: {self.target_amount}원\n현재 저축액: {self.saved_amount}원\n남은 금액: {remaining_amount}원\n남은 기간: {days_left}일")
 
 
+  # 포인트를 부여하는 메서드입니다.
+  # 목표를 달성한 경우, 목표 금액에 달러 당 적립할 포인트 양을 곱하여 포인트를 계산합니다.
+  # 포인트를 계산한 후 반환합니다. 달성하지 않은 경우에는 0을 반환합니다.
+    def award_points(self, points_per_dollar=1):
+        if self.is_completed:
+            points = self.target_amount * points_per_dollar
+            return points
+        else:
+            return 0
+
+
 # 사용자 정보를 담는 클래스입니다.
 # 사용자의 이름을 설정하고, 사용자의 재정 목표 리스트를 빈 리스트로 초기화합니다.
 class User:
     def __init__(self, name):
         self.name = name
         self.goals = []
-
+        self.points = 0 #포인트 선언
 
     # 목표 리스트에서 특정 인덱스의 목표를 가져오는 메서드입니다.
     #해당 인덱스의 목표 객체를 반환하거나, 인덱스가 올바르지 않을 경우 None을 반환합니다.
@@ -1420,6 +1432,13 @@ class User:
         else:
             return None
 
+#  포인트적립 메서드       
+#  사용자의 포인트에 지정된 양의 포인트를 추가합니다.
+#  적립된 포인트와 함께 현재 포인트를 출력하여 사용자에게 알립니다.
+    def add_points(self, points):
+            self.points += points
+            print(f"{points} 포인트가 적립되었습니다. 현재 포인트: {self.points}")
+
 # 재정 목표를 관리하는 루프 함수입니다.
 def financial_goal_loop(user):
     while True:
@@ -1428,6 +1447,7 @@ def financial_goal_loop(user):
         print("2: 목표 목록 확인")
         print("3: 목표 저축액 추가")
         print("4: 목표 진행 상황 확인")
+        print("5: 포인트 확인")
         print("0: 메인 메뉴로 돌아가기")
 
         # 사용자로부터 기능 선택을 입력받습니다.
@@ -1468,6 +1488,8 @@ def financial_goal_loop(user):
         elif choice == "4":
             if not user.goals:
                 print("등록된 목표가 없습니다. 먼저 목표를 추가하세요.")
+        elif choice == "5":
+            print(f"현재 포인트: {user.points}") #현재 포인트를 확인 할 수 있는 기능
             else:
                 print("등록된 목표 목록:")
                 for idx, goal in enumerate(user.goals, start=1):
