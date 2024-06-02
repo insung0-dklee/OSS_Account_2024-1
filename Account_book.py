@@ -6,7 +6,8 @@ class Account_book: # 가계부 클래스
   spend_total = 0 #지출 총액
   spend_list = [] #지출 기록 리스트
   name = " " #이름 - 미설정시 공백
-
+  credit_score = 0 # 신용점수
+  
   def __init__(self,name,bal): # 초기화
     self.name = name #이름 설정
     if(bal>0):  #잔액 설정
@@ -59,3 +60,8 @@ class Account_book: # 가계부 클래스
         print(i+1,"위 ",sortedlist[i],"원")
     else:
       print("잘못 입력하셨습니다.")
+  
+  # 신용점수를 입력하는 기능 추가
+  def put_credit_score(self):
+    print("당신의 신용점수를 입력하세요:", end = " ")
+    self.credit_score = int(input())
