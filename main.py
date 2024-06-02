@@ -1,4 +1,5 @@
 
+
 import hashlib
 import os
 import json
@@ -7,6 +8,9 @@ import pickle
 import Account_book
 import webbrowser
 import re
+import csv
+from datetime import datetime
+
 
 userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
 userdata2 = {}  # 아이디, 비밀번호, 이름, 전화번호 저장해둘 딕셔너리
@@ -417,6 +421,91 @@ def generate_monthly_report():
         print(f"{month}월에는 평가된 점수가 없습니다.")
 
 budget = None #전역변수 budget의 기본값 설정
+
+# 데이터 저장용 리스트 초기화
+transactions = []
+
+# 거래 추가 함수
+def add_transaction(date, category, description, income, expense):
+    transaction = {
+        "Date": date,
+        "Category": category,
+        "Description": description,
+        "Income": income,
+        "Expense": expense
+    }
+    transactions.append(transaction)
+
+# 데이터 저장 함수
+def save_data(file_name):
+    with open(file_name, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=["Date", "Category", "Description", "Income", "Expense"])
+        writer.writeheader()
+        for transaction in transactions:
+            writer.writerow(transaction)
+
+# 데이터 불러오기 함수
+def load_data(file_name):
+    global transactions
+    transactions = []
+    with open(file_name, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            transactions.append(row)
+
+# 월별 요약 출력 함수
+def print_monthly_summary():
+    monthly_summary = {}
+    for transaction in transactions:
+        date = datetime.strptime(transaction["Date"], "%Y-%m-%d")
+        month = date.strftime("%Y-%m")
+        income = float(transaction["Income"])
+        expense = float(transaction["Expense"])
+
+        if month not in monthly_summary:
+            monthly_summary[month] = {"Income": 0, "Expense": 0}
+
+        monthly_summary[month]["Income"] += income
+        monthly_summary[month]["Expense"] += expense
+
+    print("Monthly Summary:")
+    for month, summary in monthly_summary.items():
+        print(f"{month}: Income = {summary['Income']}, Expense = {summary['Expense']}")
+
+# 카테고리별 지출 비율 출력 함수
+def print_expense_by_category():
+    expense_by_category = {}
+    for transaction in transactions:
+        category = transaction["Category"]
+        expense = float(transaction["Expense"])
+
+        if category not in expense_by_category:
+            expense_by_category[category] = 0
+
+        expense_by_category[category] += expense
+
+    print("Expenses by Category:")
+    total_expense = sum(expense_by_category.values())
+    for category, expense in expense_by_category.items():
+        percentage = (expense / total_expense) * 100 if total_expense > 0 else 0
+        print(f"{category}: {expense} ({percentage:.2f}%)")
+
+# 테스트 입력 데이터 추가
+add_transaction("2024-01-01", "Salary", "Monthly Salary", 3000, 0)
+add_transaction("2024-01-05", "Groceries", "Supermarket", 0, 150)
+add_transaction("2024-01-10", "Entertainment", "Movie", 0, 50)
+
+# 데이터 저장
+save_data("household_account.csv")
+
+# 데이터 불러오기
+load_data("household_account.csv")
+
+# 월별 요약 출력
+print_monthly_summary()
+
+# 카테고리별 지출 비율 출력
+print_expense_by_category()
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
