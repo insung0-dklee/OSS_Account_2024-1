@@ -21,6 +21,14 @@ class EventManager:
         ]
         return upcoming_events
 
+    def delete_event(self, name):
+        initial_count = len(self.events)
+        self.events = [event for event in self.events if event['name'] != name]
+        if len(self.events) < initial_count:
+            print(f"기념일 '{name}'이(가) 삭제되었습니다.")
+        else:
+            print(f"기념일 '{name}'을(를) 찾을 수 없습니다. 잘못 입력하셨습니다.")
+
 def main():
     manager = EventManager()
 
@@ -28,7 +36,8 @@ def main():
         print("\n기념일 관리 프로그램")
         print("1. 기념일 추가")
         print("2. 다가오는 기념일 보기")
-        print("3. 종료")
+        print("3. 기념일 삭제")
+        print("4. 종료")
         choice = input("원하는 작업을 선택하세요: ")
 
         if choice == '1':
@@ -49,7 +58,8 @@ def main():
             else:
                 print("다가오는 기념일이 없습니다.")
         elif choice == '3':
-            break
+            name = input("삭제할 기념일 이름을 입력하세요: ")
+            manager.delete_event(name)
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
 
