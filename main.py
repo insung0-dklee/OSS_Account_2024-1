@@ -7,13 +7,8 @@ import Account_book
 import random
 import webbrowser
 import re
-import PriceReflection
-<<<<<<< HEAD
-
-import Add_function  # 새로운 기능이 추가된 파일 import
-=======
 import Add_function
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
+import daily_budget
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -380,8 +375,6 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
-<<<<<<< HEAD
-=======
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
@@ -448,7 +441,6 @@ def list_memo():
     else:
         print("메모장이 존재하지 않습니다.")
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def read_memo():
     print("열고 싶은 메모장 제목: ")
     str_title = input()
@@ -470,20 +462,6 @@ def delete_memo():
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
 def memo():
-<<<<<<< HEAD
-    print("1. 메모 추가")
-    print("2. 메모 읽기")
-    print("3. 메모 삭제")
-    choice = input("선택: ")
-    if choice == "1":
-        add_memo()
-    elif choice == "2":
-        read_memo()
-    elif choice == "3":
-        delete_memo()
-    else:
-        print("잘못된 선택입니다.")
-=======
     while True:
         print("-----------------------")
         print("user:",user.name) # 현재 user가 누구인지 출력
@@ -507,7 +485,6 @@ def memo():
             break
         else:
             print("잘못된 선택입니다.")
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 
 
@@ -542,8 +519,6 @@ def open_account_info(user_id):
         print(f"{user_id_clean}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
         return None
 
-<<<<<<< HEAD
-=======
 def filter_expenses_by_date(start_date, end_date):
     """
     특정 기간 동안의 지출 내역을 필터링하여 출력합니다.
@@ -554,7 +529,6 @@ def filter_expenses_by_date(start_date, end_date):
         if start_date <= entry['date'] <= end_date:
             print(entry)
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def calculator():
     try:
         # 사용자가 계산할 수식을 입력받는다.
@@ -631,8 +605,6 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
-<<<<<<< HEAD
-=======
     category_count = sum(1 for e in ledger if e["category"] == category)
 
     if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
@@ -660,7 +632,6 @@ def show_favorites():
         for category in favorites:
             print(f"- {category}")
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
@@ -671,20 +642,6 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
-<<<<<<< HEAD
-    evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-    try:
-        evaluation = float(evaluation)
-        if 0 <= evaluation <= 10:
-            print(f"오늘의 평가는 {evaluation}점입니다.")
-            return evaluation
-        else:
-            print("평가는 0에서 10 사이의 숫자여야 합니다.")
-            return None
-    except ValueError:
-        print("올바른 숫자를 입력하세요.")
-        return None
-=======
     while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
         evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
         try:
@@ -696,7 +653,6 @@ def day_evaluation():
                 print("평가는 0에서 10 사이의 숫자여야 합니다.")
         except ValueError:
             print("올바른 숫자를 입력하세요.")
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 def calculate_average_score(scores):
     if scores:
@@ -706,8 +662,6 @@ def calculate_average_score(scores):
     else:
         return None
 
-<<<<<<< HEAD
-=======
 def recommend_financial_product(products):
     # 사용자에게 입력 받은 여러 금융 상품 정보를 비교하여 가장 유리한 상품을 추천
     # 이 함수는 각 상품의 이자율, 수수료 등을 비교하여 최적의 상품을 찾아냅니다.
@@ -760,7 +714,6 @@ def average():
 나이를 입력받고 한국 1인 평균  생활비를 보여주는 기능    
 """     
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
@@ -856,25 +809,7 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
-<<<<<<< HEAD
-"""
-add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
-@Parm
-    None
-@Return
-    None
-"""
-def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
-    new_f = open(str_title,"w",encoding="utf8")
-    print("내용 입력: ")
-    str_memo = input()
-    new_f.write(str_memo)
-    new_f.close()
-=======
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 def calculate_monthly_savings(target_amount, target_date):
     """
@@ -1270,9 +1205,6 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
-<<<<<<< HEAD
-    return choose 
-=======
     return choose
 
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
@@ -1293,7 +1225,6 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       name = Account_list[num-1].name #원래 저장소에서 이름 가져오기(배열은 0~n-1로 이루어짐)
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -1313,10 +1244,6 @@ def YU_Account():
     """
     print(welcome_message)
 
-<<<<<<< HEAD
-YU_Account() #프로그램 시작 화면
-
-=======
 def print_Login_help(): #user interface 도움말
     print("""
     1: 회원가입
@@ -1432,9 +1359,6 @@ YU_Account() #프로그램 시작 화면
 version = "1.0.0"  # 프로그램 버전
 print(f"프로그램 버전: {version}")
 
-<<<<<<< HEAD
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
-=======
 #########################################################
 # 사용자로부터 날짜를 입력받는 함수입니다.
 # 문자열을 datetime 객체로 변환합니다.
@@ -1569,14 +1493,11 @@ def financial_goal_loop(user):
 
 ###########################################################
 
->>>>>>> f6b5c926025bce5638fe10123e80161fe3841958
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 interface = 0 #인터페이스 만들기
 user = 0 #user 이름 저장 변수
 
-<<<<<<< HEAD
-=======
 while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스 구현(탈출을 원할 시 0)
     interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
 
@@ -1596,7 +1517,6 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         b_is_exit = 1
 
 
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
@@ -1613,39 +1533,19 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-<<<<<<< HEAD
-    elif func == "6":  # 일일 지출 한도 설정 기능
-        Add_function.set_daily_limit()
-    elif func == "7":  # 일일 지출 한도 확인 기능
-        Add_function.check_daily_limit()
-    elif func == "8":  # 특정 기간 내 지출 분석 기능
-        Add_function.analyze_expenses_in_period()
-    elif func == "9":  # 지출 패턴 예측 기능
-        Add_function.predict_future_expenses()
-    elif func == "10":  # 물가 반영 기능 추가
-        PriceReflection.get_inflation_adjusted_value()
-    elif func == "11":  # 물가 상승률 저장 기능 추가
-        year = int(input("물가 상승률을 저장할 연도를 입력하세요: "))
-        rate = float(input(f"{year}년의 물가 상승률을 입력하세요 (%): "))
-        PriceReflection.save_inflation_rate(year, rate)
-    elif func == "?":
-        print_help()
-    elif func == "exit":
-=======
+    elif func == "6":  # 일일 예산 설정 기능 추가
+        daily_budget.set_daily_budget()
+    elif func == "7":  # 일일 예산 확인 기능 추가
+        daily_budget.check_daily_budget()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
         print("프로그램을 종료합니다.")
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
         b_is_exit = True
     elif func == "memo":
         add_memo()
         memo()
     else:
-<<<<<<< HEAD
-        b_is_exit = not b_is_exit 
-
-=======
         
->>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
         print("올바른 기능을 입력해 주세요.")
+  
