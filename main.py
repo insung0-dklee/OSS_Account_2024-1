@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import acc_book_22012687 as accnt
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1543,3 +1544,6 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
+if __name__ == "__main__":
+    accnt.main()
