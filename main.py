@@ -30,9 +30,9 @@ def user_reg():  # 회원가입
 
         userdata[id] = pw_data
 
-        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
+        with open('login', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login에 작성
             for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login파일에 저장
         print("회원가입이 완료되었습니다!")
         break
 
@@ -67,9 +67,9 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     usernames[name] = id  # 이름과 아이디 매핑
     userphones[phone] = id  # 전화번호와 아이디 매핑
 
-    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+    with open('login', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login에 작성
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login파일에 저장
 
 
 """
@@ -130,7 +130,7 @@ def modify_user_info():
     userphones[new_phone] = id_to_modify
 
     # 수정된 정보를 파일에 다시 쓰기
-    with open('login.txt', 'w', encoding='UTF-8') as fw:
+    with open('login', 'w', encoding='UTF-8') as fw:
         for user_id, user_info in userdata2.items():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
@@ -375,22 +375,62 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
 @Return
     None
 """
+
+memo_directory = []
+
 def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
+    str_title = input("메모장 제목: ")
     if not str_title.endswith(".txt"):
         str_title += ".txt"
-    new_f = open(str_title,"w",encoding="utf8")
-    print("내용 입력: ")
-    str_memo = input()
-    new_f.write(str_memo)
-    new_f.close()
+
+    if '/' in str_title:
+        print("메모장 제목에 경로 정보가 포함되었습니다.")
+    try:
+        # 디렉토리 경로 추출
+        directory = os.path.dirname(str_title)
+        
+        # 디렉토리가 존재하지 않으면 생성
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # 파일 열기
+        with open(str_title, "w", encoding="utf8") as new_f:
+            # 파일에 쓸 내용을 입력 받음
+            content = input("메모할 내용을 입력하세요: ")
+            new_f.write(content)
+            new_f.close()
+            print("메모가 성공적으로 저장되었습니다.")
+            if directory not in memo_directory :
+                memo_directory.append(directory)
+                print("새로운 메모 디렉토리가 추가되었습니다.")
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: '{str_title}'")
+    except PermissionError:
+        print(f"파일을 생성할 권한이 없습니다: '{str_title}'")
+    except Exception as e:
+        print(f"다른 오류가 발생했습니다: {e}")
+
 
 def list_memo():
     """
     현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
     """
-    memo_files = [file for file in os.listdir() if file.endswith(".txt")]
+    # memo_files = [file for file in os.listdir() if file.endswith(".txt")]
+    memo_files = []
+    for directory in memo_directory:
+        try:
+            # 지정된 디렉토리에서 파일 목록을 가져옴
+            for file in os.listdir(directory):
+                if file.endswith(".txt"):
+                    # 전체 파일 경로를 구성하여 리스트에 추가
+                    memo_files.append(os.path.join(directory, file))
+        except FileNotFoundError:
+            print(f"디렉토리를 찾을 수 없습니다: '{directory}'")
+        except PermissionError:
+            print(f"디렉토리에 대한 접근 권한이 없습니다: '{directory}'")
+        except Exception as e:
+            print(f"다른 오류가 발생했습니다: {e}")
+            
     if memo_files:
         print("메모장 목록:")
         for idx, memo_file in enumerate(memo_files, start=1):
@@ -420,13 +460,15 @@ def delete_memo():
 
 def memo():
     while True:
-        print("=======================================")
-        print("1. 메모 추가")
-        print("2. 메모 리스트")
-        print("3. 메모 읽기")
-        print("4. 메모 삭제")
-        print("5. 메모 닫기")
-        print("=======================================")
+        print("-----------------------")
+        print("user:",user.name) # 현재 user가 누구인지 출력
+        print("""
+        1: 메모 추가
+        2: 메모 리스트
+        3. 메모 읽기
+        4. 메모 삭제
+        5. 메모 닫기
+        """)
         choice = input("선택: ")
         if choice == "1":
             add_memo()
@@ -510,6 +552,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    memo : 메모장
     ?: 도움말 출력
     exit: 종료
     """)
@@ -527,8 +570,8 @@ def reset_data():
     with open(expenses_file, 'w', encoding='utf-8') as file:
         json.dump([], file)
     # 로그인 파일이 존재하는 경우 삭제
-    if os.path.exists('login.txt'):
-        os.remove('login.txt')
+    if os.path.exists('login'):
+        os.remove('login')
     print("모든 데이터가 초기화되었습니다.")
 
 def get_valid_amount_input(): 
@@ -1175,8 +1218,8 @@ def YU_Account():
 
 def print_Login_help(): #user interface 도움말
     print("""
-    1: 회원가입
-    2: 로그인
+    1: 로그인
+    2: 회원가입
     3. 아이디 찾기
     4. 비밀번호 찾기
     
@@ -1185,9 +1228,15 @@ def print_Login_help(): #user interface 도움말
     ?: 로그인 도움말 출력
     """)
 
-def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
+def read_user_information(): #login에서 읽어온 후 dic에 저장
     #파일 읽어 오기
-    f = open("login.txt",'r',encoding='UTF-8')
+    try :
+        f = open("login",'r',encoding='UTF-8')
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        print(f"다른 오류가 발생했습니다: {e}")
+        return None
 
     login_info = []#파일 정보 저장
     #한줄씩 읽어 온 후 리스트에 저장
@@ -1207,14 +1256,20 @@ def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
 
 def Login_interface(): #로그인 인터페이스
+    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
+    if len(login_info)==0 : 
+        print("로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
+        return 0
+    elif login_info is None : 
+        print("오류가 발생했습니다.")
+        return 0
+    
     print("로그인(ID와 PW를 입력해 주세요.)")
     ID = input("ID: ")
     PW = input("PW: ")
 
     h = hashlib.sha256()
     cnt = 0
-
-    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
 
     for i in range(len(login_info)):
         if(login_info[i][0] == ID):
@@ -1254,9 +1309,9 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
 
                     userdata2[ID]['pw'] = P#dic 수정
 
-                    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+                    with open('login', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login에 작성
                         for user_id, user_info in userdata2.items():
-                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login파일에 저장
                     break
 
         else:
@@ -1314,8 +1369,7 @@ while not b_is_exit:
     elif func == "exit" or func == "x":
         print("프로그램을 종료합니다.")
         b_is_exit = True
-    elif func == "메모장":
-        add_memo()
+    elif func == "memo":
         memo()
     else:
         
