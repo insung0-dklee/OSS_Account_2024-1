@@ -972,6 +972,32 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 """
+get_bitcoin_price : 비트코인의 시세를 USD로 가져오는 기능
+
+@Param
+    None
+@Return
+    bitcoin_price : 현재 비트코인 시세
+"""
+def get_bitcoin_price():
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    currency = "usd"
+
+    params = {
+        "ids": "bitcoin",
+        "vs_currencies": currency
+    }
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if "bitcoin" in data and currency in data["bitcoin"]:
+        bitcoin_price = data["bitcoin"][currency]
+        return bitcoin_price
+    else:
+        return "비트코인 시세를 가져오는 데 실패했습니다."
+
+"""
 get_gold_price : Alpha Vantage 에서 금 시세 데이터 가져오기 (미국 가준)
 
 @Param
@@ -1202,12 +1228,18 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
-    
+
     gold_price = get_gold_price() #금 시세 가져오기
     if gold_price != "금 시세를 가져오는 데 실패했습니다.":
         print("현재 금 시세:", gold_price, "USD per Troy Ounce") #현재 금 시세 출력
     else:
         print("금 시세를 가져오는 데 실패했습니다.")
+
+    bitcoin_price = get_bitcoin_price()#비트코인 시세 가져오기
+    if isinstance(bitcoin_price, (float, int)):
+        print("현재 비트코인 시세: $", bitcoin_price) #현재 비트코인 시세 출력
+    else:
+        print("비트코인 시세를 가져오는 데 실패했습니다.")
 
 def print_Login_help(): #user interface 도움말
     print("""
