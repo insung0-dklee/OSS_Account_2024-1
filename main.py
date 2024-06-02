@@ -47,8 +47,14 @@ usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
+
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
+    # 중복된 id를 입력받은 경우 다른 id를 입력하도록 기능 추가
+    while id in userdata2:
+        print("이미 사용중인 아이디입니다. 다른 아이디를 입력해주세요.")
+        id = input("id 입력: ")  # 중복된 경우 다시 아이디 입력
+
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
@@ -56,7 +62,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     if phone in userphones:
         print("이미 등록된 전화번호입니다. 다른 전화번호를 사용해주세요.")
         return
-
+    
     pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
     h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
