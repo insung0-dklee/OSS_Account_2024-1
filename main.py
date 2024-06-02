@@ -737,7 +737,16 @@ budget = None #전역변수 budget의 기본값 설정
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
+    """
+    만약 예산을 음수로 입력한 경우 다시 입력하도록 기능 구현
+    """
+    while True:
+        budget = float(input("예산 설정 (원): ")) #예산을 받아옴
+        if budget < 0: #만약 입력한 예산이 음수인 경우
+            print("예산은 음수가 될 수 없습니다. 다시 입력해주세요.") #다시 입력받도록 함
+        else: #아닌 경우
+            break #설정됨
+   
     current_total = sum(float(entry["amount"]) for entry in ledger)
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
