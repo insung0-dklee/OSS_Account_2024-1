@@ -7,8 +7,12 @@ import Account_book
 import random
 import webbrowser
 import re
+<<<<<<< HEAD
 
 import Add_function  # 새로운 기능이 추가된 파일 import
+=======
+import Add_function
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -369,6 +373,39 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
+<<<<<<< HEAD
+=======
+"""
+add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
+@Parm
+    None
+@Return
+    None
+"""
+def add_memo():
+    print("메모장 제목: ")
+    str_title = input()
+    if not str_title.endswith(".txt"):
+        str_title += ".txt"
+    new_f = open(str_title,"w",encoding="utf8")
+    print("내용 입력: ")
+    str_memo = input()
+    new_f.write(str_memo)
+    new_f.close()
+
+def list_memo():
+    """
+    현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
+    """
+    memo_files = [file for file in os.listdir() if file.endswith(".txt")]
+    if memo_files:
+        print("메모장 목록:")
+        for idx, memo_file in enumerate(memo_files, start=1):
+            print(f"{idx}. {memo_file}")
+    else:
+        print("메모장이 존재하지 않습니다.")
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def read_memo():
     print("열고 싶은 메모장 제목: ")
     str_title = input()
@@ -390,6 +427,7 @@ def delete_memo():
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
 def memo():
+<<<<<<< HEAD
     print("1. 메모 추가")
     print("2. 메모 읽기")
     print("3. 메모 삭제")
@@ -402,6 +440,29 @@ def memo():
         delete_memo()
     else:
         print("잘못된 선택입니다.")
+=======
+    while True:
+        print("=======================================")
+        print("1. 메모 추가")
+        print("2. 메모 리스트")
+        print("3. 메모 읽기")
+        print("4. 메모 삭제")
+        print("5. 메모 닫기")
+        print("=======================================")
+        choice = input("선택: ")
+        if choice == "1":
+            add_memo()
+        elif choice == "2":
+            list_memo()
+        elif choice == "3":
+            read_memo()
+        elif choice == "4":
+            delete_memo()
+        elif choice == "5":
+            break
+        else:
+            print("잘못된 선택입니다.")
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 
 
@@ -436,6 +497,19 @@ def open_account_info(user_id):
         print(f"{user_id_clean}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
         return None
 
+<<<<<<< HEAD
+=======
+def filter_expenses_by_date(start_date, end_date):
+    """
+    특정 기간 동안의 지출 내역을 필터링하여 출력합니다.
+    @param start_date : 문자열 형식의 시작 날짜 (YYYY-MM-DD).
+    @param end_date : 문자열 형식의 종료 날짜 (YYYY-MM-DD).
+    """
+    for entry in ledger:
+        if start_date <= entry['date'] <= end_date:
+            print(entry)
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def calculator():
     try:
         # 사용자가 계산할 수식을 입력받는다.
@@ -512,6 +586,36 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+<<<<<<< HEAD
+=======
+    category_count = sum(1 for e in ledger if e["category"] == category)
+
+    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
+        response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
+        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
+            add_favorite_category(category)
+        else:
+            print("카테고리에 추가되지 않았습니다.")
+
+
+favorites = []
+
+def add_favorite_category(category): #즐겨찾기 항목에 추가.
+    if category not in favorites:  #카테고리가 즐겨찾기에 존재하지 않는다면, 즐겨찾기 추가. 그렇지 않다면, 경고창 출력.
+        favorites.append(category)
+        print(f"'{category}' 카테고리가 즐겨찾기에 추가되었습니다.")
+    else:
+        print(f"'{category}' 카테고리는 이미 즐겨찾기에 있습니다.")
+
+def show_favorites():
+    if not favorites:
+        print("즐겨찾기 카테고리 목록이 비어 있습니다.")
+    else:
+        print("즐겨찾는 카테고리 목록:")
+        for category in favorites:
+            print(f"- {category}")
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
@@ -522,6 +626,7 @@ def view_entries():
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
+<<<<<<< HEAD
     evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
     try:
         evaluation = float(evaluation)
@@ -534,6 +639,19 @@ def day_evaluation():
     except ValueError:
         print("올바른 숫자를 입력하세요.")
         return None
+=======
+    while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
+        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        try:
+            evaluation = float(evaluation)
+            if 0 <= evaluation <= 10:
+                print(f"오늘의 평가는 {evaluation}점입니다.")
+                return evaluation
+            else:
+                print("평가는 0에서 10 사이의 숫자여야 합니다.")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 def calculate_average_score(scores):
     if scores:
@@ -543,6 +661,61 @@ def calculate_average_score(scores):
     else:
         return None
 
+<<<<<<< HEAD
+=======
+def recommend_financial_product(products):
+    # 사용자에게 입력 받은 여러 금융 상품 정보를 비교하여 가장 유리한 상품을 추천
+    # 이 함수는 각 상품의 이자율, 수수료 등을 비교하여 최적의 상품을 찾아냅니다.
+    # 이 코드는 사용자에게서 각 상품의 정보를 입력받는 것을 가정하고, 실제 데이터베이스나 외부 API로부터 데이터를 가져올 수도 있습니다.
+    best_product = None
+    best_interest_rate = 0
+    lowest_fee = float('inf')
+
+    for product in products:
+        interest_rate = product['interest_rate']
+        fee = product['fee']
+
+        # 이자율이 높고 수수료가 낮은 상품을 찾음
+        if interest_rate > best_interest_rate and fee < lowest_fee:
+            best_product = product
+            best_interest_rate = interest_rate
+            lowest_fee = fee
+
+    return best_product
+
+def get_products_from_user():
+    products = []
+    while True:
+        product_info = {}
+        product_info['interest_rate'] = float(input("금융 상품의 이자율을 입력하세요: "))
+        product_info['fee'] = float(input("금융 상품의 수수료를 입력하세요: "))
+        products.append(product_info)
+        more_products = input("더 입력하시겠습니까? (Y/N): ")
+        if more_products.lower() != 'y':
+            break
+    return products
+
+def average():
+    나이 = input("나이 입력: ")
+    나이 = int(나이)
+
+    if 나이 >= 20 and 나이 < 30:
+        print("한달 평균 생활비는 136.2만원 입니다.")
+    elif 나이 >= 30 and 나이 < 40:
+        print("한달 평균 생활비는 246.3만원 입니다.")
+    elif 나이 >= 40 and 나이 < 50:
+        print("한달 평균 생활비는 286만원 입니다.")
+    elif 나이 >= 50 and 나이 < 60:
+        print("한달 평균 생활비는 244만원 입니다.")
+    elif 나이 >= 60:
+        print("한달 평균 생활비는 148.9만원 입니다.")
+    else:
+        print("올바른 나이를 입력하십시오")
+"""   
+나이를 입력받고 한국 1인 평균  생활비를 보여주는 기능    
+"""     
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
@@ -638,6 +811,7 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+<<<<<<< HEAD
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
@@ -653,6 +827,9 @@ def add_memo():
     str_memo = input()
     new_f.write(str_memo)
     new_f.close()
+=======
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 def calculate_monthly_savings(target_amount, target_date):
     """
@@ -1022,7 +1199,30 @@ def choose_Account(func):#가계부 선택 함수
     for i in range(0,len(Account_list)):#가계부 리스트 출력
       print(f"가계부 {i+1}번 : ",Account_list[i].name)
     choose = input()
+<<<<<<< HEAD
     return choose 
+=======
+    return choose
+
+def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
+    if(num < 0):#오류 검출
+      print("잘못 입력하셨습니다.(0이하수 입력)")
+    else:
+      bal = input("남기고 싶은 잔액을 입력하세요. (x 입력시 현재잔액을 입력)") #주의 - 잔액 설정시 char형으로 저장 -> int형으로 변환해야 함
+      if(bal == "x"):
+        print("잔액을 그대로 가져옵니다.")
+        bal = Account_list[num-1].bal
+      else:
+        if(bal.isnumeric()): #숫자를 표현하는지 확인
+          bal = int(bal) 
+        else:
+          print("잘못 입력하셨습니다.(잔액 이상)")
+          return 0
+      print(f"가계부 {num}번을 초기화 합니다.")
+      name = Account_list[num-1].name #원래 저장소에서 이름 가져오기(배열은 0~n-1로 이루어짐)
+      Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
+      print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -1042,13 +1242,138 @@ def YU_Account():
     """
     print(welcome_message)
 
+<<<<<<< HEAD
 YU_Account() #프로그램 시작 화면
 
+=======
+def print_Login_help(): #user interface 도움말
+    print("""
+    1: 회원가입
+    2: 로그인
+    3. 아이디 찾기
+    4. 비밀번호 찾기
+    
+    아무거나 입력시 프로그램 종료
+    
+    ?: 로그인 도움말 출력
+    """)
+
+def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
+    #파일 읽어 오기
+    f = open("login.txt",'r',encoding='UTF-8')
+
+    login_info = []#파일 정보 저장
+    #한줄씩 읽어 온 후 리스트에 저장
+    while True:
+        line = f.readline()
+        if line == '':
+            break
+        line = line.replace(' ','')#필요없는 값 삭제
+        line = line.replace('\n','')
+        line = line.split(':')
+        #파일에서 딕셔너리로 복구 시켜주는 코드(userdata2, usernames, userphones를 복구시킴)
+        login_info.append(line)
+        userdata2[line[0]] = {'pw': line[1], 'name': line[2], 'phone': line[3]} 
+        usernames[line[2]] = line[0]
+        userphones[line[3]] = line[0] 
+    f.close()
+    return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
+
+def Login_interface(): #로그인 인터페이스
+    print("로그인(ID와 PW를 입력해 주세요.)")
+    ID = input("ID: ")
+    PW = input("PW: ")
+
+    h = hashlib.sha256()
+    cnt = 0
+
+    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
+
+    for i in range(len(login_info)):
+        if(login_info[i][0] == ID):
+            h.update(PW.encode()) #문자열로 비밀번호 추가 가능
+            login_pw = h.hexdigest()#암호화 후 출력
+
+            if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
+                print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+            else:
+                print("비밀번호 오류입니다.")#아니면 끝
+                break
+        cnt += 1
+
+    if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
+        print("존재하지 않는 아이디입니다.")
+    return 0
+
+def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
+    check = 0
+
+    ID = input("찾고자 하는 사용자의 ID 입력: ")  # 사용자가 찾고자 하는 ID를 입력받음
+
+    if ID in userdata2:  # ID(key)가 딕셔너리에 존재하는지 확인
+        print(f"{userdata2[ID]['name']}님, 전화번호를 입력해 주십시오.")
+        phone = input("전화번호 입력: ")
+
+        if phone in userphones:
+            while(True):#비밀번호를 바꿀때 까지 무한루프
+                P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
+
+                if(check == "1"): #주의 - check는 input으로 받으므로 char 형임
+                    h = hashlib.sha256() #암호 복호화
+                    h.update(P.encode())
+                    P = h.hexdigest()
+
+                    userdata2[ID]['pw'] = P#dic 수정
+
+                    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+                        for user_id, user_info in userdata2.items():
+                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                    break
+
+        else:
+            print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
+    else:
+        print("ID가 존재하지 않습니다.") #ID 존재 X
+
+YU_Account() #프로그램 시작 화면
+
+version = "1.0.0"  # 프로그램 버전
+print(f"프로그램 버전: {version}")
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
+interface = 0 #인터페이스 만들기
+user = 0 #user 이름 저장 변수
 
+<<<<<<< HEAD
+=======
+while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스 구현(탈출을 원할 시 0)
+    interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
+
+    if interface == "1":
+        user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
+    elif interface == "2":
+        user_reg_include_name_phone() #회원가입 함수 - 이미 존재
+    elif interface == "3":
+        find_id_by_phone() #id 찾기 - 이미 존재
+    elif interface == "4": 
+        change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형
+    elif interface == "?":
+        print_Login_help() #?입력시 Login 도움말 띄우기
+    else:
+        print("프로그램을 종료합니다.")
+        user = interface
+        b_is_exit = 1
+
+
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
 # 메인 루프
 while not b_is_exit:
+    print("-----------------------")
+    print("user:",user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1061,6 +1386,7 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+<<<<<<< HEAD
     elif func == "6":  # 일일 지출 한도 설정 기능
         Add_function.set_daily_limit()
     elif func == "7":  # 일일 지출 한도 확인 기능
@@ -1072,11 +1398,21 @@ while not b_is_exit:
     elif func == "?":
         print_help()
     elif func == "exit":
+=======
+    elif func == "?":
+        print_help()
+    elif func == "exit" or func == "x":
+        print("프로그램을 종료합니다.")
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
         b_is_exit = True
     elif func == "메모장":
         add_memo()
         memo()
     else:
+<<<<<<< HEAD
         b_is_exit = not b_is_exit 
 
+=======
+        
+>>>>>>> 950819e0f8efbafc0a5c32030e099fd545f7052b
         print("올바른 기능을 입력해 주세요.")
