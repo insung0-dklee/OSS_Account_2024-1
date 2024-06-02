@@ -543,6 +543,34 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#교통비 기록 기능
+class TransportationRecorder:
+    def __init__(self):
+        self.expenses = {}  # {month: {"버스": 0, "지하철": 0}}
+
+    def set_current_month(self, month):
+        if month not in self.expenses:
+            self.expenses[month] = {"버스": 0, "지하철": 0}
+        self.current_month = month
+        print(f"현재 월이 {self.current_month}로 설정되었습니다.")
+
+    def record_expense(self, mode, count):
+        if self.current_month is None:
+            print("현재 월을 설정해주세요.")
+            return
+        if mode in self.expenses[self.current_month]:
+            self.expenses[self.current_month][mode] += count * 1500
+            print(f"{mode} {count}회 기록되었습니다.")
+        else:
+            print("잘못된 교통수단입니다. '버스' 또는 '지하철'을 입력하세요.")
+
+    
+
+    def get_month_expenses(self, month):
+        if month not in self.expenses:
+            print(f"{month}의 기록이 없습니다.")
+            return 0
+        return sum(self.expenses[month].values())
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +582,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 교통비 기록        
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1561,46 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 교통비 입력, 계산 기능
+        recorder = TransportationRecorder()
+        print("교통비 기록기를 시작합니다.")
+
+        while True:
+            sub_func = input("교통비 기록 기능 선택 (1: 기록, 2: 교통비 확인, 3: 종료): ")
+
+            if sub_func == '1':
+                while True:
+                    month = input("현재 월을 입력하세요 (예: 2024-06): ")
+                    recorder.set_current_month(month)
+
+                    mode = input("교통수단을 선택하세요 (1: 버스, 2: 지하철): ")
+                    count = int(input("이번 달 사용 횟수를 입력하세요: "))
+
+                    if mode == '1':
+                        mode = '버스'
+                    elif mode == '2':
+                        mode = '지하철'
+                    else:
+                        print("올바른 선택을 해주세요.")
+                        continue
+
+                    recorder.record_expense(mode, count)
+
+                    more_records = input("더 기록하시겠습니까? (Y/N): ")
+                    if more_records.upper() != 'Y':
+                        break
+
+            elif sub_func == '2':
+                month = input("교통비를 확인할 월을 입력하세요 (예: 2024-06): ")
+                expenses = recorder.get_month_expenses(month)
+                print(f"{month}의 총 교통비: {expenses}원")
+
+            elif sub_func == '3':
+                print("프로그램을 종료합니다.")
+                break
+
+            else:
+                print("올바른 선택을 해주세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
