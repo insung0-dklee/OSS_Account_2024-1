@@ -86,24 +86,53 @@ def analyze_expenses_in_period():
 # 3. 지출 패턴 예측 기능
 # 사용자가 지정한 일 수 이후의 예상 지출을 예측하는 함수
 def predict_future_expenses():
-    days = int(input("몇 일 후까지의 지출을 예측하시겠습니까? (예: 30): "))
-    total_expense = 0
-    days_count = 0
+    try:
+        days = int(input("몇 일 후까지의 지출을 예측하시겠습니까? (예: 30): "))
+        total_expense = 0
+        days_count = 0
 
-    # expenses.json 파일에서 지출 내역을 읽어옴
-    with open(expenses_file, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        for expense in data:
-            total_expense += float(expense['amount'])
-            days_count += 1
+        # expenses.json 파일에서 지출 내역을 읽어옴
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            for expense in data:
+                total_expense += float(expense['amount'])
+                days_count += 1
 
-    if days_count == 0:
-        print("지출 내역이 없습니다.")
-        return
+        if days_count == 0:
+            print("지출 내역이 없습니다.")
+            return
 
-    # 일일 평균 지출 계산
-    daily_average_expense = total_expense / days_count
-    # 지정한 일 수 동안의 예상 지출 계산
-    future_expense = daily_average_expense * days
-    print(f"예상 일일 평균 지출: {daily_average_expense:.2f} 원")
-    print(f"{days}일 후 예상 총 지출: {future_expense:.2f} 원")
+        # 일일 평균 지출 계산
+        daily_average_expense = total_expense / days_count
+        # 지정한 일 수 동안의 예상 지출 계산
+        future_expense = daily_average_expense * days
+        print(f"예상 일일 평균 지출: {daily_average_expense:.2f} 원")
+        print(f"{days}일 후 예상 총 지출: {future_expense:.2f} 원")
+    except ValueError:
+        print("올바른 숫자를 입력하세요.")
+
+def main():
+    while True:
+        print("\n가계부 관리 프로그램")
+        print("1. 일일 지출 한도 설정")
+        print("2. 오늘의 지출 한도 확인")
+        print("3. 특정 기간 내 지출 분석")
+        print("4. 지출 패턴 예측")
+        print("5. 종료")
+        choice = input("원하는 작업을 선택하세요: ")
+
+        if choice == '1':
+            set_daily_limit()
+        elif choice == '2':
+            check_daily_limit()
+        elif choice == '3':
+            analyze_expenses_in_period()
+        elif choice == '4':
+            predict_future_expenses()
+        elif choice == '5':
+            break
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
+
+if __name__ == "__main__":
+    main()
