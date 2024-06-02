@@ -886,6 +886,7 @@ def save_expenses(expenses):
             json.dump(expenses, file, ensure_ascii=False, indent=4)
     except Exception as e:
         print(f"An error occurred while saving expenses: {e}")
+
 # 달력에 지출 내역을 표시하는 함수
 def display_monthly_calendar(year, month):
     cal = calendar.TextCalendar(calendar.SUNDAY)
@@ -921,6 +922,7 @@ def display_monthly_calendar(year, month):
         print(week_str)
     print("\n* 표시는 해당 날짜에 지출이 있음을 나타냅니다.\n")
 
+    return expenses_by_date
 
 def show_calendar():
     while True:
@@ -928,12 +930,32 @@ def show_calendar():
             year = int(input("달력을 보고 싶은 연도를 입력하세요 (예: 2024): "))
             month = int(input("달력을 보고 싶은 달을 입력하세요 (예: 6): "))
             if 1 <= month <= 12:
-                display_monthly_calendar(year, month)
+                expenses_by_date = display_monthly_calendar(year, month)
+                if not expenses_by_date:
+                    print("해당 월에 지출 내역이 없습니다.")
+                else:
+                    show_expense_details(expenses_by_date)
                 break
             else:
                 print("올바른 월을 입력하세요 (1-12).")
         except ValueError:
             print("올바른 연도와 월을 입력하세요.")
+
+def show_expense_details(expenses_by_date):
+    while True:
+        day = input("자세한 정보를 보고 싶은 날짜를 입력하세요 (예: 15). 종료하려면 'exit' 입력: ")
+        if day.lower() == 'exit':
+            break
+        try:
+            day = int(day)
+            if day in expenses_by_date:
+                print(f"{day}일의 지출 내역:")
+                for expense in expenses_by_date[day]:
+                    print(f"  날짜: {expense['date']}, 카테고리: {expense['category']}, 설명: {expense['description']}, 금액: {expense['amount']}")
+            else:
+                print("해당 날짜에 지출 내역이 없습니다.")
+        except ValueError:
+            print("올바른 날짜를 입력하세요.")
 
 # 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
 if not os.path.exists(expenses_file):
