@@ -312,7 +312,9 @@ class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 �
 
     def get_joint_tran(self):    # 거래 내역 반환
         return self.joint_tran
-
+"""
+여기서부터 입니다.
+"""
 def export_account(account):
     """
     가계부 데이터를 JSON 파일로 내보내기.
@@ -322,8 +324,8 @@ def export_account(account):
     filename = f"{account.name}_export.json"
     account_data = {
         'name': account.name,
-        'balance': account.balance,
-        'history': account.history
+        'balance': account.bal, #account.balance -> account.bal로 수정 - account 객체 내부에는 balance 멤버 변수 존재 X
+        'history': [account.income_total,account.income_list,account.spend_total,account.spend_list]#account.history -> [account.income_total,account.income_list,account.spend_total,account.spend_list]로 수정 -> 위와 마찬가지 이유 + 밑의 함수와 연동 + 직관적으로 보기 위해 수정
     }
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(account_data, file, ensure_ascii=False, indent=4)
@@ -337,12 +339,19 @@ def import_account():
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             account_data = json.load(file)
-        new_account = Account_book(account_data['name'], account_data['balance'])
-        new_account.history = account_data['history']
+        new_account = Account_book.Account_book(account_data['name'], account_data['balance'])
+        new_account.income_total = account_data['history'][0] #단순 history에서 Account_book 안의 멤버 변수들로 교체 ->  new_account 객체의 멤버 변수들에 저장
+        new_account.income_list = account_data['history'][1]
+        new_account.spend_total = account_data['history'][2]
+        new_account.spend_list = account_data['history'][3]
         Account_list.append(new_account)
         print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
     except Exception as e:
         print(f"파일을 가져오는 중 오류가 발생했습니다: {e}")
+
+"""
+여기까지 입니다.
+"""
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
