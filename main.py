@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import time
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1486,8 +1487,45 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+# 경제 퀴즈 질문과 답변
+quiz_questions = [
+    {"question": "GDP는 무엇의 약자입니까?", "options": ["A. Gross Domestic Product", "B. Global Development Plan", "C. General Domestic Policy", "D. Gross Domestic Price"], "answer": "A"},
+    {"question": "인플레이션은 무엇을 의미합니까?", "options": ["A. 물가 하락", "B. 물가 상승", "C. 고용 증가", "D. 경제 침체"], "answer": "B"},
+    {"question": "주식 시장에서 '불 마켓(Bull Market)'은 무엇을 의미합니까?", "options": ["A. 시장이 하락세", "B. 시장이 횡보", "C. 시장이 상승세", "D. 시장이 정체"], "answer": "C"},
+    {"question": "리스크를 분산하기 위해 다양한 자산에 투자하는 것을 무엇이라고 합니까?", "options": ["A. 통화 분산", "B. 위험 회피", "C. 투자 분산", "D. 자산 배분"], "answer": "D"},
+    {"question": "중앙은행이 통화량을 조절하여 경제를 안정시키는 정책은?", "options": ["A. 재정 정책", "B. 금리 정책", "C. 통화 정책", "D. 세금 정책"], "answer": "C"}
+]
 
+def one_minute_economic_quiz():
+    # 퀴즈 시작 안내
+    print("1분 경제 퀴즈에 오신 것을 환영합니다! 각 질문에 대해 올바른 답변을 선택하세요.")
+    print("퀴즈는 1분 동안 진행됩니다.\n")
 
+    # 퀴즈 시작 시간 기록
+    start_time = time.time()  # 현재 시간을 기록
+    score = 0  # 정답 개수
+    question_count = 0  # 질문 개수
+
+    while time.time() - start_time < 60:  # 1분 동안 반복
+        # 랜덤하게 질문 선택
+        question = random.choice(quiz_questions)  # 퀴즈 질문 중 랜덤하게 선택
+        print(question["question"])  # 질문 출력
+        for option in question["options"]:
+            print(option)  # 선택지 출력
+
+        # 사용자의 답변 입력
+        answer = input("정답을 선택하세요 (A, B, C, D): ").strip().upper()  # 대문자로 변환하여 입력 받음
+        if answer == question["answer"]:  # 사용자의 답변과 정답 비교
+            print("정답입니다!\n")  # 정답인 경우 메시지 출력
+            score += 1  # 정답 개수 증가
+        else:
+            print(f"오답입니다. 정답은 {question['answer']}입니다.\n")  # 오답인 경우 정답과 함께 메시지 출력
+
+        question_count += 1  # 질문 개수 증가
+
+    # 퀴즈 종료 및 결과 출력
+    print(f"1분이 종료되었습니다! 총 {question_count}문제 중 {score}문제를 맞추셨습니다.")  # 총 문제 개수와 맞춘 개수 출력
+    print(f"정답률: {score / question_count * 100:.2f}%")  # 정답률 계산하여 출력
 
 
 ###########################################################
@@ -1539,6 +1577,8 @@ while not b_is_exit:
         b_is_exit = True
     elif func == "memo":
         add_memo()
+    elif func == "quiz":
+        one_minute_economic_quiz()
         memo()
     else:
         
