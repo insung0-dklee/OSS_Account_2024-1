@@ -1164,7 +1164,10 @@ def load_assets_from_file(user_id):
         with open(assets_file, 'r') as file:
             return json.load(file)
     except FileNotFoundError:
-        return []
+        # 파일이 없을 경우 빈 자산 목록을 파일에 저장하고 반환
+        empty_assets = []
+        save_assets_to_file(user_id, empty_assets)
+        return empty_assets
 
 # asset_management 함수 수정
 def asset_management(user_id):
@@ -1596,7 +1599,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        asset_management(user_reg)
+        asset_management(user.name)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
