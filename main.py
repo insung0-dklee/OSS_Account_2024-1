@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import challenge
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1515,6 +1516,25 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
+def mission():
+    # 도전과제 받아오기
+    today_challenge = challenge.assign_challenge()
+    print("오늘의 도전과제:", today_challenge)
+
+    # 도전과제 완료 여부 확인
+    challenge_completed = input("도전과제를 완료하셨나요? (예/아니요): ")
+    if challenge_completed.lower() == "예":
+        # 도전과제를 완료한 경우
+        challenge.complete_challenge()
+    else:
+        # 도전과제를 완료하지 않은 경우
+        print("아쉽네요. 다음 번에 더 잘해봅시다!")
+
+    # 현재 포인트 출력
+    print(f"현재 누적 포인트: {challenge.get_points()}점")
+
+if __name__ == "__main__":
+    mission()  
 
 # 메인 루프
 while not b_is_exit:
