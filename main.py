@@ -68,47 +68,29 @@ def set_savings():
 # 도움말 출력 함수
 def print_help():
     print("""
-    1: 수입/지출 항목 추가
-    2: 항목 조회
-    3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
-    5: 지출 카테고리 분석
-    6: 회원가입
-    7: 예상 지출 항목
-    8: 빚 추가
-    9: 이자 계산
-    10: 저축 설정
-    11: 자동 저축 실행
+    1: 저축 설정
+    2: 자동 저축 실행
+    3: 현재 저축 금액 조회
     ?: 도움말 출력
     exit: 종료
     """)
+
+# 현재 저축 금액 조회 함수
+def view_savings():
+    with open(savings_file, 'r') as file:
+        savings_data = json.load(file)
+    print(f"현재 총 저축 금액: {savings_data['total_savings']} 원")
 
 # 메인 코드
 while True:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        input_expense()
-    elif func == "2":
-        view_expenses()
-    elif func == "3":
-        generate_monthly_report()
-    elif func == "4":
-        set_budget()
-    elif func == "5":
-        analyze_categories()
-    elif func == "6":
-        user_reg()
-    elif func == "7":
-        predict_next_month_expense()
-    elif func == "8":
-        add_debt()
-    elif func == "9":
-        calculate_interest()
-    elif func == "10":
         set_savings()
-    elif func == "11":
+    elif func == "2":
         auto_save()
+    elif func == "3":
+        view_savings()
     elif func == "?":
         print_help()
     elif func == "exit":
