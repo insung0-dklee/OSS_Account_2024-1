@@ -1,4 +1,4 @@
-import hashlib #hashlib 사용
+﻿import hashlib #hashlib 사용
 import os
 import json
 from datetime import datetime
@@ -287,3 +287,39 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+
+
+# 출석체크 기능 추가
+
+import datetime
+import random
+
+def check_in():
+    while True:
+        # 오늘 날짜 가져오기
+        today_date = datetime.datetime.now().date()
+
+        # 사용자에게 날짜 입력 받기
+        user_input = input("날짜를 입력하세요 (YYYY-MM-DD 형식): ")
+
+        try:
+            # 입력한 날짜를 날짜 객체로 변환
+            input_date = datetime.datetime.strptime(user_input, "%Y-%m-%d").date()
+
+            # 오늘 날짜와 비교하여 유효성 검사
+            if input_date != today_date:
+                print("오늘 날짜의 출석체크만 가능합니다.")
+                continue  # 다시 입력 받기
+
+            # 출석체크 완료 메시지 출력
+            print(f"{input_date}의 출석이 완료 되었습니다!")
+
+            # 포인트 계산 및 제공
+            points = random.randint(2, 8)
+            print(f"{points} 포인트를 받았습니다.")
+            break  # 반복 종료
+
+        except ValueError:
+            # 잘못된 형식의 입력일 경우 오류 메시지 출력
+            print("날짜 입력 형식에 맞추어 입력해주세요.")
