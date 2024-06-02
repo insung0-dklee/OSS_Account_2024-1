@@ -1286,7 +1286,39 @@ def Login_interface(): #로그인 인터페이스
         return 0
     print("로그인(ID와 PW를 입력해 주세요.)")
     ID = input("ID: ")
-    PW = input("PW: ")
+
+    id_found = False
+
+    for user_info in login_info:
+        if user_info[0].strip() == ID:
+            id_found = True  # ID가 존재함을 표현
+            break
+
+    if not id_found: #ID가 존재하지 않으면, 함수를 종료.
+        print("존재하지 않는 아이디입니다.")
+        return 0
+
+    attempt = 0  # 비밀번호 입력 시도 횟수
+
+    while attempt < 3:
+        PW = input("PW: ")
+
+        h = hashlib.sha256()
+        h.update(PW.encode())  # 문자열로 비밀번호 추가 가능
+        login_pw = h.hexdigest()  # 암호화 후 출력
+
+        if user_info[1].strip() == login_pw:  # ID가 맞으면 PW 확인
+            print(f"환영합니다. {user_info[2].strip()} 고객님")  # 맞으면 이름 출력
+            return User(user_info[2].strip())  # user 객체 반환 - 이후 user 정보에 입력 위함
+        else:
+            print("입력된 비밀번호가 틀렸습니다..")  # 비밀번호 입력 실패 시 경고문 출력
+            attempt += 1
+
+        if attempt == 3:
+            print("비밀번호를 3회 이상 틀렸습니다. 4번을 눌러 비밀번호를 찾으십시오.") #3회 이상 비밀번호 입력 실패 시, 안내문 출력
+            return 0
+
+    return 0
 
     h = hashlib.sha256()
 
