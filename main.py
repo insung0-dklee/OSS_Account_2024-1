@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+from datetime import datetime, date
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1242,6 +1243,13 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+    Time()
+
+#시간을 출력하는 함수
+def Time():
+    time = datetime.now()
+    print("time : ", time.hour, "시", time.minute, "분", time.second, "초\n")
+
 
 def print_Login_help(): #user interface 도움말
     print("""
