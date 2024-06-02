@@ -1269,6 +1269,149 @@ YU_Account() #프로그램 시작 화면
 version = "1.0.0"  # 프로그램 버전
 print(f"프로그램 버전: {version}")
 
+
+
+
+#########################################################
+# 사용자로부터 날짜를 입력받는 함수입니다.
+# 문자열을 datetime 객체로 변환합니다.
+# 올바른 날짜 형식이면 변환된 datetime 객체를 반환합니다.
+# 날짜 형식이 잘못된 경우 안내 메시지를 출력하고 다시 입력을 요청합니다.
+def input_date(prompt):
+    while True:
+        date_str = input(prompt)
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d")
+            return date
+        except ValueError:
+            print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
+
+# 재정 목표를 나타내는 클래스입니다.
+"""
+        재정 목표 객체를 초기화합니다.
+
+        Args:
+            목표의 이름, 목표의 금액, 목표의 달성 기한을 설정하고, 현재까지의 저축금액을 0으로 초기화
+"""
+class FinancialGoal:
+    def __init__(self, name, target_amount, due_date):
+        self.name = name
+        self.target_amount = target_amount
+        self.due_date = due_date
+        self.saved_amount = 0
+    
+    # 목표에 저축 금액을 추가하는 메서드입니다.
+    # 목표의 현재 저축 금액에 입력된 금액을 더합니다.
+     # 추가된 저축 금액을 안내합니다.
+    def add_savings(self, amount):
+        self.saved_amount += amount
+        print(f"{amount}원이 목표에 추가되었습니다. 현재 저축액: {self.saved_amount}원")
+    
+    # 목표의 진행 상황을 확인하는 메서드입니다.
+    # 남은 금액과 남은 일 수를 계산하고, 목표를 달성했다면 달성했음을 알리고 목표한 금액과 현재 저축 상태를 출력합니다.
+    # 목표를 달성하지 않았다면 목표 금액과 현재 저축 상태와 남은 금액, 남은기간을 출력합니다.
+    def check_progress(self):
+        remaining_amount = self.target_amount - self.saved_amount
+        days_left = (self.due_date - datetime.now()).days
+        if remaining_amount <= 0:
+            print(f"축하합니다! '{self.name}' 목표를 달성했습니다! \n 목표 금액: {self.target_amount}원\n현재 저축액: {self.saved_amount}원\n")
+        else:
+            print(f"목표: {self.name}\n목표 금액: {self.target_amount}원\n현재 저축액: {self.saved_amount}원\n남은 금액: {remaining_amount}원\n남은 기간: {days_left}일")
+
+
+# 사용자 정보를 담는 클래스입니다.
+# 사용자의 이름을 설정하고, 사용자의 재정 목표 리스트를 빈 리스트로 초기화합니다.
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.goals = []
+
+
+    # 목표 리스트에서 특정 인덱스의 목표를 가져오는 메서드입니다.
+    #해당 인덱스의 목표 객체를 반환하거나, 인덱스가 올바르지 않을 경우 None을 반환합니다.
+    def get_goal(self, index):
+        if 0 <= index < len(self.goals):
+            return self.goals[index]
+        else:
+            return None
+        
+# 재정 목표를 관리하는 루프 함수입니다.
+def financial_goal_loop(user):
+    while True:
+        print("\n--- 재정 목표 관리 ---")
+        print("1: 새로운 목표 추가")
+        print("2: 목표 목록 확인")
+        print("3: 목표 저축액 추가")
+        print("4: 목표 진행 상황 확인")
+        print("0: 메인 메뉴로 돌아가기")
+        
+        # 사용자로부터 기능 선택을 입력받습니다.
+        choice = input("기능을 선택하세요: ")
+          # 새로운 목표를 추가하는 기능입니다.
+        if choice == "1":
+            name = input("목표 이름을 입력하세요: ")
+            target_amount = int(input("목표 금액을 입력하세요: "))
+            due_date = input_date("목표 달성 기한을 입력하세요 (YYYY-MM-DD): ")
+            user.goals.append(FinancialGoal(name, target_amount, due_date))
+            print("새로운 목표가 추가되었습니다.")
+        # 목표 목록을 확인하는 기능입니다.
+        elif choice == "2":
+            if not user.goals:
+                print("등록된 목표가 없습니다.")
+            else:
+                print("등록된 목표 목록:")
+                for idx, goal in enumerate(user.goals, start=1):
+                    print(f"{idx}: {goal.name}")
+        # 등록된 목표를 나타내고 사용자에게 특정한 목표를 입력받아 저축앨을 추가하는 기능입니다.
+        elif choice == "3":
+            if not user.goals:
+                print("등록된 목표가 없습니다. 먼저 목표를 추가하세요.")
+            else:
+                print("등록된 목표 목록:")
+                for idx, goal in enumerate(user.goals, start=1):
+                    print(f"{idx}: {goal.name}")
+                goal_index = int(input("저축액을 추가할 목표를 선택하세요: ")) - 1
+                selected_goal = user.get_goal(goal_index)
+                if selected_goal:
+                    amount = int(input("추가할 저축액을 입력하세요: "))
+                    selected_goal.add_savings(amount)
+                else:
+                    print("올바른 목표를 선택하세요.")
+        #목표 목록을 출력하고, 사용자에게 특정한 목표를 입력받아 해당 목표의 진행 상황을 확인하는 기능입니다.
+        #목표한 금액을 모두 모았다면 목표했던 금액과 현재 저축액을 출력합니다.
+        #목표 목록에 없는 번호 입력시 사용자에게 다시 입력 받습니다.
+        elif choice == "4":
+            if not user.goals:
+                print("등록된 목표가 없습니다. 먼저 목표를 추가하세요.")
+            else:
+                print("등록된 목표 목록:")
+                for idx, goal in enumerate(user.goals, start=1):
+                    print(f"{idx}: {goal.name}")
+                goal_index = int(input("진행 상황을 확인할 목표를 선택하세요: ")) - 1
+                selected_goal = user.get_goal(goal_index)
+                if selected_goal:
+                    selected_goal.check_progress()
+                else:
+                    print("올바른 목표를 선택하세요.")
+        #메인 메뉴로 돌아가는 기능입니다.
+        elif choice == "0":
+            print("메인 메뉴로 돌아갑니다.")
+            break
+        #재정 목표 관리 반복문에 없는 번호 입력시 사용자에게 다시 입력 받습니다.
+        else:
+            print("올바른 기능을 선택하세요.")
+
+
+
+
+
+###########################################################
+
+
+
+
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 interface = 0 #인터페이스 만들기
@@ -1311,6 +1454,9 @@ while not b_is_exit:
         analyze_categories()
     elif func == "?":
         print_help()
+
+    elif func == "8":
+        financial_goal_loop(user)
     elif func == "exit" or func == "x":
         print("프로그램을 종료합니다.")
         b_is_exit = True
