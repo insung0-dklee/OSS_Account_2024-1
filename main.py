@@ -558,6 +558,8 @@ def print_help():
     6: 고정 지출 항목 추가
     7: 고정 지출 항목 조회
     8: 고정 지출 항목 적용
+    9: 아이디 찾기
+    10: 비밀번호 찾기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1257,17 +1259,57 @@ def YU_Account():
     """
     print(welcome_message)
 
-def print_Login_help(): #user interface 도움말
+def print_Login_help():
     print("""
     1: 회원가입
     2: 로그인
-    3. 아이디 찾기
-    4. 비밀번호 찾기
+    3. 아이디 찾기 (로그인 후에도 사용 가능)
+    4. 비밀번호 찾기 (로그인 후에도 사용 가능)
 
     아무거나 입력시 프로그램 종료
 
     ?: 로그인 도움말 출력
     """)
+
+# 아이디 찾기 함수
+def find_id_by_phone():
+    phone = input("찾고자 하는 사용자의 전화번호 입력: ")
+    if phone in userphones:
+        print(f'해당 전화번호로 등록된 아이디는 {userphones[phone]}입니다.')
+    else:
+        print("해당 전화번호를 가진 사용자가 없습니다.")
+
+# 비밀번호 찾기 함수
+def change_pw_by_phone():
+    check = 0
+
+    ID = input("찾고자 하는 사용자의 ID 입력: ")
+
+    if ID in userdata2:
+        print(f"{userdata2[ID]['name']}님, 전화번호를 입력해 주십시오.")
+        phone = input("전화번호 입력: ")
+
+        if phone in userphones:
+            while True:
+                P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
+
+                if check == "1":
+                    h = hashlib.sha256()
+                    h.update(P.encode())
+                    P = h.hexdigest()
+
+                    userdata2[ID]['pw'] = P
+
+                    with open('login.txt', 'w', encoding='UTF-8') as fw:
+                        for user_id, user_info in userdata2.items():
+                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
+                    break
+
+        else:
+            print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오")
+    else:
+        print("ID가 존재하지 않습니다.")
 
 def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     #파일 읽어 오기
@@ -1552,6 +1594,10 @@ while not b_is_exit:
         view_fixed_expense_func()
     elif func == "8":
         apply_fixed_expense_func()
+    elif func == "9":
+        find_id_by_phone()
+    elif func == "10":
+        change_pw_by_phone()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func == "종료":
