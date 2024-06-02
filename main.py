@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import calendar
+from datetime import timedelta
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -554,6 +556,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 달력 보기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -592,16 +595,21 @@ def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
-    score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
     entry = {
         "date": date,
         "category": category,
         "description": description,
         "amount": amount,
-        "score": score  # 평가 점수 추가
+        "score": day_evaluation()  # 평가 점수 추가
     }
     ledger.append(entry)
+
+    # 파일에 저장
+    expenses = load_expenses()
+    expenses.append(entry)
+    save_expenses(expenses)
+
     print("항목이 추가되었습니다.")
 
     category_count = sum(1 for e in ledger if e["category"] == category)
@@ -858,6 +866,74 @@ def track_savings(savings, target_amount, months_left):
 
 # 지출 내역을 저장할 파일 이름
 expenses_file = 'expenses.json'
+
+# 지출 내역을 파일에서 불러오는 함수
+def load_expenses():
+    try:
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        print(f"An error occurred while loading expenses: {e}")
+        return []
+
+    # 지출 내역을 파일에 저장하는 함수
+def save_expenses(expenses):
+    try:
+        with open(expenses_file, 'w', encoding='utf-8') as file:
+            json.dump(expenses, file, ensure_ascii=False, indent=4)
+    except Exception as e:
+        print(f"An error occurred while saving expenses: {e}")
+# 달력에 지출 내역을 표시하는 함수
+def display_monthly_calendar(year, month):
+    cal = calendar.TextCalendar(calendar.SUNDAY)
+    month_calendar = cal.monthdayscalendar(year, month)
+
+    expenses = load_expenses()
+    expenses_by_date = {}
+
+    # 지출 내역을 날짜별로 수집
+    for expense in expenses:
+        expense_date = datetime.strptime(expense['date'], '%Y-%m-%d').date()
+        if expense_date.year == year and expense_date.month == month:
+            if expense_date.day not in expenses_by_date:
+                expenses_by_date[expense_date.day] = []
+            expenses_by_date[expense_date.day].append(expense)
+
+    print("\n     " + calendar.month_name[month] + " " + str(year))
+    print("Mo Tu We Th Fr Sa Su")
+
+    # 달력 출력
+    for week in month_calendar:
+        week_str = ""
+        for day in week:
+            if day == 0:
+                week_str += "   "
+            else:
+                day_expenses = expenses_by_date.get(day, [])
+                total_expense = sum(float(exp['amount']) for exp in day_expenses)
+                week_str += f"{day:2d}"
+                if total_expense > 0:
+                    week_str += f"*"
+                week_str += " "
+        print(week_str)
+    print("\n* 표시는 해당 날짜에 지출이 있음을 나타냅니다.\n")
+
+
+def show_calendar():
+    while True:
+        try:
+            year = int(input("달력을 보고 싶은 연도를 입력하세요 (예: 2024): "))
+            month = int(input("달력을 보고 싶은 달을 입력하세요 (예: 6): "))
+            if 1 <= month <= 12:
+                display_monthly_calendar(year, month)
+                break
+            else:
+                print("올바른 월을 입력하세요 (1-12).")
+        except ValueError:
+            print("올바른 연도와 월을 입력하세요.")
 
 # 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
 if not os.path.exists(expenses_file):
@@ -1532,6 +1608,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        show_calendar()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1541,5 +1619,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
