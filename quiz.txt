@@ -1,0 +1,99 @@
+
+#금융 퀴즈 기능 추가  
+
+""""
+금융 퀴즈 질문 및 정답 난이도등을 포함하는 FinanceQuiz라는 클래스를 구현하였습니다.
+또한 퀴즈 질문 저장을 리스트를 사용하여서   self.questions = [   # 질문 목록 (생략) ] 
+여러가지 질문을 저장하고 관리할 수 있게 하였고 새로운 질문도 쉽게 추가할 수 있습니다.
+  """
+
+class FinanceQuiz:
+  def __init__(self):
+      self.questions = [
+          {
+              "question": "1. 주식이란 무엇인가요?",
+              "choices": ["a. 회사의 소유권 일부", "b. 회사의 채무", "c. 은행 예금", "d. 부동산 투자"],
+              "answer": "a",
+              "difficulty": "easy"
+          },
+          {
+              "question": "2. 채권이란 무엇인가요?",
+              "choices": ["a. 회사의 소유권 일부", "b. 정부나 기업이 발행한 빚 증서", "c. 은행 예금", "d. 부동산 투자"],
+              "answer": "b",
+              "difficulty": "easy"
+          },
+          {
+              "question": "3. 인플레이션이란 무엇인가요?",
+              "choices": ["a. 물가가 하락하는 현상", "b. 물가가 상승하는 현상", "c. 주식의 가치가 상승하는 현상", "d. 주식의 가치가 하락하는 현상"],
+              "answer": "b",
+              "difficulty": "easy"
+          },
+          {
+              "question": "4. 분산 투자의 목적은 무엇인가요?",
+              "choices": ["a. 수익을 극대화하기 위해", "b. 위험을 최소화하기 위해", "c. 세금을 줄이기 위해", "d. 현금을 보유하기 위해"],
+              "answer": "b",
+              "difficulty": "easy"
+          },
+          {
+              "question": "5. ETF란 무엇인가요?",
+              "choices": ["a. Exchange Traded Fund", "b. Electronic Transfer Fund", "c. Emerging Transfer Fund", "d. Equity Traded Fund"],
+              "answer": "a",
+              "difficulty": "easy"
+          },
+          {
+              "question": "6. 주식 시장의 베타 지수는 무엇을 나타내나요?",
+              "choices": ["a. 특정 주식의 변동성", "b. 전체 시장 대비 특정 주식의 변동성", "c. 주식의 수익률", "d. 주식의 배당률"],
+              "answer": "b",
+              "difficulty": "hard"
+          },
+          {
+              "question": "7. 회사의 재무제표에서 '자산'은 무엇을 의미하나요?",
+              "choices": ["a. 회사의 총 부채", "b. 회사가 소유한 모든 것의 총 가치", "c. 주주의 지분", "d. 회사의 순이익"],
+              "answer": "b",
+              "difficulty": "hard"
+          },
+          {
+              "question": "8. 암호화폐의 '블록체인' 기술은 무엇을 의미하나요?",
+              "choices": ["a. 중앙 집중식 데이터베이스", "b. 거래 기록을 저장하는 분산형 디지털 장부", "c. 암호화된 이메일 시스템", "d. 온라인 결제 게이트웨이"],
+              "answer": "b",
+              "difficulty": "hard"
+          },
+          {
+              "question": "9. 재무비율 분석에서 '유동비율'은 무엇을 나타내나요?",
+              "choices": ["a. 자산 대비 부채 비율", "b. 단기 자산 대비 단기 부채 비율", "c. 순이익 대비 자산 비율", "d. 매출 대비 비용 비율"],
+              "answer": "b",
+              "difficulty": "hard"
+          },
+          {
+              "question": "10. 주식시장에서 '공매도'란 무엇인가요?",
+              "choices": ["a. 주식을 빌려서 파는 거래", "b. 주식을 사는 거래", "c. 주식을 장기 보유하는 거래", "d. 주식을 배당받는 거래"],
+              "answer": "a",
+              "difficulty": "hard"
+          }
+      ]
+      self.score = 0
+
+  def start_quiz(self):
+      print("금융 퀴즈에 오신 것을 환영합니다!")
+      for q in self.questions:
+          print("\n" + q["question"])
+          for choice in q["choices"]:
+              print(choice)
+          answer = input("정답을 입력하세요 (a, b, c, d): ")
+          if answer.lower() == q["answer"]:
+              print("정답입니다!")
+              self.score += 1
+          else:
+              print(f"틀렸습니다. 정답은 {q['answer']}입니다.")
+      self.show_score()
+
+  def show_score(self):
+      print(f"\n퀴즈가 끝났습니다. 총 점수는 {self.score}/{len(self.questions)}입니다.")
+
+if __name__ == "__main__":
+  quiz = FinanceQuiz()
+  quiz.start_quiz()
+
+
+
+
