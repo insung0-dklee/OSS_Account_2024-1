@@ -8,6 +8,7 @@ import webbrowser
 import re
 import Add_function
 import Account_book  # 이 부분을 추가하여 Account_book 모듈을 임포트합니다.
+import time  # 새로운 모듈 임포트
 from Add_function import set_daily_limit, check_daily_limit, analyze_expenses_in_period, predict_future_expenses, add_fixed_expense, view_fixed_expenses, apply_fixed_expenses
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -142,6 +143,17 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
+# 사용자 마지막 활동 시간 저장 변수
+last_activity_time = time.time()
+timeout_duration = 30  # 자동 로그아웃까지의 시간 (초)
+
+def update_last_activity_time():
+    """
+    사용자의 마지막 활동 시간을 현재 시간으로 갱신하는 함수.
+    """
+    global last_activity_time
+    last_activity_time = time.time()
 
 class Debt:
     def __init__(self, lender, amount, due_date):
@@ -1368,6 +1380,7 @@ def Login_interface(): #로그인 인터페이스
 
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
                 print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                update_last_activity_time()  # 로그인 성공 시 활동 시간 갱신
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
                 print("비밀번호 오류입니다.")#아니면 끝
@@ -1574,9 +1587,17 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 
 # 메인 루프
 while not b_is_exit:
+    # 현재 시간과 마지막 활동 시간을 비교하여 타임아웃 체크
+    current_time = time.time()
+    if current_time - last_activity_time > timeout_duration:
+        print("자동 로그아웃되었습니다. 활동이 없어서 로그아웃됩니다.")
+        break  # 메인 루프 종료로 로그아웃
+
     print("-----------------------")
     print("user:", user.name)  # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
+
+    update_last_activity_time()  # 활동 시간 갱신
 
     if func == "1":
         add_entry()
