@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import time
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1189,6 +1190,16 @@ def view_d_day():
             print("이미 지난 디데이입니다.")
     else:
         print("저장된 디데이 정보가 없습니다.")
+        
+def get_program_running_time():
+    return time.time() - start_time
+
+start_time = time.time()
+
+# 프로그램 실행 시간을 출력하는 함수
+def print_program_running_time():
+    print("프로그램 실행 시간: {:.2f} 초".format(get_program_running_time()))
+    
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
