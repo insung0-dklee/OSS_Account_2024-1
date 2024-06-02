@@ -1282,10 +1282,10 @@ def print_Login_help(): #user interface 도움말
     print("""
     1: 회원가입
     2: 로그인
-    3. 아이디 찾기
-    4. 비밀번호 찾기
+    3: 아이디 찾기
+    4: 비밀번호 찾기
     
-    아무거나 입력시 프로그램 종료
+    종료: 프로그램 종료
     
     ?: 로그인 도움말 출력
     """)
@@ -1577,10 +1577,13 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형
     elif interface == "?":
         print_Login_help() #?입력시 Login 도움말 띄우기
-    else:
+    elif interface.lower() == "종료":
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
+    else:
+        print("올바른 숫자를 입력하십시오. 종료를 원한다면 '종료'를 입력하십시오.")
+
 
 
 # 메인 루프
