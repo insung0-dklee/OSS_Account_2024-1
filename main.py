@@ -549,6 +549,7 @@ ledger = []
 # 도움말 출력 함수
 def print_help():
     print("""
+    0: 자산 관리 메뉴
     1: 수입/지출 항목 추가
     2: 항목 조회
     3: 월별 보고서 생성
@@ -1487,7 +1488,84 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 
+##############################################################################
+##############################################################################
+# 자산 관리 시스템
+##############################################################################
+##############################################################################
 
+class SingleAsset:
+    def __init__(self, asset_group, name, balance=0): # 클래스 생성자: 객체가 생성될 때 호출되어 입력받은 값으로 변수를 초기화
+        self.asset_group = asset_group
+        self.name = name
+        self.balance = balance
+
+class AssetManager:
+    def __init__(self):
+        self.assets = {} # 자산을 저장하는 dictionary
+        self.allowed_asset_groups = ["현금", "은행", "체크카드", "신용카드", "기타"] # 허용되는 자산 그룹
+
+    def add_asset(self, asset_group, asset_name, initial_balance=0): # 자산 추가: (자산 그룹, 자산 이름, 최초 금액)을 매개 변수로 받음
+        if asset_group not in self.allowed_asset_groups:
+            print(f"잘못된 자산 그룹입니다.\n올바른 자산 그룹: {', '.join(self.allowed_asset_groups)}\n")
+            return
+        
+        if asset_name not in self.assets: # 자산 이름 충돌 감지
+            self.assets[asset_name] = SingleAsset(asset_group, asset_name, initial_balance)
+            print(f"{asset_group} 자산 '{asset_name}'이(가) 추가되었습니다. 초기 잔액: {initial_balance} 원\n")
+        else:
+            print(f"{asset_name} 자산은 이미 존재합니다.\n")
+
+    def remove_asset(self, asset_name): # 자산 제거
+        if asset_name in self.assets:
+            del self.assets[asset_name]
+            print(f"{asset_name} 자산이 삭제되었습니다.\n")
+        else:
+            print(f"{asset_name} 자산이 존재하지 않습니다.\n")
+
+    def list_assets(self): # 현재 저장된 자산 목록 출력
+        for asset_name, asset in self.assets.items():
+            print(f"자산 그룹: {asset.asset_group}, 자산 이름: {asset.name}, 잔액: {asset.balance} 원\n")
+
+
+asset_manager = AssetManager() # 자산 관리 클래스 생성 및 할당
+
+def assetManagement():
+    print("\n[자산 관리 시스템]")
+    print("1. 자산 추가")
+    print("2. 자산 삭제")
+    print("3. 자산 목록 보기")
+    print("4. 종료\n")
+    while True:
+        am_interface = input("기능 입력 (? 입력시 도움말): ")
+        
+        if am_interface == "?":
+            print("""
+            1: 자산 추가
+            2: 자산 삭제
+            3: 자산 목록 조회
+            4: 이전 메뉴로
+            """)
+        elif am_interface == "1":
+            asset_group = input("자산 그룹을 입력하세요 (예: 현금, 은행, 체크카드, 신용카드): ")
+            asset_name = input("자산 이름을 입력하세요: ")
+            initial_balance = float(input("초기 잔액을 입력하세요: "))
+            asset_manager.add_asset(asset_group, asset_name, initial_balance)
+        elif am_interface == "2":
+            asset_name = input("삭제할 자산 이름을 입력하세요: ")
+            asset_manager.remove_asset(asset_name)
+        elif am_interface == "3":
+            asset_manager.list_assets()
+        elif am_interface == "4":
+            break
+        else:
+            print("올바른 기능을 입력해주세요.")
+
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
 
 
 ###########################################################
@@ -1522,7 +1600,9 @@ while not b_is_exit:
     print("user:",user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
-    if func == "1":
+    if func == "0":
+        assetManagement()
+    elif func == "1":
         add_entry()
     elif func == "2":
         view_entries()
@@ -1541,5 +1621,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
