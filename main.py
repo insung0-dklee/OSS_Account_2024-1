@@ -1,13 +1,14 @@
-import hashlib #hashlib 사용
+import hashlib
 import os
 import json
 from datetime import datetime, date
 import pickle
-import Account_book
 import random
 import webbrowser
 import re
 import Add_function
+import Account_book  # 이 부분을 추가하여 Account_book 모듈을 임포트합니다.
+from Add_function import set_daily_limit, check_daily_limit, analyze_expenses_in_period, predict_future_expenses, add_fixed_expense, view_fixed_expenses, apply_fixed_expenses
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -554,6 +555,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 고정 지출 항목 추가
+    7: 고정 지출 항목 조회
+    8: 고정 지출 항목 적용
     ?: 도움말 출력
     exit: 종료
     """)
@@ -716,7 +720,7 @@ def average():
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
-    
+
     @Param
         user1 : User object : 비교할 첫 번째 사용자 객체.
         user2 : User object : 비교할 두 번째 사용자 객체.
@@ -770,7 +774,7 @@ def generate_monthly_report():
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
@@ -813,7 +817,7 @@ def analyze_categories():
 def calculate_monthly_savings(target_amount, target_date):
     """
     목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
-    
+
     @Param
         target_amount : 목표 금액.
         target_date : 목표 날짜 (YYYY-MM-DD 형식).
@@ -837,7 +841,7 @@ def calculate_monthly_savings(target_amount, target_date):
 def track_savings(savings, target_amount, months_left):
     """
     현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
-    
+
     @Param
         savings : 현재까지 저축된 금액.
         target_amount : 목표 금액.
@@ -1225,6 +1229,16 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
+# 고정 지출 관리를 위한 함수 추가
+def add_fixed_expense_func():
+    add_fixed_expense()
+
+def view_fixed_expense_func():
+    view_fixed_expenses()
+
+def apply_fixed_expense_func():
+    apply_fixed_expenses()
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1249,9 +1263,9 @@ def print_Login_help(): #user interface 도움말
     2: 로그인
     3. 아이디 찾기
     4. 비밀번호 찾기
-    
+
     아무거나 입력시 프로그램 종료
-    
+
     ?: 로그인 도움말 출력
     """)
 
@@ -1300,7 +1314,7 @@ def Login_interface(): #로그인 인터페이스
     except Exception as e:
         print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
         return 0
-    
+
     cnt = 0
 
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
@@ -1519,7 +1533,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
+    print("user:", user.name)  # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1532,14 +1546,19 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_fixed_expense_func()
+    elif func == "7":
+        view_fixed_expense_func()
+    elif func == "8":
+        apply_fixed_expense_func()
     elif func == "?":
         print_help()
-    elif func == "exit" or func == "x" or func =="종료":
+    elif func == "exit" or func == "x" or func == "종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
     elif func == "memo":
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
