@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import requests
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -970,6 +971,35 @@ def modify_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+"""
+get_gold_price : Alpha Vantage 에서 금 시세 데이터 가져오기 (미국 가준)
+
+@Param
+    None
+@Return
+    gold_price : 현재 금 시세
+"""
+def get_gold_price():
+    url = "https://www.alphavantage.co/query"
+
+    api_key = '39F4DLYE9KLUHJVR'  # Alpha Vantage API 키
+    
+    # API 요청 매개변수
+    params = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": "XAUUSD",  # XAUUSD는 금 시세를 의미합니다.
+        "apikey": api_key
+    }
+
+    response = requests.get(url, params=params) # API 요청 매개변수 보내기
+    data = response.json()# 응답 데이터 확인하기
+    
+    # 현재 금 시세 추출
+    if "Global Quote" in data:
+        gold_price = data["Global Quote"]["05. price"]
+        return gold_price #금 시세 반환하기
+    else:
+        return "금 시세를 가져오는 데 실패했습니다."
 
 # 엔화와 달러의 환율 정보를 정적으로 저장합니다.
 exchange_rate = {
@@ -1172,6 +1202,12 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+    
+    gold_price = get_gold_price() #금 시세 가져오기
+    if gold_price != "금 시세를 가져오는 데 실패했습니다.":
+        print("현재 금 시세:", gold_price, "USD per Troy Ounce") #현재 금 시세 출력
+    else:
+        print("금 시세를 가져오는 데 실패했습니다.")
 
 def print_Login_help(): #user interface 도움말
     print("""
