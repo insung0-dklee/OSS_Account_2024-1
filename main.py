@@ -1487,6 +1487,7 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 
+# 경제 사전
 financial_dictionary = {
     "최저임금제": "근로자의 생존권 및 삶의 질 향상을 위해 '최소한의 생활이 가능할 정도의 급료를 근로자에게 지급해라.' 라고 사업주들에게 법으로 강제하는 제도.",
     "이자": "원본인 유동자본(화폐)의 대부로부터 발생하는 수익",
@@ -1500,12 +1501,23 @@ financial_dictionary = {
 
 # 특정 용어의 정의를 검색하는 함수
 def search_definitiod(dictionary):
-    term = input("정의를 검색할 용어를 입력하세요: ")
-    definition = dictionary.get(term)
-    if definition:
+    term = input("정의를 검색할 용어를 입력하세요: ") #사용자에게 단어 입력 받음
+    definition = dictionary.get(term) # 입력받은 단어를 dictionary에서 찾음
+    if definition: #존재 O
         print(f"{term} : {definition}")
-    else:
+    else: #존재 X
         print(f"'{term}'에 대한 정의를 찾을 수 없습니다.")
+        add_term = input(f"'{term}'을(를) 사전에 추가하시겠습니까? (yes/no): ").strip().lower() # 경제 사전 용어 추가 
+        if add_term == 'yes': #yes인 경우 추가함
+            add_definition(dictionary, term) #dictionary에 term 추가
+        else:
+            print(f"'{term}'을(를) 추가하지 않았습니다.") # 답변이 yes가 아닌 모든 경우
+
+# 새로운 단어와 정의를 사전에 추가하는 함수
+def add_definition(dictionary, term):
+    new_definition = input(f"'{term}'의 정의를 입력하세요: ") #사용자에게 입력 받기
+    dictionary[term] = new_definition # dictionary에 추가
+    print(f"'{term}'이(가) 사전에 추가되었습니다.")
 
 ###########################################################
 
