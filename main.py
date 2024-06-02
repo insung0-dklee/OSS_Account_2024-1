@@ -182,6 +182,65 @@ def delete_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+# 종합소득세 계산 함수
+def calculate_comprehensive_income_tax():
+    business_income = float(input("사업소득을 입력하세요 (원): "))
+    labor_income = float(input("근로소득을 입력하세요 (원): "))
+    interest_income = float(input("이자소득을 입력하세요 (원): "))
+    dividend_income = float(input("배당소득을 입력하세요 (원): "))
+    pension_income = float(input("연금소득을 입력하세요 (원): "))
+    other_income = float(input("기타소득을 입력하세요 (원): "))
+
+    total_income = business_income + labor_income + interest_income + dividend_income + pension_income + other_income
+    
+    # 근로소득공제 계산 (근로소득에 대해서만 적용)
+    if labor_income <= 500000:
+        labor_deduction = labor_income * 0.7
+    elif labor_income <= 15000000:
+        labor_deduction = 350000 + (labor_income - 500000) * 0.4
+    elif labor_income <= 45000000:
+        labor_deduction = 5150000 + (labor_income - 15000000) * 0.15
+    elif labor_income <= 100000000:
+        labor_deduction = 9150000 + (labor_income - 45000000) * 0.05
+    else:
+        labor_deduction = 9150000 + (labor_income - 45000000) * 0.05
+        labor_deduction += (labor_income - 100000000) * 0.02
+        if labor_deduction > 20000000:
+            labor_deduction = 20000000
+
+    taxable_income = total_income - labor_deduction
+
+    # 기본 세율에 따른 세금 계산
+    tax = 0
+    if taxable_income <= 12000000:
+        tax = taxable_income * 0.06
+    elif taxable_income <= 46000000:
+        tax = 12000000 * 0.06 + (taxable_income - 12000000) * 0.15
+    elif taxable_income <= 88000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + (taxable_income - 46000000) * 0.24
+    elif taxable_income <= 150000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + (taxable_income - 88000000) * 0.35
+    elif taxable_income <= 300000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + (taxable_income - 150000000) * 0.38
+    elif taxable_income <= 500000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (taxable_income - 300000000) * 0.40
+    elif taxable_income <= 1000000000:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + (taxable_income - 500000000) * 0.42
+    else:
+        tax = 12000000 * 0.06 + 34000000 * 0.15 + 42000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + (taxable_income - 1000000000) * 0.45
+
+    # 표준 세액 공제
+    tax_credit = min(tax * 0.07, 740000)
+
+    tax_before_credit = tax
+    tax -= tax_credit
+
+    print(f"총 소득: {total_income} 원")
+    print(f"근로소득공제: {labor_deduction} 원")
+    print(f"과세 표준: {taxable_income} 원")
+    print(f"세금 공제 전: {tax_before_credit} 원")
+    print(f"세금 공제 후: {tax} 원")
+
 # 근로소득세 계산 함수
 def calculate_income_tax():
     income = float(input("총 소득을 입력하세요 (원): "))
@@ -225,12 +284,13 @@ def calculate_income_tax():
     # 표준 세액 공제
     tax_credit = min(tax * 0.07, 740000)
 
+    tax_before_credit = tax
     tax -= tax_credit
 
     print(f"총 소득: {income} 원")
     print(f"근로소득공제: {deduction} 원")
     print(f"과세 표준: {taxable_income} 원")
-    print(f"세금 공제 전: {tax + tax_credit} 원")
+    print(f"세금 공제 전: {tax_before_credit} 원")
     print(f"세금 공제 후: {tax} 원")
 
 # 부가가치세 계산 함수
@@ -271,16 +331,19 @@ def calculate_insurance():
 # 세금 및 보험 계산 메뉴 함수
 def tax_and_insurance_menu():
     print("세금 및 보험 계산 항목을 선택하세요: ")
-    print("1: 근로소득세 계산")
-    print("2: 부가가치세 계산")
-    print("3: 4대 보험 계산")
+    print("1: 종합소득세 계산")
+    print("2: 근로소득세 계산")
+    print("3: 부가가치세 계산")
+    print("4: 4대 보험 계산")
     choice = input("선택: ")
 
     if choice == "1":
-        calculate_income_tax()
+        calculate_comprehensive_income_tax()
     elif choice == "2":
-        calculate_vat()
+        calculate_income_tax()
     elif choice == "3":
+        calculate_vat()
+    elif choice == "4":
         calculate_insurance()
     else:
         print("잘못된 선택입니다.")
@@ -303,7 +366,7 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        tax_and_insurance_menu()  # 세금 및 보험 계산 메뉴 호출
+        tax_and_insurance_menu()
     elif func == "7":
         user_id = input("사용자 ID를 입력하세요: ")
         user_info = open_account_info(user_id)
