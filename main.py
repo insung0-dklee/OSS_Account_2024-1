@@ -26,6 +26,28 @@ def weekly_reminder():
 def print_exchange_rate_url():
     url = "https://finance.naver.com/marketindex/"
     print(f"오늘의 환율 정보를 확인하려면 다음 링크를 방문하세요: {url}")
+    
+
+    # 금액을 나눠야할 사람의 수와 총 금액을 입력하면 인당 내야하는 금액을 알려주는 함수.
+def calculate_per_person_amount():
+    try:
+        num_people = int(input("나눠야 할 사람의 수를 입력하세요: "))
+        total_amount = float(input("총 금액을 입력하세요: "))
+        
+        if num_people <= 0:
+            print("사람 수는 1명 이상이어야 합니다.")
+            return
+        
+        per_person_amount = total_amount / num_people
+        print(f"인당 내야 하는 금액은 {per_person_amount:.2f}원입니다.")
+    
+    except ValueError:
+        print("유효한 숫자를 입력하세요.")
+    except ZeroDivisionError:
+        print("사람 수는 0명이 될 수 없습니다.")
+
+
+
 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -575,7 +597,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 오늘의 환율 사이트 추천      
+    6: 오늘의 환율 사이트 추천 
+    7: 더치페이 계산기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1560,6 +1583,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6": #오늘의 환율을 알려주는 사이트를 추천해주는 기능 6
         print_exchange_rate_url()
+    elif func == "7":
+        calculate_per_person_amount() #사람의 수에 따라 인당 내야하는 금액을 출력해주는 기능7
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
