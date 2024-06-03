@@ -542,7 +542,24 @@ def calculator():
     except Exception as e:
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
+#팁 계산기
+class TipCalculator:
+    def __init__(self):
+        self.total_amount = 0
+        self.tip_rate = 0
 
+    def calculate_total_and_tip(self, amount, tip_rate):
+        self.total_amount = amount
+        self.tip_rate = tip_rate
+        tip_amount = amount * tip_rate
+        print(f"팁: ${tip_amount:.2f}")
+        final_amount = amount + tip_amount
+        print(f"총 금액: ${final_amount:.2f}")
+
+    def calculate_per_person(self, participant_count):
+        per_person_amount = self.total_amount / participant_count
+        print(f"각 참여자에게 분배될 금액: ${per_person_amount:.2f}")
+        
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +571,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 팁 계산기      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1550,31 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        tip_calculator = TipCalculator()  # TipCalculator 클래스의 인스턴스 생성
+
+        print("-----------------------")
+        print("세금 계산기(달러)")
+        print("1: 세금과 함께 총 금액 및 팁 계산")
+        print("2: 인당 금액")
+        print("3: 종료")
+        option = input("기능을 선택하세요: ")
+
+        if option == "1":
+            amount = float(input("총 금액을 입력하세요: "))
+            tip_rate = float(input("팁 비율을 소수로 입력하세요 (예: 0.15): "))
+            tip_calculator.calculate_total_and_tip(amount, tip_rate)
+        elif option == "2":
+            amount = float(input("총 금액을 입력하세요: "))
+            tip_rate = float(input("팁 비율을 소수로 입력하세요 (예: 0.15): "))
+            participant_count = int(input("참여자 수를 입력하세요: "))
+            tip_calculator.calculate_total_and_tip(amount, tip_rate)
+            tip_calculator.calculate_per_person(participant_count)
+        elif option == "3":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
