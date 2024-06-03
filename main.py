@@ -8,8 +8,24 @@ import random
 import webbrowser
 import re
 import Add_function
+import time
+import threading
+
+
+def weekly_reminder():
+    """
+    7일에 한 번씩 "일주일의 소득, 소비를 정산하세요"라는 문구를 출력하는 함수입니다.
+    """
+    while True:
+        time.sleep(604800)  # 604800초 == 7일
+        print("일주일의 소득, 소비를 정산하세요")
+
+
+
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+
+
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
@@ -1520,6 +1536,10 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 while not b_is_exit:
     print("-----------------------")
     print("user:",user.name) # 현재 user가 누구인지 출력
+    # 스레드를 사용하여 함수 실행
+    reminder_thread = threading.Thread(target=weekly_reminder)
+    reminder_thread.daemon = True  # 메인 프로그램이 종료될 때 스레드도 함께 종료되도록 설정
+    reminder_thread.start()
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
