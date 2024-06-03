@@ -594,14 +594,25 @@ def add_entry():
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    card_name = input("결제한 카드: ")
+    card = next((card for card in cards if card['name'] == card_name), None)
+    if card is None:
+        print("등록되지 않은 카드입니다.")
+        answer = input("새로 등록하시겠습니까? (y/n): ")
+        if answer == 'y':
+            add_card(card_name)
+            card = cards[-1] #방금 등록한 카드로 지정해줌
     entry = {
         "date": date,
         "category": category,
         "description": description,
         "amount": amount,
-        "score": score  # 평가 점수 추가
+        "score": score,  # 평가 점수 추가
+        "card": card_name
     }
     ledger.append(entry)
+    if card is not None:
+        card["entries"].append(entry)  # 카드에도 추가
     print("항목이 추가되었습니다.")
 
     category_count = sum(1 for e in ledger if e["category"] == category)
@@ -612,7 +623,23 @@ def add_entry():
             add_favorite_category(category)
         else:
             print("카테고리에 추가되지 않았습니다.")
+cards=[]
+def add_card(entry):
+    card_name = input("카드 이름: ")
+    card_info = {
+        "name": card_name,
+         "entries": [] #결제 내역을 저장할 곳
+    }
+    cards.append(card_info)
+    print("카드가 추가되었습니다.")
 
+def view_cards():
+    if not cards:
+        print("등록된 카드가 없습니다.")
+    for card in cards:
+        print(f"카드 이름: {card['name']}" )
+        for i, entry in enumerate(card['entries'], start=1):
+                print(f"{i}. {entry}")
 
 favorites = []
 
@@ -1526,11 +1553,13 @@ while not b_is_exit:
         add_entry()
     elif func == "2":
         view_entries()
-    elif func == "3":
-        generate_monthly_report()
+    elif func == "3" :
+        view_cards()
     elif func == "4":
-        set_budget()
+        generate_monthly_report()
     elif func == "5":
+        set_budget()
+    elif func == "6":
         analyze_categories()
     elif func == "?":
         print_help()
