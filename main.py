@@ -1543,3 +1543,28 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
+#알림기능추가
+
+        class BudgetManager:
+    def __init__(self, budget):
+        self.budget = budget
+
+    def set_budget(self, budget):
+        self.budget = budget
+
+    def get_budget(self):
+        return self.budget
+
+
+def record_expense(amount, budget_manager):
+    if amount > budget_manager.get_budget():
+        print("주의: 예산을 초과하였습니다!")
+
+
+if __name__ == "__main__":
+    # 예산 초기화
+    budget_manager = BudgetManager(1000)
+
+    # 지출 기록
+    record_expense(1500, budget_manager)
