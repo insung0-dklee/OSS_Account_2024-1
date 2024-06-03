@@ -630,6 +630,19 @@ def show_favorites():
         print("즐겨찾는 카테고리 목록:")
         for category in favorites:
             print(f"- {category}")
+"""
+remove_favorite_category(category) : 즐겨찾기 항목에서 삭제하는 함수
+@Parm
+    category : favorites에 있는 category를 삭제
+@Return
+    None
+"""
+def remove_favorite_category(category): #즐겨찾기 항목에서 삭제.
+    if category in favorites:  #카테고리가 즐겨찾기에 존재한다면, 즐겨찾기에서 삭제. 그렇지 않다면, 경고창 출력.
+        favorites.remove(category)
+        print(f"'{category}' 카테고리가 즐겨찾기에서 삭제되었습니다.")
+    else:
+        print(f"'{category}' 카테고리는 즐겨찾기에 없습니다.")
 
 # 항목 조회 함수
 def view_entries():
@@ -807,9 +820,7 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
-
-
-
+ 
 def calculate_monthly_savings(target_amount, target_date):
     """
     목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
@@ -1352,6 +1363,7 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
             print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
     else:
         print("ID가 존재하지 않습니다.") #ID 존재 X
+
 
 YU_Account() #프로그램 시작 화면
 
