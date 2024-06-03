@@ -618,6 +618,10 @@ def add_entry():
 
 favorites = []
 
+"""
+get_payment_method() 수입/지출 기록 시, 어떤 자산을 사용했는지 기록하는 기능
+1, 2, 3, 4번 입력을 통해 기록 가능. 특히, 4번 입력 시, 사용자가 직접 입력이 가능
+"""
 def get_payment_method():
     while True:
         print("결제 수단을 선택하세요:")
@@ -636,7 +640,7 @@ def get_payment_method():
         elif choice == "4":
             return input("결제 수단을 직접 입력하세요: ").strip()
         else:
-            print("유효한 선택이 아닙니다. 다시 선택하세요.")
+            print("유효한 선택이 아닙니다. 다시 선택하세요.") #잘못된 입력을 하면, 옳은 방법으로 재입력.
 
 def add_favorite_category(category): #즐겨찾기 항목에 추가.
     if category not in favorites:  #카테고리가 즐겨찾기에 존재하지 않는다면, 즐겨찾기 추가. 그렇지 않다면, 경고창 출력.
