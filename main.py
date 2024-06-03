@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import numpy as np  # 수입/지출 예측을 위해 numpy 라이브러리 추가
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -586,6 +587,33 @@ def get_valid_amount_input():
             return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+
+# 수입/지출 예측 기능
+def predict_expense():
+    """
+    기존 지출 데이터를 기반으로 한 달 예측 지출을 계산하는 함수입니다.
+    """
+    # ledger 리스트에서 지출 내역만 필터링하여 expenses 리스트에 저장
+    expenses = [entry['amount'] for entry in ledger if entry['amount'] < 0]
+    # 평균 지출 금액을 계산
+    average_expense = np.mean(expenses)
+    # 한 달 예측 지출을 계산 (30일 기준)
+    future_expense = average_expense * 30
+    # 예측 결과 출력
+    print(f"예상 한 달 지출: {future_expense:.2f} 원")
+
+def predict_income():
+    """
+    기존 수입 데이터를 기반으로 한 달 예측 수입을 계산하는 함수입니다.
+    """
+    # ledger 리스트에서 수입 내역만 필터링하여 incomes 리스트에 저장
+    incomes = [entry['amount'] for entry in ledger if entry['amount'] > 0]
+    # 평균 수입 금액을 계산
+    average_income = np.mean(incomes)
+    # 한 달 예측 수입을 계산 (30일 기준)
+    future_income = average_income * 30
+    # 예측 결과 출력
+    print(f"예상 한 달 수입: {future_income:.2f} 원")
 
 # 수입/지출 항목 추가 함수
 def add_entry():
@@ -1514,6 +1542,8 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
+
+
 
 
 # 메인 루프
