@@ -11,31 +11,6 @@ import Add_function
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
-def user_reg():  # 회원가입
-    id = input("id 입력: ")
-    while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
-
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
-            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
-            continue
-
-        h = hashlib.sha256()
-        h.update(pw.encode())
-        pw_data = h.hexdigest()
-
-        userdata[id] = pw_data
-
-        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
-        print("회원가입이 완료되었습니다!")
-        break
-
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
@@ -63,19 +38,29 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
-    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
-    h.update(pw.encode())  # sha256으로 암호화
-    pw_data = h.hexdigest()  # 16진수로 변환
+        """
+        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+        """
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
 
-    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
-    usernames[name] = id  # 이름과 아이디 매핑
-    userphones[phone] = id  # 전화번호와 아이디 매핑
+        h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+        h.update(pw.encode())  # sha256으로 암호화
+        pw_data = h.hexdigest()  # 16진수로 변환
 
-    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-        for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        usernames[name] = id  # 이름과 아이디 매핑
+        userphones[phone] = id  # 전화번호와 아이디 매핑
+
+        with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+        break
 
 
 """
@@ -1501,7 +1486,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
     interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
 
     if interface == "1":
-        user_reg_include_name_phone() #회원가입 함수 - 이미 존재
+        user_reg_include_name_phone() #회원가입 함수
     elif interface == "2":
         user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
     elif interface == "3":
@@ -1541,5 +1526,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
