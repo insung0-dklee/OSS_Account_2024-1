@@ -613,6 +613,7 @@ def add_entry():
     ledger.append(entry)
     if card is not None:
         card["entries"].append(entry)  # 카드에도 추가
+        card["total_amount"] +=amount #카드에 총 사용 금액 추가
     print("항목이 추가되었습니다.")
 
     category_count = sum(1 for e in ledger if e["category"] == category)
@@ -626,8 +627,13 @@ def add_entry():
 cards=[]
 def add_card(entry):
     card_name = input("카드 이름: ")
+    pay_date = input("결제일: ")
+    todo_amount = float(input("전월실적: "))
     card_info = {
         "name": card_name,
+        "pay_date": pay_date,
+        "todo_amount": todo_amount,
+        "total_amount": 0, #총 사용 금액을 저장할 곳
          "entries": [] #결제 내역을 저장할 곳
     }
     cards.append(card_info)
@@ -637,10 +643,23 @@ def view_cards():
     if not cards:
         print("등록된 카드가 없습니다.")
     for card in cards:
-        print(f"카드 이름: {card['name']}" )
+        print(f"카드 이름: {card['name']}, 결제일: {card['pay_date']}, 전월실적: {card['todo_amount']}, 총 결제금액: {card['total_amount']}" )
+        if card['total_amount'] >= card['todo_amount']:
+            print("전월실적 충족")
+        else:
+            remain=card['todo_amount']-card['total_amount']
+            print(f"전월실적까지 {remain}원 부족")
         for i, entry in enumerate(card['entries'], start=1):
                 print(f"{i}. {entry}")
-
+def notic_card():
+    today = date.today().day  # 오늘 날짜에서 일 데이터만 가져옴
+    for card in cards:
+        if int(card['pay_date']) == today:  # 결제일이 되었을때 알림
+            print(f"오늘은 {card['name']}카드 결제일입니다.")
+            if card['total_amount'] >= card['todo_amount']:
+                print("전월실적 충족하였습니다.")
+            else :
+                print("전월실적을 충족하지 못하였습니다.")
 favorites = []
 
 def add_favorite_category(category): #즐겨찾기 항목에 추가.
@@ -1547,6 +1566,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 while not b_is_exit:
     print("-----------------------")
     print("user:",user.name) # 현재 user가 누구인지 출력
+    notic_card() #카드 결제일 알림
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
