@@ -587,9 +587,23 @@ def get_valid_amount_input():
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+def get_valid_date_input():
+    """
+    사용자로부터 유효한 날짜를 입력받는 함수.
+    입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
+    """
+    while True:
+        date_str = input("날짜 (YYYY-MM-DD): ")  # 사용자로부터 날짜 입력 요청
+        try:
+            # 입력된 문자열을 datetime 객체로 변환 시도
+            datetime.datetime.strptime(date_str, "%Y-%m-%d")
+            return date_str  # 변환이 성공하면 입력값 반환
+        except ValueError:
+            print("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력하세요.")  # 변환이 실패하면 오류 메시지 출력
+
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
+    date = get_valid_date_input()  # 수정된 부분! 날짜 입력 요청 및 유효성 검사.
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
