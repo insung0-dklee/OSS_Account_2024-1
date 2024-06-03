@@ -701,6 +701,47 @@ def show_all_goals():
         for month, amount in monthly_goals.items():
             print(f"{month}: {amount}원")
 
+#저금 동기 부여 기능 (월별 목표 저금액을 입력받고 매달 칭찬 or 격려의 말 출력)
+class HouseholdLedger:
+    def __init__(self):
+        self.target_savings = 0
+        self.total_savings = 0
+
+    def set_target_savings(self):
+        try:
+            self.target_savings = float(input("이번 달 목표 저금액을 입력하세요: "))
+        except ValueError:
+            print("잘못된 입력입니다. 숫자를 입력하세요.")
+            self.set_target_savings()
+
+    def add_savings(self):
+        while True:
+            try:
+                amount = float(input("저금한 금액을 입력하세요: "))
+                self.total_savings += amount
+                print(f"현재 총 저금액: {self.total_savings}")
+                more = input("추가로 저금하시겠습니까? (yes/no): ")
+                if more.lower() != 'yes':
+                    break
+            except ValueError:
+                print("잘못된 입력입니다. 숫자를 입력하세요.")
+
+    def check_savings(self):
+        if self.total_savings >= self.target_savings:
+            print("축하합니다! 목표 저금액을 달성했습니다!")
+        else:
+            print("힘내세요! 다음 번에는 더 많이 저금할 수 있어요.")
+
+    def run(self):
+        self.set_target_savings()
+        self.add_savings()
+        self.check_savings()
+
+if __name__ == "__main__":
+    ledger = HouseholdLedger()
+    ledger.run()
+
+
 # 날짜 형식 검사 함수
 # 날짜가 달력상 날짜인지 확인
 def validate_date(date):
