@@ -553,7 +553,7 @@ def print_help():
     1: 수입/지출 항목 추가
     2: 항목 조회
     3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
+    4: 총 자산 조회
     5: 지출 카테고리 분석
     ?: 도움말 출력
     exit: 종료
@@ -582,37 +582,41 @@ def get_valid_amount_input():
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
     while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
-        else:
+        try:    
+            return float(input("금액: ")) # 금액을 입력 받고, float로 변환 가능하다면 입력한 값을 return
+        except ValueError:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+
 # 수입/지출 항목 추가 함수
-def add_entry():
+def add_entry():    
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
-    entry = {
+
+    asset_name = input("자산 이름: ")
+    amount = get_valid_amount_input()
+
+    if (asset_manager.update_asset_balance(asset_name, amount)) == 1: # 해당 자산 잔액 업데이트
+        entry = {
         "date": date,
         "category": category,
         "description": description,
         "amount": amount,
         "score": score  # 평가 점수 추가
-    }
-    ledger.append(entry)
-    print("항목이 추가되었습니다.")
+        }
+        ledger.append(entry)
+        print("항목이 추가되었습니다.")
 
-    category_count = sum(1 for e in ledger if e["category"] == category)
+        category_count = sum(1 for e in ledger if e["category"] == category)
 
-    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
-        response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
-        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
-            add_favorite_category(category)
-        else:
-            print("카테고리에 추가되지 않았습니다.")
+        if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
+            response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
+            if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
+                add_favorite_category(category)
+            else:
+                print("카테고리에 추가되지 않았습니다.")
 
 
 favorites = []
@@ -779,6 +783,16 @@ def generate_monthly_report():
 
 budget = None #전역변수 budget의 기본값 설정
 
+# 자산 관리 시스템과 연계되는 총 자산 조회 함수.
+# 기존의 set_budget() 함수를 대체합니다.
+def view_total_assets():
+    total = asset_manager.calculate_total_assets()
+    current_spend = sum(float(entry["amount"]) for entry in ledger if float(entry["amount"]) < 0)
+    if total < current_spend*-1:
+        print(f"총 지출:{-current_spend}\t총 자산: {total}원\n경고: 지출이 보유 자산에 비해 너무 많습니다.")
+    else:
+        print(f"총 지출:{-current_spend}\t총 자산: {total}원\n")
+
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     global budget 
@@ -790,7 +804,7 @@ def set_budget():
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
 
 # 예산 확인 함수
-def check_budget():
+def check_budgcheck_budgetet():
     global budget
     if budget is None:
         print("예산이 지정되지 않았습니다.")
@@ -1082,6 +1096,7 @@ def add_entry_with_exchange():
     amount = float(input("금액(원): "))
     currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
     converted_amount = convert_currency(amount, currency)
+    
     if converted_amount is not None:
         # 환전된 금액과 통화 정보를 함께 저장합니다.
         entry = {
@@ -1500,6 +1515,22 @@ class SingleAsset:
         self.name = name
         self.balance = balance
 
+    def update(self, amount): # 자산 시스템과 연계된 수입/지출 갱신 함수
+        if amount > 0: # 입력 값이 양수면 수입으로 판단
+            self.balance += amount
+            print(f"{self.name}에 {amount}원이 추가되었습니다.\n현재 {self.name} 잔액: {self.balance}원\n")
+        elif amount < 0: # 입력 값이 음수면 지출로 판단
+            if self.balance + amount >= 0:
+                self.balance += amount
+                print(f"{self.name}에서 {-amount}원이 지출되었습니다.\n현재 {self.name} 잔액: {self.balance}원\n")
+            else:
+                self.balance += amount
+                print(f"{self.name}에서 {-amount}원이 지출되었습니다.\n현재 {self.name} 잔액: {self.balance}원\n")
+                print(f"{self.name}의 잔액이 음수가 되었습니다. 내역을 확인해주세요.\n")
+        else:
+            print("금액은 0이 될 수 없습니다.\n")
+
+
 class AssetManager:
     def __init__(self):
         self.assets = {} # 자산을 저장하는 dictionary
@@ -1512,7 +1543,7 @@ class AssetManager:
         
         if asset_name not in self.assets: # 자산 이름 충돌 감지
             self.assets[asset_name] = SingleAsset(asset_group, asset_name, initial_balance)
-            print(f"{asset_group} 자산 '{asset_name}'이(가) 추가되었습니다. 초기 잔액: {initial_balance} 원\n")
+            print(f"{asset_group} 자산 '{asset_name}'이(가) 추가되었습니다. 초기 잔액: {initial_balance}원\n")
         else:
             print(f"{asset_name} 자산은 이미 존재합니다.\n")
 
@@ -1525,8 +1556,19 @@ class AssetManager:
 
     def list_assets(self): # 현재 저장된 자산 목록 출력
         for asset_name, asset in self.assets.items():
-            print(f"자산 그룹: {asset.asset_group}, 자산 이름: {asset.name}, 잔액: {asset.balance} 원\n")
+            print(f"자산 그룹: {asset.asset_group} / 자산 이름: {asset.name} / 잔액: {asset.balance}원")
+        print("\n")
 
+    def update_asset_balance(self, asset_name, amount):
+        if asset_name in self.assets:
+            self.assets[asset_name].update(amount)
+            return 1 # 자산을 제대로 지정했는지 감지하기 위한 반환
+        else:
+            print(f"{asset_name} 자산이 존재하지 않습니다.\n")
+            return 0 # 자산을 제대로 지정했는지 감지하기 위한 반환
+
+    def calculate_total_assets(self):
+        return sum(asset.balance for asset in self.assets.values())
 
 asset_manager = AssetManager() # 자산 관리 클래스 생성 및 할당
 
@@ -1547,7 +1589,7 @@ def assetManagement():
             4: 이전 메뉴로
             """)
         elif am_interface == "1":
-            asset_group = input("자산 그룹을 입력하세요 (예: 현금, 은행, 체크카드, 신용카드): ")
+            asset_group = input("자산 그룹을 입력하세요 (예: 현금, 은행, 체크카드, 신용카드, 기타): ")
             asset_name = input("자산 이름을 입력하세요: ")
             initial_balance = float(input("초기 잔액을 입력하세요: "))
             asset_manager.add_asset(asset_group, asset_name, initial_balance)
@@ -1603,13 +1645,13 @@ while not b_is_exit:
     if func == "0":
         assetManagement()
     elif func == "1":
-        add_entry()
+        add_entry()  
     elif func == "2":
         view_entries()
     elif func == "3":
         generate_monthly_report()
     elif func == "4":
-        set_budget()
+        view_total_assets()
     elif func == "5":
         analyze_categories()
     elif func == "?":
