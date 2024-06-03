@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import calendar
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -627,7 +628,7 @@ def add_entry():
 cards=[]
 def add_card(entry):
     card_name = input("카드 이름: ")
-    pay_date = input("결제일: ")
+    pay_date = input("결제일(1~27): ")
     todo_amount = float(input("전월실적: "))
     card_info = {
         "name": card_name,
@@ -643,23 +644,45 @@ def view_cards():
     if not cards:
         print("등록된 카드가 없습니다.")
     for card in cards:
-        print(f"카드 이름: {card['name']}, 결제일: {card['pay_date']}, 전월실적: {card['todo_amount']}, 총 결제금액: {card['total_amount']}" )
-        if card['total_amount'] >= card['todo_amount']:
+        amount_in_term = calculate_amount_in_term(card)
+        print(f"카드 이름: {card['name']}, 결제일: {card['pay_date']}, 전월실적: {card['todo_amount']}, 청구예정 금액: {amount_in_term}, 총 결제금액: {card['total_amount']}" )
+        if amount_in_term >= card['todo_amount']:
             print("전월실적 충족")
         else:
-            remain=card['todo_amount']-card['total_amount']
+            remain=card['todo_amount']-amount_in_term
             print(f"전월실적까지 {remain}원 부족")
         for i, entry in enumerate(card['entries'], start=1):
                 print(f"{i}. {entry}")
 def notic_card():
     today = date.today().day  # 오늘 날짜에서 일 데이터만 가져옴
     for card in cards:
+        amount_in_term = calculate_amount_in_term(card)
         if int(card['pay_date']) == today:  # 결제일이 되었을때 알림
             print(f"오늘은 {card['name']}카드 결제일입니다.")
-            if card['total_amount'] >= card['todo_amount']:
+            if amount_in_term >= card['todo_amount']:
                 print("전월실적 충족하였습니다.")
             else :
                 print("전월실적을 충족하지 못하였습니다.")
+#신용카드 결제일 계산기 기눙 (신한,KB,농협 기준 출저:https://visualbank.io/%EC%B9%B4%EB%93%9C%EB%B3%84-%EA%B2%B0%EC%A0%9C-%EA%B8%B0%EC%A4%80%EC%9D%BC/)
+def pay_date_cal(pay_date):
+    today = date.today()
+    if pay_date in range(1, 14):#전전달 +17일부터 전달 +16일까지
+        pay_term_start = date(today.year, today.month - 2, pay_date + 17)
+        pay_term_end = date(today.year, today.month - 1, pay_date + 16)
+    elif pay_date == 14: #저번달 1일부터 저번달 말일까지
+        pay_term_start = date(today.year, today.month - 1, 1)
+        pay_term_end = date(today.year, today.month - 1, calendar.monthrange(today.year, today.month - 1)[1])
+    elif pay_date in range(15, 28): #저번달 -13일부터 이번달 -14일까지
+        pay_term_start = date(today.year, today.month - 1, pay_date - 13)
+        pay_term_end = date(today.year, today.month, pay_date - 14)
+    return pay_term_start, pay_term_end
+
+# 실적 기간에 맞춘 결제 총액 계산하는 함수
+def calculate_amount_in_term(card):
+    pay_term_start, pay_term_end = pay_date_cal(int(card['pay_date'])) #기간별로 결제 내역을 확인하기 위해 int형으로
+    #문자열 형태로 저장되어 있는 'date'를 int형으로 변환하여 계싼
+    return float(sum(entry['amount'] for entry in card['entries'] if pay_term_start <= date(int(entry['date'].split('-')[0]), int(entry['date'].split('-')[1]), int(entry['date'].split('-')[2])) <= pay_term_end))
+
 favorites = []
 
 def add_favorite_category(category): #즐겨찾기 항목에 추가.
