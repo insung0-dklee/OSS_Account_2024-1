@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+from datetime import datetime
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -171,16 +172,6 @@ class Debt:
 
 debts = []
 
-def validate_date(date_text):
-    """
-    날짜 형식이 올바른지 확인하는 함수. 'YYYY-MM-DD' 형식이어야 함.
-    """
-    try:
-        datetime.strptime(date_text, '%Y-%m-%d')
-        return True
-    except ValueError:
-        return False
-
 def add_debt():
     """
     새로운 빚을 추가하는 함수. 대출 기관/사람, 금액, 상환 기한을 입력받고
@@ -193,8 +184,6 @@ def add_debt():
         due_date = input("상환 기한 (YYYY-MM-DD): ")
         if validate_date(due_date):
             break
-        else:
-            print("잘못된 날짜 형식입니다. 다시 입력해 주세요.")
 
     new_debt = Debt(lender, amount, due_date)
     debts.append(new_debt)
@@ -589,7 +578,10 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
+    while True:
+        date = input("날짜 (YYYY-MM-DD): ")
+        if validate_date(date):
+            break
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
@@ -743,14 +735,33 @@ def compare_financial_goal(user1, user2, goal):
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
 
+# YYYY-MM 형식 검증 함수
+def validate_month(month_text):
+    pattern = r'^\d{4}-\d{2}$'
+    if re.match(pattern, month_text):
+        try:
+            # 입력된 월이 지정된 형식과 일치하는지 확인
+            datetime.strptime(month_text, '%Y-%m')
+            return True
+        except ValueError:
+            # ValueError 발생 시: 월 형식이 맞지 않음
+            print("올바른 날짜 형식이 아닙니다. YYYY-MM 형식으로 입력하세요.")
+            return False
+    else : 
+        print("잘못된 날짜 형식입니다. 올바른 형식은 YYYY-MM 입니다.")
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    while True :
+        month = input("보고서 생성할 월 (YYYY-MM): ")
+        if validate_month(month) :
+            break
+    
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
     for entry in ledger:
-        if entry["date"].startswith(month):
+        if entry["date"][:7] == (month):
             monthly_total += float(entry["amount"])
             category = entry["category"]
             if category not in category_totals:
@@ -890,7 +901,12 @@ def view_expenses():
 # 지출 내역을 입력받는 함수
 def input_expense():
     # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
-    date = input("지출 날짜 (예: 2024-05-30): ")
+    while True:
+        date = input("지출 날짜 (YYYY-MM-DD): ")
+        if validate_date(date):
+            break
+        else:
+            print("잘못된 날짜 형식입니다. 다시 입력해 주세요.")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
     # 입력받은 데이터를 딕셔너리 형태로 저장
@@ -946,12 +962,16 @@ def show_all_goals():
 # 날짜 형식 검사 함수
 # 날짜가 달력상 날짜인지 확인
 def validate_date(date):
-    try:
-        datetime.strptime(date, '%Y-%m-%d')
-        return True
-    except ValueError:
-        print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
-        return False
+    pattern = r'^\d{4}-\d{2}-\d{2}$'
+    if re.match(pattern, date):
+        try:
+            datetime.strptime(date, '%Y-%m-%d')
+            return True
+        except ValueError:
+            print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
+            return False
+    else :
+        print("잘못된 날짜 형식입니다. 올바른 형식은 YYYY-MM-DD 입니다.")
 
 # 금액 형식 검사 함수 (소수점 포함)
 def validate_amount(amount):
@@ -1075,7 +1095,10 @@ def calculate_exchange():
 def add_entry_with_exchange():
     # 기존의 지출 항목 추가 함수(add_entry())와 비슷하게 작성하되,
     # 추가로 환전할 통화와 금액을 입력받고, 해당 통화로 환전된 금액을 함께 저장합니다.
-    date = input("날짜 (YYYY-MM-DD): ")
+    while True:
+        date = input("날짜 (YYYY-MM-DD): ")
+        if validate_date(date):
+            break
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액(원): "))
