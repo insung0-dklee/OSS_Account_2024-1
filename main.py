@@ -1586,16 +1586,26 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
-def calculate_present_value(future_value, inflation_rate, years):
+def calculate_account_weights():
     """
-    목표 저축액의 현재 가치를 계산하는 함수
-    :param future_value: 목표 저축액 (미래 가치)
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    :param years: 목표 달성까지 남은 기간 (년 단위)
-    :return: 현재 가치
+    각 가계부의 금액을 입력받아 총액 대비 가중치를 계산하는 함수.
     """
-    present_value = future_value / ((1 + inflation_rate / 100) ** years)
-    return present_value
+    account_balances = []
+    num_accounts = int(input("가계부의 개수를 입력하세요: "))
+
+    for i in range(num_accounts):
+        balance = float(input(f"가계부 {i+1}의 금액을 입력하세요: "))
+        account_balances.append(balance)
+
+    total_balance = sum(account_balances)
+    if total_balance == 0:
+        print("총액이 0입니다. 가중치를 계산할 수 없습니다.")
+        return
+
+    print("\n가계부의 금액과 총액 대비 가중치는 다음과 같습니다:")
+    for i, balance in enumerate(account_balances, start=1):
+        weight = (balance / total_balance) * 100
+        print(f"가계부 {i}: 금액 = {balance}, 가중치 = {weight:.2f}%")
 
 
 ###########################################################
