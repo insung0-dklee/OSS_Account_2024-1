@@ -9,6 +9,40 @@ import webbrowser
 import re
 import Add_function
 
+# 게시글 클래스
+class Post:
+    def __init__(self, author, content):
+        self.author = author
+        self.content = content
+        self.timestamp = datetime.datetime.now()
+
+# 게시글을 저장할 리스트
+community_posts = []
+
+# 게시글을 파일에 저장하는 함수
+def save_posts():
+    with open('community_posts.json', 'w', encoding='utf-8') as file:
+        json_posts = [
+            {
+                "author": post.author,
+                "content": post.content,
+                "timestamp": post.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            } for post in community_posts
+        ]
+        json.dump(json_posts, file, ensure_ascii=False, indent=4)
+
+# 파일에서 게시글을 불러오는 함수
+def load_posts():
+    try:
+        with open('community_posts.json', 'r', encoding='utf-8') as file:
+            json_posts = json.load(file)
+            for json_post in json_posts:
+                post = Post(json_post["author"], json_post["content"])
+                post.timestamp = datetime.datetime.strptime(json_post["timestamp"], '%Y-%m-%d %H:%M:%S')
+                community_posts.append(post)
+    except FileNotFoundError:
+        pass
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
