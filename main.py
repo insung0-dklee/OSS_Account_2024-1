@@ -1541,6 +1541,11 @@ def recommend_function():
     print(function_list[random.randint(0,4)], end ="");
     print("은 어떠세요?");
 
+recommend_acc = ["가계부 1", "저축 계좌", "user_님의 저축 계좌", "여행 적금 관리", "간식 사먹을 돈", "저금통", "시간은 금이다"]#추천 계좌 이름 리스트
+
+def print_recommend_name():
+    print(recommend_acc[random.randint(0,6)],"는 어떠세요?");
+
 
 
 ###########################################################
