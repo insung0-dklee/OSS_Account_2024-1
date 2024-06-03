@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import time
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1189,6 +1190,16 @@ def view_d_day():
             print("이미 지난 디데이입니다.")
     else:
         print("저장된 디데이 정보가 없습니다.")
+        
+def program_running_time():
+    return time.time() - starting_time
+
+starting_time = time.time()
+
+# 프로그램 실행 시간을 출력하는 함수
+def print_program_running_time():
+    print("프로그램 실행 시간: {:.2f} 초".format(program_running_time()))
+    
 
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
@@ -1225,12 +1236,6 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
-# 시간과 날짜를 출력하는 함수
-def Time():
-    now = datetime.now()
-    print("현재 날짜 및 시간:", now.year, "년", now.month, "월", now.day, "일", now.hour, "시", now.minute, "분", now.second, "초\n")
-
-
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1248,7 +1253,7 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
-    Time()
+    print_program_running_time()
 
 def print_Login_help(): #user interface 도움말
     print("""
