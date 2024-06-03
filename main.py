@@ -43,6 +43,37 @@ def load_posts():
     except FileNotFoundError:
         pass
 
+# 게시글 추가 함수
+def add_post(user_name):
+    content = input("게시글 내용을 입력하세요: ")
+    post = Post(user_name, content)
+    community_posts.append(post)
+    save_posts()
+    print("게시글이 성공적으로 추가되었습니다.")
+
+# 게시글 조회 함수
+def view_posts():
+    if not community_posts:
+        print("게시된 글이 없습니다.")
+    else:
+        for idx, post in enumerate(community_posts, start=1):
+            print(f"{idx}. {post.author} - {post.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n{post.content}\n")
+
+# 게시글 삭제 함수
+def delete_post(user_name):
+    view_posts()
+    post_idx = int(input("삭제할 게시글 번호를 입력하세요: ")) - 1
+    if 0 <= post_idx < len(community_posts):
+        post = community_posts[post_idx]
+        if post.author == user_name:
+            del community_posts[post_idx]
+            save_posts()
+            print("게시글이 성공적으로 삭제되었습니다.")
+        else:
+            print("자신이 작성한 글만 삭제할 수 있습니다.")
+    else:
+        print("잘못된 번호입니다.")
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
