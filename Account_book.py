@@ -40,22 +40,16 @@ class Account_book: # 가계부 클래스
     print("현재까지 소득의 총합은 ",self.income_total,"원 입니다.")
     print("현재까지 지출의 총합은 ",self.spend_total,"원 입니다.")
 
-  def show_sortedlist(self): #지출 및 수입 순위 출력
-    print("보고싶은 내역을 선택하세요")
-    button = input("1번 - 수입, 2번 - 지출: ")#수입 혹은 지출 선택
-    if(button == "1"):#주의 - button값은 input으로 받아 char형 변수임
-      print("현재까지의 수입 순위")
-      sortedlist = sorted(self.income_list)[::-1] #수입 리스트 정렬
-      for i in range(0,10):#10위 까지만 출력
-        if(len(self.income_list) <= i):#만약 리스트 크기보다 작을 경우 탈출
-          break
-        print(i+1,"위:",sortedlist[i],"원")
-    elif(button == "2"):
-      print("현재까지 사용한 금액 순위")
-      sortedlist = sorted(self.spend_list)[::-1]#지출 리스트 정렬
-      for i in range(0,10):#10위 까지만 출력
-        if(len(self.income_list) <= i):#만약 리스트 크기보다 작을 경우 탈출
-          break
-        print(i+1,"위 ",sortedlist[i],"원")
+  def show_sortedlist(self, category):  # 지출 및 수입 순위 출력
+    if category == 1:  # 수입 리스트 출력
+        print("현재까지의 수입 순위")
+        sorted_list = sorted(self.income_list, reverse=True)  # 수입 리스트 정렬
+        for i, amount in enumerate(sorted_list[:10], 1):  # 10위 까지만 출력
+            print(f"{i}위: {amount}원")
+    elif category == 2:  # 지출 리스트 출력
+        print("현재까지 사용한 금액 순위")
+        sorted_list = sorted(self.spend_list, reverse=True)  # 지출 리스트 정렬
+        for i, amount in enumerate(sorted_list[:10], 1):  # 10위 까지만 출력
+            print(f"{i}위: {amount}원")
     else:
-      print("잘못 입력하셨습니다.")
+        print("잘못 입력하셨습니다.")
