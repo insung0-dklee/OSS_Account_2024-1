@@ -546,6 +546,9 @@ def calculator():
 # 가계부 데이터 저장 변수
 ledger = []
 
+# 지출 상한선을 저장할 전역 변수 선언
+spending_limit = None
+
 # 도움말 출력 함수
 def print_help():
     print("""
@@ -586,6 +589,28 @@ def get_valid_amount_input():
             return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+
+# 지출 상한 알림 기능
+def set_spending_limit(limit):
+    """
+    지출 상한선을 설정하는 함수입니다.
+
+    Parameters:
+    limit (float): 사용자가 설정한 지출 상한선
+    """
+    global spending_limit
+    spending_limit = limit  # 전역 변수 spending_limit에 설정된 한도 값을 저장
+    print(f"지출 상한선이 {limit} 원으로 설정되었습니다.")
+
+def check_spending_limit():
+    """
+    현재 지출이 설정된 상한선을 초과했는지 확인하는 함수입니다.
+    """
+    # ledger 리스트에서 모든 지출 내역을 합산
+    total_expenses = sum(entry['amount'] for entry in ledger if entry['amount'] < 0)
+    # 현재 지출이 상한선을 초과했는지 확인
+    if spending_limit is not None and total_expenses > spending_limit:
+        print(f"경고: 지출 상한선을 초과했습니다! 현재 지출: {total_expenses} 원, 상한선: {spending_limit} 원")
 
 # 수입/지출 항목 추가 함수
 def add_entry():
