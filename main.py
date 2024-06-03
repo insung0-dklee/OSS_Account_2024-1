@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import tkinter as tk
+from tkinter import messagebox
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1276,17 +1278,17 @@ def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     f.close()
     return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
 
-def Login_interface(): #로그인 인터페이스
+def Login_interface(id_entry, pw_entry): #로그인 인터페이스 - 수정(messagebox를 사용하여 문구를 띄움)
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
     if len(login_info)==0 : 
-        print("로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
+        messagebox.showinfo("정보", "로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
         return 0
-    elif login_info is None : 
-        print("오류가 발생했습니다.")
+    elif login_info is 0 : 
+        messagebox.showerror("오류", "오류가 발생했습니다.")
         return 0
-    print("로그인(ID와 PW를 입력해 주세요.)")
-    ID = input("ID: ")
-    PW = input("PW: ")
+
+    ID = id_entry.get() #entry에서 값을 가져오도록 수정 (create_login_interface())
+    PW = pw_entry.get()
 
     h = hashlib.sha256()
 
@@ -1295,12 +1297,12 @@ def Login_interface(): #로그인 인터페이스
         with open("login.txt", "r", encoding="UTF-8") as f:
             login_info = [line.strip().split(":") for line in f.readlines()]
     except FileNotFoundError:
-        print("로그인 정보 파일을 찾을 수 없습니다.")
+        messagebox.showinfo("정보", "로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
         return 0
     except Exception as e:
-        print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
+        messagebox.showerror("오류", "오류가 발생했습니다.")
         return 0
-    
+
     cnt = 0
 
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
@@ -1311,16 +1313,70 @@ def Login_interface(): #로그인 인터페이스
             login_pw = h.hexdigest()#암호화 후 출력
 
             if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
-                print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                messagebox.showinfo("성공", f"환영합니다. {login_info[i][2]} 고객님")
                 return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
             else:
-                print("비밀번호 오류입니다.")#아니면 끝
-                break
+                messagebox.showerror("오류", "비밀번호 오류입니다.")
+                return 0
         cnt += 1
 
     if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
-        print("존재하지 않는 아이디입니다.")
+        messagebox.showerror("오류", "존재하지 않는 아이디입니다.")
+
     return 0
+
+"""
+create_login_interface : GUI를 사용하여 로그인을 할 수 있도록 버튼 및 entry생성, user 정보 반환
+@Parm
+    None
+@return
+    User(login_info[i][2]) : user 정보 반환
+"""
+def create_login_interface():
+    root = tk.Tk() #window 생성
+    root.title("로그인 인터페이스") #window 제목
+
+    # 레이블과 엔트리 필드 생성 및 배치
+    tk.Label(root, text="ID:").grid(row=0, column=0, padx=10, pady=10)
+    global id_entry
+    id_entry = tk.Entry(root) #id를 입력받을 entry
+    id_entry.grid(row=0, column=1, padx=10, pady=10)
+
+    tk.Label(root, text="PW:").grid(row=1, column=0, padx=10, pady=10)
+    global pw_entry
+    pw_entry = tk.Entry(root, show='*') #비밀번호를 입력받을 entry
+    pw_entry.grid(row=1, column=1, padx=10, pady=10)
+
+    # 로그인 버튼 생성 및 배치
+    login_button = tk.Button(root, text="로그인", command=lambda: on_login_button_click(root, id_entry, pw_entry))
+    login_button.grid(row=2, columnspan=2, pady=10)
+
+    # GUI 이벤트 루프 시작
+    root.mainloop()
+
+    if (flag == 0):
+        return 0
+    else:
+        login_info = read_user_information()
+        return User(login_info[i][2]) #유저정보 반환하기
+"""
+on_login_button_click : 로그인 버튼을 눌렀을때 로그인이 된 경우 window창 닫기
+    root: tkinter 인터페이스 
+    id_entry: id 입력 entry
+    pw_entry: 비밀번호 입력 entry
+@return
+    None
+"""
+def on_login_button_click(root, id_entry, pw_entry):
+    user = Login_interface(id_entry, pw_entry)
+    if user:
+        root.destroy()  # 로그인 성공 시 창 닫기
+        return user
+    else:
+        flag()
+def flag():
+    global flag
+    flag = 0
 
 def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
     check = 0
@@ -1503,7 +1559,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
     if interface == "1":
         user_reg_include_name_phone() #회원가입 함수 - 이미 존재
     elif interface == "2":
-        user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
+        user = create_login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
     elif interface == "3":
         find_id_by_phone() #id 찾기 - 이미 존재
     elif interface == "4": 
