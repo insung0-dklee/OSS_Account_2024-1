@@ -753,7 +753,14 @@ def compare_financial_goal(user1, user2, goal):
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    while True: # 보고서 생성 년도와 월 입력 정확히 입력 받기
+        month = input("보고서 생성할 월 (YYYY-MM): ")
+        year_month = month.split('-')
+        if len(year_month) == 2: # '-' 기준으로 년도와 월로 나누어졌을 때
+            test_year, test_month = year_month
+            if test_year.isdigit() and test_month.isdigit() and 1 <= int(test_month) <= 12: # 년도가 숫자이고 월이 숫자이면서 1월부터 12월 사이의 입력일 떄 통과
+                break
+        print("올바른 월 형식을 입력하세요 (YYYY-MM, 월은 1부터 12까지).")
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
