@@ -8,7 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
-import simulation
+import spending_health_score
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1323,37 +1323,6 @@ def Login_interface(): #로그인 인터페이스
         print("존재하지 않는 아이디입니다.")
     return 0
 
-def budget_simulation():
-    """가상 예산 시뮬레이션 기능"""
-    goal_name = input("목표 이름을 입력하세요: ")
-    target_amount = float(input("목표 금액을 입력하세요 (원): "))
-    target_date = input("목표 날짜를 입력하세요 (YYYY-MM-DD): ")
-    sim = simulation.BudgetSimulation(goal_name, target_amount, target_date)
-
-    while True:
-        print("\n--- 가상 예산 시뮬레이션 ---")
-        print("1: 저축액 추가")
-        print("2: 월별 저축액 계산")
-        print("3: 미래 지출 시뮬레이션")
-        print("4: 시뮬레이션 결과 저장")
-        print("0: 메인 메뉴로 돌아가기")
-        choice = input("기능을 선택하세요: ")
-
-        if choice == "1":
-            amount = float(input("추가할 저축액을 입력하세요 (원): "))
-            sim.add_savings(amount)
-        elif choice == "2":
-            sim.calculate_monthly_savings()
-        elif choice == "3":
-            sim.simulate_expenses()
-        elif choice == "4":
-            sim.save_simulation()
-        elif choice == "0":
-            print("메인 메뉴로 돌아갑니다.")
-            break
-        else:
-            print("올바른 기능을 선택하세요.")
-
 def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
     check = 0
 
@@ -1564,6 +1533,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  
+        spending_health_score.calculate_spending_health_score()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1572,8 +1543,6 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
-    elif func == "simulation":
-        budget_simulation()
     else:
         
         print("올바른 기능을 입력해 주세요.")
