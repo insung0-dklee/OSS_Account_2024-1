@@ -584,6 +584,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 세금 계산 프로그램 실행
+    7: 더치페이 프로그램 실행
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1310,7 +1311,40 @@ def tax_program():
 
 
 
-     
+"""
+calculate_payment() : 더치페이 프로그램
+금액과 명수를 입력받아 한 사람이 내야할 금액을 알려주는 프로그램
+음수 입력시 다시 입력하라는 문구가 출력됨
+0 입력시 프로그램 종료
+단, 금액은 소수점 둘째자리까지만 출력된다.
+"""
+def calculate_payment():
+    print("***더치페이 프로그램***")
+    while True:
+        try:
+            total_amount = float(input("총 금액을 입력하세요 (종료하려면 0 입력): "))
+            if total_amount == 0:
+                print("더치페이 프로그램을 종료합니다.")
+                break
+            elif total_amount < 0:
+                print("총 금액은 음수일 수 없습니다. 다시 입력해주세요.")
+                continue
+
+            how_many_people = int(input("명수를 입력하세요 (종료하려면 0 입력): "))
+            if how_many_people == 0:
+                print("더치페이 프로그램을 종료합니다.")
+                break
+            elif how_many_people < 0:
+                print("명수는 음수일 수 없습니다. 다시 입력해주세요.")
+                continue
+
+            splited_amount = total_amount / how_many_people
+            print(f"각각의 사람이 내야 할 금액은 {splited_amount:.2f} 원입니다.")
+
+        except ValueError:
+            print("숫자를 입력하세요.")
+
+
 
 
 
@@ -1354,7 +1388,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         tax_program()
-
+    elif func == "7":
+        calculate_payment()
     elif func == "?":
         print_help()
     elif func == "exit":
