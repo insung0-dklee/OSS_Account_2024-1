@@ -10,7 +10,6 @@ import re
 import Add_function
 import spending_health_score
 
-
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
@@ -1534,7 +1533,7 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6": 
+    elif func == "6":  
         spending_health_score.calculate_spending_health_score()
     elif func == "?":
         print_help()
