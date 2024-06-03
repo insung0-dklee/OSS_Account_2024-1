@@ -55,7 +55,7 @@ class ACC_BOOK:
     def log_statement(self):
         pass
     
-    # 5. 날짜 입력 검사 기능
+    # 5. 날짜 입력 기능
     def date_err_check(self):
         while True:
             print("작성 형식: 2024-06-02-1\n(마지막 숫자는 같은 날짜의 내역서를 구분하기 위한 번호)") 
@@ -99,15 +99,23 @@ class ACC_BOOK:
                 continue
             return True, date
         
-    # 6. 요일 입력 검사 기능
+    # 6. 요일 입력 기능
     def DoW_err_check(self):
-        pass
+        week = "월화수목금토일"
+        while True:
+            print("\n작성 형식: 월/화/수/목/금/토/일")
+            day_of_week = input("요일: ")
+            if day_of_week in week:
+                return day_of_week
+            else:
+                print("\n잘못된 입력입니다. 다시 입력해주세요.")
 
-    # 7. 금액 입력 검사 기능
+
+    # 7. 금액 입력 기능
     def exp_err_check(self):
         pass
 
-    # 8. 카테고리 오류 검사 기능
+    # 8. 카테고리 입력 기능
     def ctgry_err_check(self):
         pass
 
