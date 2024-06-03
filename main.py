@@ -1094,3 +1094,45 @@ account_book.show_budgets()
 account_book.show_spending()
 account_book.show_total()
 account_book.show_sortedlist()
+
+
+# 소득에 따른 소비 비율 계산 기능
+class FinancialAnalyzer:
+    def __init__(self):
+        self.income = 0
+        self.expenses = []
+
+    def add_income(self, income):
+        self.income = income
+
+    def add_expense(self, expense):
+        self.expenses.append(expense)
+
+    def calculate_monthly_spending_ratio(self):
+        total_expenses = sum(self.expenses)
+        if self.income == 0:
+            return "소득을 입력하세요."
+        else:
+            monthly_ratio = (total_expenses / self.income) * 100
+            return monthly_ratio
+
+# 테스트를 위한 코드
+analyzer = FinancialAnalyzer()
+
+# 사용자의 소득과 지출 정보 입력
+income = float(input("소득을 입력하세요: "))
+analyzer.add_income(income)
+
+while True:
+    expense = float(input("월별 지출을 입력하세요 (입력이 끝났으면 0을 입력하세요): "))
+    if expense == 0:
+        break
+    else:
+        analyzer.add_expense(expense)
+
+# 매 달 지출 비율 계산 및 출력
+monthly_ratio = analyzer.calculate_monthly_spending_ratio()
+if isinstance(monthly_ratio, str):
+    print(monthly_ratio)
+else:
+    print(f"매 달 소비 비율: {monthly_ratio:.2f}%")
