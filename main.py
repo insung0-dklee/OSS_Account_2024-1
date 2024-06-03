@@ -9,6 +9,7 @@ import webbrowser
 import re
 import Add_function
 import calendar
+import datetime
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -938,6 +939,19 @@ def show_calendar():
     cal = calendar.month(year, month)
     print(cal)
 
+mood_record = {}  # 기분을 기록하는 딕셔너리
+
+def capture_mood():
+    """
+    사용자로부터 오늘의 날짜와 기분을 입력받아 기분을 기록하는 함수입니다.
+    오늘의 날짜를 현재 날짜로 설정하고, 사용자로부터 기분을 입력받은 후,
+    입력받은 날짜를 키로 하고 입력받은 기분을 값으로 하는 딕셔너리에 저장합니다.
+    """
+    date = datetime.date.today().strftime("%Y-%m-%d")  # 오늘의 날짜를 YYYY-MM-DD 형식의 문자열로 가져옵니다.
+    mood = input("오늘의 기분을 입력하세요: ")  # 사용자로부터 기분을 입력받습니다.
+    mood_record[date] = mood  # mood_record 딕셔너리에 오늘의 날짜를 키로 하고 기분을 값으로 하는 항목을 추가합니다.
+    print("기분이 저장되었습니다.")
+
 
 monthly_goals = {}
 
@@ -1549,6 +1563,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         show_calendar()
+    elif func == "7":
+        capture_mood() #그날그날 기분 출력기능추가
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
