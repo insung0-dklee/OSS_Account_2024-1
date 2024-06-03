@@ -1111,6 +1111,31 @@ def analyze_and_advise():
     else:
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
 
+import schedule
+import time
+from datetime import datetime
+
+# 관리비 납부 알림을 위한 함수
+def check_payment_date():
+    today = datetime.now()  # 현재 날짜와 시간을 가져옴
+    if today.day == 10:  # 오늘이 10일인지 확인
+        print("오늘은 관리비 납부일입니다. 관리비를 납부하세요.")  # 알림 메시지 출력
+
+# 매일 작업을 실행하는 함수
+def daily_job():
+    schedule.every().day.at("09:00").do(check_payment_date)  # 매일 오전 9시에 check_payment_date 함수 실행
+
+    try:
+        while True:  # 무한 루프 시작
+            schedule.run_pending()  # 실행할 예정인 작업을 실행
+            time.sleep(1)  # CPU 사용량을 줄이기 위해 1초 대기
+    except KeyboardInterrupt:
+        print("프로그램이 종료되었습니다.")  # 프로그램이 종료될 때 메시지 출력
+
+if __name__ == "__main__":
+    daily_job()  # daily_job 함수 호출
+
+
 #디데이 기능
 d_day_file = 'd_day.json' 
 
