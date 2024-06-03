@@ -10,6 +10,7 @@ import re
 import Add_function
 import shutil
 from threading import Timer
+import csv
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -556,6 +557,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 데이터 내보내기
+    7: 데이터 불러오기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1546,6 +1549,28 @@ def restore_data():
 if not os.path.exists(backup_dir):
     os.makedirs(backup_dir)
 
+def export_to_csv():
+    filename = input("내보낼 CSV 파일명을 입력하세요 (예: expenses.csv): ")
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ["date", "category", "description", "amount"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for entry in ledger:
+            writer.writerow(entry)
+    print(f"데이터가 {filename} 파일로 내보내졌습니다.")
+
+# 데이터 가져오기 기능
+def import_from_csv():
+    filename = input("가져올 CSV 파일명을 입력하세요 (예: expenses.csv): ")
+    try:
+        with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                ledger.append(row)
+        print(f"데이터가 {filename} 파일에서 불러와졌습니다.")
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: {filename}")
+
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
@@ -1588,6 +1613,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        export_to_csv()
+    elif func == "7":
+        import_from_csv()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
