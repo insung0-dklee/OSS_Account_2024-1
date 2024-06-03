@@ -74,6 +74,31 @@ def delete_post(user_name):
     else:
         print("잘못된 번호입니다.")
 
+# 커뮤니티 기능 메뉴
+def community_menu(user_name):
+    while True:
+        print("\n--- 커뮤니티 ---")
+        print("1: 게시글 작성")
+        print("2: 게시글 조회")
+        print("3: 게시글 삭제")
+        print("0: 메인 메뉴로 돌아가기")
+        choice = input("기능을 선택하세요: ")
+        if choice == "1":
+            add_post(user_name)
+        elif choice == "2":
+            view_posts()
+        elif choice == "3":
+            delete_post(user_name)
+        elif choice == "0":
+            print("메인 메뉴로 돌아갑니다.")
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
+
+# 프로그램 시작 시 게시글을 불러옴
+load_posts()
+
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
