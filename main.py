@@ -1535,6 +1535,11 @@ def read_user_acc():
             
     return user_accinfo #이후 유저 어카운트 호출을 위한 return
 
+function_list = ["지출 내역 정리", "주식 추천", "세금 환급 기능", "누르면 10원 기능", "날씨에 따른 주식 추천"]
+
+def recommend_function():
+    print(function_list[random.randint(0,4)], end ="");
+    print("은 어떠세요?");
 
 
 
