@@ -543,6 +543,37 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#모임 계산기
+class NPangCalculator:
+    def __init__(self):
+        self.participants = {}
+
+    def add_participants(self, count, amount):
+        per_person = amount / count
+        for i in range(1, count + 1):
+            name = f"참여자{i}"
+            self.participants[name] = per_person
+            print(f"{name}에게 {per_person:.2f}원이 추가되었습니다.")
+
+    def calculate_n_pang(self):
+        if not self.participants:
+            print("참여자가 없습니다.")
+            return
+        total_amount = sum(self.participants.values())
+        n = len(self.participants)
+        per_person = total_amount / n
+        print(f"총 금액: {total_amount}원, 인원 수: {n}명")
+        print(f"각 참여자에게 분배될 금액: {per_person:.2f}원")
+
+    def random_molajugi(self, total_count, molajugi_count, amount):
+        per_person = amount / molajugi_count
+        chosen = random.sample(range(1, total_count + 1), molajugi_count)
+        print(f"{molajugi_count}명에게 몰아주기 결과:")
+        for num in chosen:
+            print(f"{num}번째 참여자: {per_person:.2f}원")   
+            
+npang_calculator = NPangCalculator()
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +585,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 모임 계산기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1564,31 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        print("NPang 기능 선택")
+        print("1: 엔빵 계산기")
+        print("2: 랜덤 몰아주기")
+        print("3: 종료")
+        sub_func = input("기능 입력 : ")
+
+        if sub_func == "1":
+            participant_count = int(input("참여자 수를 입력하세요: "))
+            total_amount = float(input("총 금액을 입력하세요: "))
+            npang_calculator.add_participants(participant_count, total_amount)
+            npang_calculator.calculate_n_pang()
+
+        elif sub_func == "2":
+            total_count = int(input("총 몇 명인지 입력하세요: "))
+            molajugi_count = int(input("몰아줄 인원 수를 입력하세요: "))
+            amount = float(input("총 금액을 입력하세요: "))
+            npang_calculator.random_molajugi(total_count, molajugi_count, amount)
+
+
+
+        elif sub_func == "3":
+            continue  # 다시 메인 루프로 돌아갑니다.
+        else:
+            print("잘못된 기능 입력입니다.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
