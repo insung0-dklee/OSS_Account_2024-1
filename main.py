@@ -1,51 +1,94 @@
-import csv
-from datetime import datetime
+# 가계부 프로그램
 
-# 로그 파일 경로 설정
-LOG_FILE = 'activity_log.csv'
+# 지출 내역을 저장할 데이터 구조 (리스트)
+expenses = []
 
-def log_activity(user_id, activity_type, details):
+# 지출 내역을 추가하는 함수
+def add_expense(expenses, date, category, amount):
     """
-    사용자 활동을 로그 파일에 기록합니다.
-    
+    지출 내역을 추가하는 함수
+
     Args:
-        user_id (str): 사용자 ID
-        activity_type (str): 활동 유형 (예: "로그인", "지출 추가", "지출 삭제" 등)
-        details (str): 활동에 대한 상세 정보
+        expenses (list): 지출 내역 리스트
+        date (str): 지출 날짜 (예: "2024-06-01")
+        category (str): 지출 카테고리 (예: "Food")
+        amount (int): 지출 금액 (예: 10000)
     """
-    # 로그 파일을 append 모드로 열어 기록
-    with open(LOG_FILE, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # 현재 시간, 사용자 ID, 활동 유형, 상세 정보를 로그에 기록
-        writer.writerow([datetime.now().strftime('%Y-%m-%d %H:%M:%S'), user_id, activity_type, details])
+    expenses.append({"date": date, "category": category, "amount": amount})
 
-def view_logs(user_id=None, activity_type=None):
+# 지출 내역을 출력하는 함수
+def print_expenses(expenses):
     """
-    로그 파일에서 활동 기록을 조회합니다.
-    
+    저장된 지출 내역을 출력하는 함수
+
     Args:
-        user_id (str, optional): 특정 사용자의 활동만 조회하려면 사용자 ID를 지정
-        activity_type (str, optional): 특정 활동 유형만 조회하려면 활동 유형을 지정
-    
+        expenses (list): 지출 내역 리스트
+    """
+    for expense in expenses:
+        print(f"Date: {expense['date']}, Category: {expense['category']}, Amount: {expense['amount']}")
+
+# 특정 기간 동안의 지출 합계를 비교하는 함수
+def compare_expenses(expenses, start_date, end_date):
+    """
+    특정 기간 동안의 지출 합계를 계산하는 함수
+
+    Args:
+        expenses (list): 지출 내역 리스트
+        start_date (str): 비교 시작 날짜 (예: "2024-06-01")
+        end_date (str): 비교 종료 날짜 (예: "2024-06-03")
+
     Returns:
-        list: 조회된 로그 기록 리스트
+        int: 지정된 기간 동안의 지출 합계
     """
-    logs = []
-    # 로그 파일을 읽기 모드로 열기
-    with open(LOG_FILE, mode='r', newline='', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        # 각 로그 기록을 읽어 조건에 맞는지 확인 후 리스트에 추가
-        for row in reader:
-            log_time, log_user_id, log_activity_type, log_details = row
-            if (user_id is None or log_user_id == user_id) and (activity_type is None or log_activity_type == activity_type):
-                logs.append(row)
-    return logs
+    total_amount = 0
+    for expense in expenses:
+        if start_date <= expense["date"] <= end_date:
+            total_amount += expense["amount"]
+    return total_amount
 
-# 로그 기록 예시
-log_activity('user123', '로그인', '사용자 로그인 성공')  # 'user123' 사용자가 로그인 성공
-log_activity('user123', '지출 추가', '지출 내역: 커피 4000원')  # 'user123' 사용자가 커피 지출 추가
+# 특정 기간 동안 카테고리별 지출 합계를 비교하는 함수
+def compare_expenses_by_category(expenses, start_date, end_date):
+    """
+    특정 기간 동안 카테고리별 지출 합계를 계산하는 함수
 
-# 로그 조회 예시
-logs = view_logs('user123', '로그인')  # 'user123' 사용자의 로그인 활동 조회
-for log in logs:
-    print(log)
+    Args:
+        expenses (list): 지출 내역 리스트
+        start_date (str): 비교 시작 날짜 (예: "2024-06-01")
+        end_date (str): 비교 종료 날짜 (예: "2024-06-03")
+
+    Returns:
+        dict: 카테고리별 지출 합계를 담은 딕셔너리
+    """
+    category_totals = {}
+    for expense in expenses:
+        if start_date <= expense["date"] <= end_date:
+            category = expense["category"]
+            amount = expense["amount"]
+            if category in category_totals:
+                category_totals[category] += amount
+            else:
+                category_totals[category] = amount
+    return category_totals
+
+# 예시 사용
+# 지출 내역 추가
+add_expense(expenses, "2024-06-01", "햄버거", 10000)
+add_expense(expenses, "2024-06-01", "과자", 5000)
+add_expense(expenses, "2024-06-02", "넷플릭스", 20000)
+add_expense(expenses, "2024-06-03", "게임", 15000)
+
+# 지출 내역 출력
+print("Expenses:")
+print_expenses(expenses)
+
+# 특정 기간 동안의 지출 합계 비교
+start_date = "2024-06-01"
+end_date = "2024-06-03"
+total = compare_expenses(expenses, start_date, end_date)
+print(f"\nTotal expenses from {start_date} to {end_date}: {total}")
+
+# 카테고리별 지출 합계 비교
+category_totals = compare_expenses_by_category(expenses, start_date, end_date)
+print(f"\nCategory-wise expenses from {start_date} to {end_date}:")
+for category, total in category_totals.items():
+    print(f"Category: {category}, Total: {total}")
