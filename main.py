@@ -583,6 +583,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 세금 계산 프로그램 실행
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1145,6 +1146,175 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+
+
+"""
+calculate_income_tax() : 소득 금액에 따른 근로소득세 계산 프로그램
+소득 금액마다 근로소득세의 세율이 다르기에
+소득 금액을 입력하면 소득 범위에 따른 세율을 적용하여 근로소득세를 계산해주는 프로그
+단, 근로소득세는 소수점 둘째 자리까지 출력된다.
+"""
+def calculate_income_tax():
+    print("근로소득세 계산 프로그램(숫자만 입력 가능)")
+    
+    while True:
+        try:
+            income = float(input("총 근로소득 금액을 입력하세요 (원): "))
+            if income < 0:
+                print("근로소득 금액은 음수일 수 없습니다. 다시 입력하세요.")
+                continue  # 음수일 경우 다시 입력받기
+            break  # 유효한 값이 입력되면 루프 종료
+        except ValueError:
+            print("잘못된 입력입니다. 숫자를 입력하세요.")
+    
+    if income <= 12000000:
+        tax_rate = 6
+    elif income <= 46000000:
+        tax_rate = 15
+    elif income <= 88000000:
+        tax_rate = 24
+    elif income <= 150000000:
+        tax_rate = 35
+    elif income <= 300000000:
+        tax_rate = 38
+    elif income <= 500000000:
+        tax_rate = 40
+    elif income <= 1000000000:
+        tax_rate = 42
+    else:
+        tax_rate = 45
+
+    tax_amount = income * tax_rate / 100
+    print(f"총 근로소득 금액: {income:.0f}원")
+    print(f"근로소득세: {tax_amount:.2f}원 (세율: {tax_rate}%)")
+    print("근로소득세 계산 프로그램을 종료합니다.")
+
+"""
+calculate_vat() : 부가가치세 계산 프로그램
+매출액에 따른 일반과세자/간이과세자 구분
++ 간이과세자일시 업종에 따라 세율이 다르기에 그에 따른 부가가치세 계산
++ 납부세액이 마이너스인 경우 정보를 제공하지 않음
+"""
+def calculate_vat():
+    while True:
+        try:
+            # 1년 매출액 입력
+            annual_sales = float(input("1년 매출액을 입력하세요: "))
+
+            if annual_sales < 0:
+                print("매출액이 마이너스일 수 없습니다. 다시 입력하세요.")
+                continue
+
+            if annual_sales >= 80000000:
+                # 일반과세자 계산
+                print("일반과세자입니다.")
+                sales_tax = annual_sales * 0.10
+                while True:
+                    try:
+                        purchase_tax = float(input("매입세액을 입력하세요: "))
+                        if purchase_tax > sales_tax:
+                            print("매입세액이 매출세액보다 클 수 없습니다.")
+                        elif purchase_tax < 0:
+                            print("매입세액이 마이너스일 수 없습니다.")
+                        else:
+                            break
+                    except ValueError:
+                        print("잘못된 입력입니다. 숫자를 입력하세요.")
+                vat = sales_tax - purchase_tax
+                print(f"일반과세자의 납부세액은 {vat:.2f} 원 입니다.")
+                return  # 프로그램 종료
+
+            else:
+                # 간이과세자 계산
+                print("간이과세자입니다. 업종을 선택하세요:")
+                print("1: 소매업, 재생용 재료수집 및 판매업, 음식점업")
+                print("2: 제조업, 농업·임업 및 어업, 소화물 전문 운송업")
+                print("3: 숙박업")
+                print("4: 건설업, 운수 및 창고업(소화물 전문 운송업은 제외), 정보통신업")
+                print("5: 금융 및 보험 관련 서비스업, 전문·과학 및 기술서비스업(인물사진 및 행사용 영상 촬영업은 제외), 사업시설관리·사업지원 및 임대서비스업, 부동산 관련 서비스업, 부동산임대업")
+                print("6: 그 밖의 서비스업")
+
+                while True:
+                    try:
+                        sector = int(input("업종 번호를 선택하세요: "))
+                        if sector in [1, 2, 3, 4, 5, 6]:
+                            break
+                        else:
+                            print("잘못된 입력입니다. 1에서 6 사이의 숫자를 입력하세요.")
+                    except ValueError:
+                        print("잘못된 입력입니다. 숫자를 입력하세요.")
+
+                vat_rate = {
+                    1: 0.15,
+                    2: 0.20,
+                    3: 0.25,
+                    4: 0.30,
+                    5: 0.40,
+                    6: 0.30
+                }[sector]
+
+                # 부가가치세 계산
+                vat = annual_sales * vat_rate * 0.10
+
+                # 공제세액 계산
+                while True:
+                    try:
+                        purchase_amount = float(input("매입액(공급대가)를 입력하세요(숫자만 입력 가능): "))
+                        if purchase_amount <= 0:
+                            print("입력이 잘못되었습니다. 양수를 입력하세요.")
+                        else:
+                            break
+                    except ValueError:
+                        print("잘못된 입력입니다. 숫자를 입력하세요.")
+
+                deduction_tax = purchase_amount * 0.005
+
+                # 납부세액 계산
+                payable_tax = vat - deduction_tax
+                if payable_tax >= 0:
+                    print(f"간이과세자의 납부세액은 {payable_tax:.2f} 원 입니다.")
+                    print("프로그램을 종료합니다.")
+                else:
+                    print("납부세액이 마이너스인 경우는 정보를 제공하지 않습니다.")
+                    print("부가가치세 계산 프로그램을 종료합니다.")
+                return  # 프로그램 종료
+                
+        except ValueError:
+            print("입력이 잘못되었습니다. 숫자를 입력하세요.")
+    _
+
+
+
+
+"""
+tax_program() : 근로소득세 계산 프로그램/부가가치세 계산 프로그램을 고르는 함수
+1,2의 선택지로 선택 가능
+0일 시 종료
+그 외의 숫자 입력시 다시 입력하라는 문구 출력
+"""
+def tax_program():
+    a_is_exit = 0
+    print("세금 계산 프로그램(숫자만 입력 가능)\n1: 근로소득세 계산 프로그램\n2: 부가가치세 계산 프로그램\n")
+    print("0 입력시 종료")
+    while not a_is_exit:
+        push_the_button = input("입력(1: 근로소득세 2: 부가가치세) >> ")
+        if push_the_button == "1":
+            calculate_income_tax()
+        elif push_the_button == "2":
+            calculate_vat()
+        elif push_the_button == "0":
+            a_is_exit = 1
+            print("세금 계산 프로그램을 종료합니다.")
+        else:
+            print("잘못된 입력입니다. 다시 입력하세요.")
+
+
+
+     
+
+
+
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1182,6 +1352,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        tax_program()
+
     elif func == "?":
         print_help()
     elif func == "exit":
