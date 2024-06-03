@@ -581,10 +581,9 @@ def get_valid_amount_input():
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
     while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
-        else:
+        try:    
+            return float(input("금액: ")) # 금액을 입력 받고, float로 변환 가능하다면 입력한 값을 return
+        except ValueError:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
