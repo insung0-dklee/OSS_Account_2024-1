@@ -1041,12 +1041,13 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
-# 엔화와 달러의 환율 정보를 정적으로 저장합니다.
+# 엔화와 달러, 유로와 위안의 환율 정보를 정적으로 저장합니다.
 exchange_rate = {
     "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
-    "JPY": 0.1      # 1엔화 = 10원 (가상의 환율)
+    "JPY": 0.1,      # 1엔화 = 10원 (가상의 환율)
+    "EUR": 0.0008,  # 1유로 = 1250원 (가상의 환율)
+    "CNY": 0.006    # 1위안 = 166.67원 (가상의 환율)
 }
-
 def convert_currency(amount, currency):
     """
     입력된 금액을 선택한 통화로 환전하는 함수
@@ -1064,7 +1065,7 @@ def convert_currency(amount, currency):
 # 환율 계산을 실행하는 부분
 def calculate_exchange():
     amount = float(input("환전할 금액(원): "))
-    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    currency = input("환전할 통화를 입력하세요 (USD, JPY, EUR, CNY 중 하나): ")
     converted_amount = convert_currency(amount, currency)
     if converted_amount is not None:
         print(f"{amount}원을 {currency}로 환전한 금액은 {converted_amount}입니다.")
@@ -1079,7 +1080,7 @@ def add_entry_with_exchange():
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액(원): "))
-    currency = input("환전할 통화를 입력하세요 (USD 또는 JPY): ")
+    currency = input("환전할 통화를 입력하세요 (USD, JPY, EUR, CNY 중 하나): ")
     converted_amount = convert_currency(amount, currency)
     if converted_amount is not None:
         # 환전된 금액과 통화 정보를 함께 저장합니다.
