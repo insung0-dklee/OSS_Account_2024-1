@@ -1,67 +1,6 @@
-class Account_book: # 가계부 클래스
+# 카테고리별 지출계산 및 지출 증가 경고메시지 기능
+import datetime
 
-  bal = 0 #잔액 - 미설정시 0원
-  income_total = 0 #수입 총액
-  income_list = [] #수입 기록 리스트
-  spend_total = 0 #지출 총액
-  spend_list = [] #지출 기록 리스트
-  name = " " #이름 - 미설정시 공백
-
-  def __init__(self,name,bal): # 초기화
-    self.name = name #이름 설정
-    if(bal>0):  #잔액 설정
-      self.income_total += bal
-      self.bal = bal
-    else: #잔액이 0원보다 낮으면 0원으로 설정
-      print("금액이 너무 적습니다. 초기값(0원)으로 지정합니다.")
-
-  def income(self):# 수입 입력시 추가
-    income_money = int(input("수입을 입력하세요 "))
-    if(income_money < 0):#수입 잘못 입력 방지
-      print("0 미만의 값을 입력하셨습니다.")
-      return 0
-    self.bal += income_money #금액 추가 및 내역을 리스트에 넣기
-    self.income_list.append (income_money)
-    self.income_total += income_money
-
-  def spend(self):#지출 입력시 추가
-    spend_money = int(input("지출을 입력하세요 "))
-    if(spend_money < 0 or spend_money > self.bal):#지출 잘못 입력 방지
-      print("값을 잘못 입력하셨습니다.")
-      return 0
-    self.bal -= spend_money #금액 감소 및 내역을 리스트에 넣기
-    self.spend_list.append(spend_money)
-    self.spend_total += spend_money
-
-  def show_account(self): #금액 출력
-    print("현재 남은 금액은: ",self.bal, "원 입니다.")
-
-  def show_total(self): #수입,지출 총액 출력
-    print("현재까지 소득의 총합은 ",self.income_total,"원 입니다.")
-    print("현재까지 지출의 총합은 ",self.spend_total,"원 입니다.")
-
-  def show_sortedlist(self): #지출 및 수입 순위 출력
-    print("보고싶은 내역을 선택하세요")
-    button = input("1번 - 수입, 2번 - 지출: ")#수입 혹은 지출 선택
-    if(button == "1"):#주의 - button값은 input으로 받아 char형 변수임
-      print("현재까지의 수입 순위")
-      sortedlist = sorted(self.income_list)[::-1] #수입 리스트 정렬
-      for i in range(0,10):#10위 까지만 출력
-        if(len(self.income_list) <= i):#만약 리스트 크기보다 작을 경우 탈출
-          break
-        print(i+1,"위:",sortedlist[i],"원")
-    elif(button == "2"):
-      print("현재까지 사용한 금액 순위")
-      sortedlist = sorted(self.spend_list)[::-1]#지출 리스트 정렬
-      for i in range(0,10):#10위 까지만 출력
-        if(len(self.income_list) <= i):#만약 리스트 크기보다 작을 경우 탈출
-          break
-        print(i+1,"위 ",sortedlist[i],"원")
-    else:
-      print("잘못 입력하셨습니다.")
-
-
-# 지출예산 설정 및 알림 기능
 class AccountBook:
     def __init__(self, name, bal):
         self.name = name
@@ -73,9 +12,14 @@ class AccountBook:
         self.transactions = [("Initial Balance", self.balance, "initial", "")]
         self.budgets = {}
         self.spending = {}
+        self.monthly_spending = {}
 
         if bal <= 0:
             print("금액이 너무 적습니다. 초기값(0원)으로 지정합니다.")
+
+    def get_current_month(self):
+        now = datetime.datetime.now()
+        return now.year, now.month
 
     def deposit(self, amount):
         self.balance += amount
@@ -93,7 +37,15 @@ class AccountBook:
             self.spend_total += amount
             self.spend_list.append(amount)
             self.spending[category] = self.spending.get(category, 0) + amount
+
+            # Update monthly spending
+            current_month = self.get_current_month()
+            if current_month not in self.monthly_spending:
+                self.monthly_spending[current_month] = 0
+            self.monthly_spending[current_month] += amount
+
             self.check_budget(category)
+            self.check_spending_increase()
 
     def set_budget(self, category, amount):
         self.budgets[category] = amount
@@ -120,6 +72,16 @@ class AccountBook:
             if category != "uncategorized":
                 break
         return category
+
+    def check_spending_increase(self):
+        current_month = self.get_current_month()
+        previous_month = (current_month[0], current_month[1] - 1) if current_month[1] > 1 else (current_month[0] - 1, 12)
+
+        if previous_month in self.monthly_spending:
+            previous_spending = self.monthly_spending[previous_month]
+            current_spending = self.monthly_spending.get(current_month, 0)
+            if current_spending > previous_spending * 1.2:  # 20% increase threshold
+                print(f"Warning: Your spending has increased significantly this month! (Previous: {previous_spending}원, Current: {current_spending}원)")
 
     def show_balance(self):
         print(f"Current balance: {self.balance}원")
@@ -174,20 +136,43 @@ class AccountBook:
         button = input("1번 - 수입, 2번 - 지출: ")
         if button == "1":
             print("현재까지의 수입 순위")
-            sortedlist = sorted(self.income_list)[::-1]
-            for i in range(10):
-                if len(self.income_list) <= i:
-                    break
-                print(i + 1, "위:", sortedlist[i], "원")
+            sortedlist = sorted(self.income_list, reverse=True)
+            for i, amount in enumerate(sortedlist[:10]):
+                print(i + 1, "위:", amount, "원")
         elif button == "2":
             print("현재까지 사용한 금액 순위")
-            sortedlist = sorted(self.spend_list)[::-1]
-            for i in range(10):
-                if len(self.spend_list) <= i:
-                    break
-                print(i + 1, "위 ", sortedlist[i], "원")
+            sortedlist = sorted(self.spend_list, reverse=True)
+            for i, amount in enumerate(sortedlist[:10]):
+                print(i + 1, "위:", amount, "원")
         else:
             print("잘못 입력하셨습니다.")
+
+    # 추가 기능 1: 카테고리별 지출 비율 계산
+    def category_spending_ratio(self):
+        print("Category Spending Ratios:")
+        total_spending = sum(self.spending.values())
+        if total_spending == 0:
+            print("No spending recorded.")
+            return
+        for category, amount in self.spending.items():
+            ratio = (amount / total_spending) * 100
+            print(f"{category}: {ratio:.2f}%")
+
+    # 추가 기능 2: 최근 N개의 거래 내역 조회
+    def recent_transactions(self, n):
+        print(f"Recent {n} Transactions:")
+        for transaction in self.transactions[-n:]:
+            if transaction[0] == "Deposit" or transaction[0] == "Initial Balance":
+                print(f"{transaction[0]}: +{transaction[1]}원")
+            else:
+                print(f"{transaction[0]}: -{transaction[1]}원, Category: {transaction[2]}, Description: {transaction[3]}")
+
+    # 추가 기능 3: 예상 잔액 계산
+    def projected_balance(self, months):
+        average_income = self.income_total / len(self.income_list) if self.income_list else 0
+        average_spending = self.spend_total / len(self.spend_list) if self.spend_list else 0
+        projected_balance = self.balance + (average_income - average_spending) * months
+        print(f"Projected balance after {months} months: {projected_balance}원")
 
 # 가계부 인스턴스 생성
 account_book = AccountBook("사용자1", 5000)
