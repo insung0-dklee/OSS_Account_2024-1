@@ -288,9 +288,7 @@ def debt_management():
             break
         else:
             print("올바른 기능을 입력해 주세요.")
-
-class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
-    def __init__(self, account_name):
+                
         self.joint_account = account_name    # 공동 계정 이름
         self.joint_users = []    # 추가한 사용자 리스트
         self.joint_tran = []    # 거래 내역 리스트
@@ -744,7 +742,9 @@ def compare_financial_goal(user1, user2, goal):
         print("두 사용자의 목표 달성률이 같습니다.")
 
 # 월별 보고서 생성 함수
+
 def generate_monthly_report():
+  
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
@@ -1151,11 +1151,11 @@ def analyze_and_advise():
 
 #디데이 기능
 d_day_file = 'd_day.json' 
-
+ #사용자가 읽어 들이기 쉽게 쌍으로 구성된 json 객체에저장하여 파일에 사용
 def save_d_day(target_date_str):
     with open(d_day_file, 'w') as file:
         json.dump({"target_date": target_date_str}, file)
-
+#파일에서 바로 로드 가능한 함수 구현 
 def load_d_day():
     if os.path.exists(d_day_file):
         with open(d_day_file, 'r') as file:
@@ -1163,10 +1163,13 @@ def load_d_day():
         return data.get("target_date", None)
     return None
 
+#새로운 디데이를 추가하는 함수 
 def add_d_day():
     try:
         target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
+
+        #d-day를 계산하기 위해서 현재날짜를 가져와 남은 일자를 계산한다.
         today = datetime.today()
         d_day = (target_date - today).days
         if d_day >= 0:
@@ -1176,7 +1179,7 @@ def add_d_day():
             print("이미 지난 날짜입니다.")
     except ValueError:
         print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
-
+#저장된 디데이 정보를 보여주는 함수 구현 
 def view_d_day():
     target_date_str = load_d_day()
     if target_date_str:
