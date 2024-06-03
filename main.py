@@ -542,7 +542,23 @@ def calculator():
     except Exception as e:
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
-
+        
+def rsp_gift():
+    print("살까 말까 가위바위보로 정하자!")
+    choice = input("가위, 바위, 보 중 하나를 선택하세요")
+    print("당신의 선택은"+choice+ "입니다")
+    choices=["가위","바위","보"]
+    com=random.choice(choices)
+    print("컴퓨터의 선택은"+com+"입니다")
+    if choice==com:
+       print("비겼네요! 구매하지 마세요")
+    elif (choice=="가위" and com=="보") or (choice=="바위" and com=="가위") or (choice=="보" and com=="바위"):
+       print("축하합니다! 구매하세요")
+    else:
+        print("지셨네요! 꿈도꾸지 마세요")
+    """
+가위바위보를 해서 이기는 겨우에만 원하는 물건을 살 수 있게 허락하는 프로그램입니다. random을 import해서 컴퓨터가 가위, 바위, 보 중 하나를 선택하게 했습니다.
+       """ 
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +570,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 살까말까 가위바위보
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1540,6 +1557,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "6":
+        rsp_gift()
     else:
         
         print("올바른 기능을 입력해 주세요.")
