@@ -8,15 +8,18 @@ expenses_file = 'expenses.json'
 # 1. 일일 지출 한도 설정 기능
 # 사용자가 일일 지출 한도를 설정하도록 하는 함수
 def set_daily_limit():
-    try:
-        # 사용자로부터 일일 지출 한도 입력 받기
-        limit = float(input("일일 지출 한도를 설정하세요 (원): "))
-        # daily_limit.json 파일에 한도 저장
-        with open('daily_limit.json', 'w') as file:
-            json.dump({"limit": limit}, file)
-        print(f"일일 지출 한도가 {limit}원으로 설정되었습니다.")
-    except ValueError:
-        print("유효한 금액을 입력하세요.")
+    while True:  # 유효한 입력이 들어올 때까지 반복
+        try:
+            # 사용자로부터 일일 지출 한도 입력 받기
+            limit = float(input("일일 지출 한도를 설정하세요 (원): "))
+            # daily_limit.json 파일에 한도 저장
+            with open('daily_limit.json', 'w') as file:
+                json.dump({"limit": limit}, file)
+            print(f"일일 지출 한도가 {limit}원으로 설정되었습니다.")
+            break  # 유효한 입력이 들어오면 루프 종료
+        except ValueError:
+            print("유효한 금액을 입력하세요. ")  # 잘못된 입력에 대한 오류 메시지 출력
+
 
 # daily_limit.json 파일에서 일일 지출 한도를 가져오는 함수
 def get_daily_limit():
