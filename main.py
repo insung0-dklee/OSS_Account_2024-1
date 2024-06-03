@@ -47,35 +47,45 @@ usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
 
-def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
-    id = input("id 입력: ")  # 회원가입 시의 id 입력
-    name = input("이름 입력: ")  # 회원가입 시의 이름 입력
-    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+def user_reg_include_name_phone():
+    id = input("id 입력: ")
+    name = input("이름 입력: ")
+    phone = input("전화번호 입력: ")
 
-    # 전화번호 중복 체크
-    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
     while phone in userphones:
         print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
         print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
         phone = input("전화번호 입력: ")
-        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
+        if phone == '?':
             find_id_by_phone()
             print("로그인 기능으로 다시 돌아갑니다.")
-            return #로그인 기능으로 다시 돌려줌
+            return
 
-    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    while True:
+        pw = input("password 입력: ")
+        pw_confirm = input("password 확인 입력: ")
 
-    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
-    h.update(pw.encode())  # sha256으로 암호화
-    pw_data = h.hexdigest()  # 16진수로 변환
+        if pw != pw_confirm:
+            print("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.")
+            continue
 
-    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
-    usernames[name] = id  # 이름과 아이디 매핑
-    userphones[phone] = id  # 전화번호와 아이디 매핑
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
 
-    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-        for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+        h = hashlib.sha256()
+        h.update(pw.encode())
+        pw_data = h.hexdigest()
+
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}
+        usernames[name] = id
+        userphones[phone] = id
+
+        with open('login.txt', 'w', encoding='UTF-8') as fw:
+            for user_id, user_info in userdata2.items():
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
+        print("회원가입이 완료되었습니다!")
+        break
 
 
 """
