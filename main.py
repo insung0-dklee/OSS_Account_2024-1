@@ -554,8 +554,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 가상의 투자 시뮬레이션을 통해 일정 기간 후의 최종 금액 계산
     ?: 도움말 출력
-    추천: 사용자가 원하는 카테고리에 대해 추천
+    추천: 사용자가 원하는 카테고리에 대해 추천 
     exit: 종료
     """)
 
@@ -1528,7 +1529,34 @@ def recomm():
         print("주식투자 커뮤니티 가입을 추천드려요")
     else:
         print("잘못된 입력입니다.")
-        
+
+
+
+"""
+    투자 시뮬레이션을 통해 최종 금액을 계산합니다.
+    
+    :param principal: 초기 투자 금액
+    :param annual_rate: 연간 이자율 (소수점 형태로 입력, 예: 5% -> 0.05)
+    :param years: 투자 기간 (연 단위)
+    :return: 최종 금액
+"""
+def investment_amount(principal, annual_rate, years):
+    final_amount = principal * ((1 + annual_rate) ** years)
+    return final_amount
+
+# 가상의 투자 시뮬레이션
+def investment_simulation():
+    try:
+        principal = float(input("초기 투자 금액을 입력하세요: "))
+        annual_rate = float(input("연간 이자율을 입력하세요 (예: 5% -> 0.05): "))
+        years = int(input("투자 기간을 입력하세요 (연 단위): "))
+
+        # 투자 시뮬레이션
+        final_amount = investment_amount(principal, annual_rate, years)
+        print(f"{years}년 후 예상 최종 금액은 {final_amount:.2f}원 입니다.")
+    except ValueError:
+        print("올바른 숫자를 입력해주세요.")
+
 
 # 메인 루프
 while not b_is_exit:
@@ -1546,6 +1574,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        investment_simulation()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
