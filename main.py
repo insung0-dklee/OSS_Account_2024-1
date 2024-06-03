@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 월별 보고서 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -743,6 +744,9 @@ def compare_financial_goal(user1, user2, goal):
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
 
+# 보고서 데이터를 저장할 딕셔너리
+monthly_reports = {}
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
@@ -775,6 +779,31 @@ def generate_monthly_report():
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
+
+    # 보고서를 메모리에 저장
+    monthly_reports[month] = {
+        "total": monthly_total,
+        "category_totals": category_totals,
+        "average_score": average_score
+    }
+
+# 저장된 월별 보고서를 조회하는 함수
+def view_monthly_report():
+    month = input("조회할 월 (YYYY-MM): ")
+    report = monthly_reports.get(month)
+    if report:
+        print(f"{month}월 총 지출: {report['total']} 원")
+        print(f"{month}월 각 카테고리별 지출 내역:")
+        for category, total in report["category_totals"].items():
+            print(f"{category}: {total} 원")
+        print(f"가장 지출이 많은 카테고리: {max(report['category_totals'], key=report['category_totals'].get)} ({max(report['category_totals'].values())} 원)")
+        if report["average_score"] is not None:
+            print(f"{month}월 평균 점수: {report['average_score']:.2f} 점")
+        else:
+            print(f"{month}월에는 평가된 점수가 없습니다.")
+    else:
+        print(f"{month}월에 대한 보고서가 없습니다.")
+
 
 budget = None #전역변수 budget의 기본값 설정
 
@@ -1532,6 +1561,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        view_monthly_report()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
