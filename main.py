@@ -52,6 +52,14 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
+     # 전화번호 형식
+    phone_pattern = re.compile(r'^01[0-9]-\d{4}-\d{4}$')
+
+    # 입력된 전화번호가 올바른 형식인지 확인
+    while not phone_pattern.match(phone):
+        print("전화번호 형식이 잘못되었습니다. 다시 입력해주세요.")
+        phone = input("전화번호 입력 (예: 010-1234-1234): ")
+
     # 전화번호 중복 체크
     # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
     while phone in userphones:
