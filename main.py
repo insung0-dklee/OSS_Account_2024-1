@@ -1419,6 +1419,62 @@ class User:
             return self.goals[index]
         else:
             return None
+# 주식 거래 내역을 관리하는 클래스
+class StockAccountBook:
+    def __init__(self):
+        self.stock_transactions = []
+
+    def add_stock_transaction(self, transaction):
+        self.stock_transactions.append(transaction)
+
+    def display_stock_transactions(self):
+        for transaction in self.stock_transactions:
+            print(transaction)
+
+# 주식 거래 정보를 저장하는 클래스
+class StockTransaction:
+    def __init__(self, stock_name, price, quantity, transaction_type):
+        self.stock_name = stock_name
+        self.stock_price = price
+        self.stock_quantity = quantity
+        self.transaction_type = transaction_type
+
+    def __str__(self):
+        return f"{self.transaction_type} - Stock: {self.stock_name}, Price: {self.stock_price}, Quantity: {self.stock_quantity}"
+
+# 주식 관련 기능을 실행하는 함수
+def stock_functions(stock_account_book):
+    while True:
+        print("\n--- 주식 관리 ---")
+        print("1: 주식 구매 입력")
+        print("2: 주식 판매 입력")
+        print("3: 주식 거래 내역 확인")
+        print("4: 종료")
+
+        choice = input("기능을 선택하세요: ")
+
+        if choice == "1":
+            stock_name = input("주식 이름을 입력하세요: ")
+            price = float(input("구매한 가격을 입력하세요: "))
+            quantity = int(input("구매한 개수를 입력하세요: "))
+            transaction = StockTransaction(stock_name, price, quantity, "구매")
+            stock_account_book.add_stock_transaction(transaction)
+            print("주식 구매 입력이 완료되었습니다.")
+        elif choice == "2":
+            stock_name = input("주식 이름을 입력하세요: ")
+            price = float(input("판매한 가격을 입력하세요: "))
+            quantity = int(input("판매한 개수를 입력하세요: "))
+            transaction = StockTransaction(stock_name, price, quantity, "판매")
+            stock_account_book.add_stock_transaction(transaction)
+            print("주식 판매 입력이 완료되었습니다.")
+        elif choice == "3":
+            print("주식 거래 내역:")
+            stock_account_book.display_stock_transactions()
+        elif choice == "4":
+            print("주식 관리를 종료합니다.")
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
 
 # 재정 목표를 관리하는 루프 함수입니다.
 def financial_goal_loop(user):
