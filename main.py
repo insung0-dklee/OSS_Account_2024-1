@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import datetime
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1485,6 +1486,37 @@ def financial_goal_loop(user):
         #재정 목표 관리 반복문에 없는 번호 입력시 사용자에게 다시 입력 받습니다.
         else:
             print("올바른 기능을 선택하세요.")
+
+def notify_expenses_of_month():
+    # 오늘 날짜 가져오기
+    today = datetime.datetime.today()
+
+    # 해당 월의 마지막 날 가져오기
+    last_day_of_month = {
+        1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30,
+        7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
+    }.get(today.month)
+
+    # 윤년인지 확인하고 2월의 마지막 날 수정
+    if today.month == 2:
+        if (today.year % 4 == 0 and today.year % 100 != 0) or (today.year % 400 == 0):
+            last_day_of_month = 29
+        else:
+            last_day_of_month = 28
+    # 오늘이 해당 월의 마지막 날인지 확인
+    if today.day == last_day_of_month:
+        # 지출 파일 열고 데이터 로드
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            if data:
+                # 총 지출 계산
+                total_expenses = sum(expense['amount'] for expense in data)
+                # 총 지출 출력
+                print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 이번 달 총 지출 금액은 {total_expenses}원입니다.")
+            else:
+                print("저장된 지출 내역이 없습니다.")
+    else:
+        print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 마지막 날이 아닙니다.")
 
 
 
