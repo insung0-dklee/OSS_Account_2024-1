@@ -649,7 +649,7 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
+    date = input_date("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
@@ -975,7 +975,7 @@ def view_expenses():
 # 지출 내역을 입력받는 함수
 def input_expense():
     # 사용자로부터 지출 날짜, 항목, 금액을 입력받음
-    date = input("지출 날짜 (예: 2024-05-30): ")
+    date = input_date("지출 날짜 (예: 2024-05-30): ")
     item = input("지출 항목: ")
     amount = input("지출 금액: ")
     # 입력받은 데이터를 딕셔너리 형태로 저장
@@ -1174,7 +1174,7 @@ def calculate_exchange():
 def add_entry_with_exchange():
     # 기존의 지출 항목 추가 함수(add_entry())와 비슷하게 작성하되,
     # 추가로 환전할 통화와 금액을 입력받고, 해당 통화로 환전된 금액을 함께 저장합니다.
-    date = input("날짜 (YYYY-MM-DD): ")
+    date = input_date("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     amount = float(input("금액(원): "))
@@ -1270,7 +1270,7 @@ def load_d_day():
 
 def add_d_day():
     try:
-        target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
+        target_date_str = input_date("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
         today = datetime.today()
         d_day = (target_date - today).days
@@ -1488,8 +1488,8 @@ def input_date(prompt):
         try:
             date = datetime.strptime(date_str, "%Y-%m-%d")
             return date
-        except ValueError:
-            print("올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
+        except ValueError as e:
+            print(f"올바른 날짜 형식이 아닙니다. YYYY-MM-DD 형식으로 입력하세요.")
 
 
 # 재정 목표를 나타내는 클래스입니다.
