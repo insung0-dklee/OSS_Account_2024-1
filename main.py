@@ -14,12 +14,13 @@ userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 def user_reg():  # 회원가입
     id = input("id 입력: ")
     while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        pw = input("password 입력: ")
+        pw_confirm = input("password 확인 입력: ")
 
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
+        if pw != pw_confirm:
+            print("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.")
+            continue
+
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
             print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
             continue
@@ -30,11 +31,12 @@ def user_reg():  # 회원가입
 
         userdata[id] = pw_data
 
-        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+        with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+            for user_id, user_pw in userdata.items():  # 딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_pw}\n')  # key, value값을 차례로 login.txt파일에 저장
         print("회원가입이 완료되었습니다!")
         break
+
 
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
