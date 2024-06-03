@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 연봉계산(세전)
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1515,6 +1516,18 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
+def calculate_annual_income(monthly_income):
+    """
+    월급을 입력받아 연봉을 계산하는 함수
+    parameters -
+    monthly_income : 월급
+    returns -
+    annual_income : 연봉
+    """
+    # 연봉 = 월급 * 12
+    annual_income = monthly_income * 12
+    return annual_income
+
 
 # 메인 루프
 while not b_is_exit:
@@ -1532,6 +1545,15 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        try:
+        # 사용자에게 월급을 입력받음
+            monthly_income = float(input("월급을 입력하세요: "))
+        # 연봉을 계산하여 출력
+            annual_income = calculate_annual_income(monthly_income)
+            print(f"연봉은 {annual_income}원 입니다.(세전)")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
