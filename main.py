@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import schedule
+import time
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1078,6 +1080,18 @@ def analyze_and_advise():
             print(a)
     else:
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
+
+#가계부 작성 알림 기능
+def send_notification():
+    print("알림: 오늘의 지출을 입력하세요!")
+
+# 매일 오후 8시에 send_notification 함수를 실행하도록 스케줄을 설정합니다.
+schedule.every().day.at("20:00").do(send_notification)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
 
 #디데이 기능
 d_day_file = 'd_day.json' 
