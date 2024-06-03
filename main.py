@@ -12,6 +12,7 @@ import time
 import threading
 
 
+
 def weekly_reminder():
     """
     7일에 한 번씩 "일주일의 소득, 소비를 정산하세요"라는 문구를 출력하는 함수입니다.
@@ -21,6 +22,10 @@ def weekly_reminder():
         print("일주일의 소득, 소비를 정산하세요")
 
 
+        #오늘의 환율을 알려주는 사이트를 추천해주는 함수입니다.
+def print_exchange_rate_url():
+    url = "https://finance.naver.com/marketindex/"
+    print(f"오늘의 환율 정보를 확인하려면 다음 링크를 방문하세요: {url}")
 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -570,6 +575,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 오늘의 환율 사이트 추천      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1536,7 +1542,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 while not b_is_exit:
     print("-----------------------")
     print("user:",user.name) # 현재 user가 누구인지 출력
-    # 스레드를 사용하여 함수 실행
+    # 스레드를 사용하여 함수 실행 (7일마다 정산하라는 문구를 출력하는 함수)
     reminder_thread = threading.Thread(target=weekly_reminder)
     reminder_thread.daemon = True  # 메인 프로그램이 종료될 때 스레드도 함께 종료되도록 설정
     reminder_thread.start()
@@ -1552,6 +1558,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6": #오늘의 환율을 알려주는 사이트를 추천해주는 기능 6
+        print_exchange_rate_url()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
