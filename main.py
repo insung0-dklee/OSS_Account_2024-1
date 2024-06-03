@@ -9,6 +9,7 @@ import webbrowser
 import re
 import Add_function
 import requests
+from collections import defaultdict
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1532,6 +1533,33 @@ def get_silver_price():
         return "은 시세를 가져오는 데 실패했습니다."
 
 
+def find_highest_expense_day():
+    """
+    소비가 가장 많았던 날을 찾아 경고 메시지를 출력하는 함수
+    """
+    expenses = load_expenses() #지출 내역을 불러옴
+
+    if not expenses:
+        return "지출 내역이 없습니다."
+
+    # 날짜별 지출 합계를 저장할 딕셔너리
+    expense_by_date = defaultdict(float)
+
+    # 지출 내역을 날짜별로 합산
+    for expense in expenses:
+        date = expense.get('date')
+        amount = expense.get('amount', 0)
+        expense_by_date[date] += amount
+
+    # 가장 많은 지출을 기록한 날짜 찾기
+    highest_expense_day = max(expense_by_date, key=expense_by_date.get)
+    highest_expense_amount = expense_by_date[highest_expense_day]
+
+    # 경고 메시지 출력
+    warning_message = (
+        f"경고: {highest_expense_day}에 {highest_expense_amount:.2f}원의 소비가 있었습니다."
+    )
+    return warning_message
 
 
 
