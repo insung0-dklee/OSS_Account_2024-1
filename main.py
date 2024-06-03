@@ -289,28 +289,28 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
-class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
+class JointAccount:  # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
-        self.joint_account = account_name    # 공동 계정 이름
-        self.joint_users = []    # 추가한 사용자 리스트
-        self.joint_tran = []    # 거래 내역 리스트
-        self.joint_bal = 0    # 현재 잔액
+        self.joint_account = account_name  # 공동 계정 이름
+        self.joint_users = []  # 추가한 사용자 리스트
+        self.joint_tran = []  # 거래 내역 리스트
+        self.joint_bal = 0  # 현재 잔액
 
-    def add_joint_user(self, joint_user):    # 계정에 사용자 추가
+    def add_joint_user(self, joint_user):  # 계정에 사용자 추가
         self.joint_users.append(joint_user)
 
-    def add_joint_income(self, amount, joint_desc=""):    # 수입 내역 추가 및 수입에 대한 설명
-        self.joint_tran.append({"type": "income", "amount": amount, "income_description": joint_desc})
+    def add_joint_income(self, amount, joint_desc=""):  # 수입 내역 추가 및 수입에 대한 설명
+        self.joint_tran.append({"type": "income", "amount": amount, "description": joint_desc})
         self.joint_bal += amount
 
-    def add_joint_expense(self, amount, joint_desc=""):    # 지출 내역 추가 및 지출에 대한 설명
-        self.joint_tran.append({"type": "expense", "amount": amount, "expense_description": joint_desc})
+    def add_joint_expense(self, amount, joint_desc=""):  # 지출 내역 추가 및 지출에 대한 설명
+        self.joint_tran.append({"type": "expense", "amount": amount, "description": joint_desc})
         self.joint_bal -= amount
 
-    def get_joint_bal(self):    # 현재 잔액 반환
+    def get_joint_bal(self):  # 현재 잔액 반환
         return self.joint_bal
 
-    def get_joint_tran(self):    # 거래 내역 반환
+    def get_joint_tran(self):  # 거래 내역 반환
         return self.joint_tran
 
 def export_account(account):
@@ -525,7 +525,7 @@ def filter_expenses_by_date(start_date, end_date):
     @param end_date : 문자열 형식의 종료 날짜 (YYYY-MM-DD).
     """
     for entry in ledger:
-        if start_date <= entry['date'] <= end_date:
+        if start_date <= entry['date'] <= end_date and entry["type"] == "expense":  # 지출 항목만 필터링
             print(entry)
 
 def calculator():
@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 수입 카테고리 분석
     ?: 도움말 출력
     exit: 종료
     """)
@@ -589,30 +590,45 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    transaction_type = input("거래 유형을 입력하세요 (1: 수입, 2: 지출): ")
+    if transaction_type == "1":
+        transaction_type = "income"
+    elif transaction_type == "2":
+        transaction_type = "expense"
+    else:
+        print("올바른 거래 유형을 입력하세요.")
+        return
+
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
-    score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    amount = get_valid_amount_input()  # 금액 입력 요청 및 유효성 검사.
+
+    score = day_evaluation()  # 평가 점수 추가
+
     entry = {
+        "type": transaction_type,
         "date": date,
         "category": category,
         "description": description,
         "amount": amount,
-        "score": score  # 평가 점수 추가
+        "score": score
     }
+
     ledger.append(entry)
+    save_expense(entry)  # 내역을 파일에 저장
+
     print("항목이 추가되었습니다.")
 
-    category_count = sum(1 for e in ledger if e["category"] == category)
+    if transaction_type == "expense":
+        category_count = sum(1 for e in ledger if e["category"] == category and e["type"] == "expense")
 
-    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
-        response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
-        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
-            add_favorite_category(category)
-        else:
-            print("카테고리에 추가되지 않았습니다.")
-
+        if category_count >= 3 and category not in favorites:
+            response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
+            if response == 'y':
+                add_favorite_category(category)
+            else:
+                print("카테고리에 추가되지 않았습니다.")
 
 favorites = []
 
@@ -637,11 +653,10 @@ def view_entries():
         print(entry)
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
-
+        print(f"거래 유형: {entry['type']}")  # 거래 유형 출력 추가
 
 def day_evaluation():
-    # 사용자로부터 그날의 평가를 입력 받음
-    while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
+    while True:
         evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
         try:
             evaluation = float(evaluation)
@@ -716,7 +731,7 @@ def average():
 def compare_financial_goal(user1, user2, goal):
     """
     두 사용자의 잔고를 비교하여 목표 금액에 대한 달성률을 계산하고 비교합니다.
-    
+
     @Param
         user1 : User object : 비교할 첫 번째 사용자 객체.
         user2 : User object : 비교할 두 번째 사용자 객체.
@@ -750,8 +765,8 @@ def generate_monthly_report():
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
     for entry in ledger:
-        if entry["date"].startswith(month):
-            monthly_total += float(entry["amount"])
+        if entry["date"].startswith(month) and entry["type"] == "expense":  # 지출 항목만 합산
+            monthly_total += entry["amount"]
             category = entry["category"]
             if category not in category_totals:
                 category_totals[category] = 0
@@ -770,7 +785,7 @@ def generate_monthly_report():
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
@@ -780,13 +795,14 @@ budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
-    current_total = sum(float(entry["amount"]) for entry in ledger)
-    if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+    global budget
+    budget = float(input("예산 설정 (원): "))
+    # 지출 항목만 합산
+    current_expense_total = sum(entry["amount"] for entry in ledger if entry["type"] == "expense")
+    if current_expense_total > budget:
+        print(f"경고: 예산 초과! 현재 지출: {current_expense_total} 원")
     else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        print(f"예산 설정 완료. 현재 지출: {current_expense_total} 원, 남은 예산: {budget - current_expense_total} 원")
 
 # 예산 확인 함수
 def check_budget():
@@ -794,26 +810,43 @@ def check_budget():
     if budget is None:
         print("예산이 지정되지 않았습니다.")
     else:
-        current_total = sum(entry["amount"] for entry in ledger)
-        print(f"설정된 예산은 {budget}원이고, 남은 예산은 {budget - current_total} 원입니다.")
+        # 지출 항목만 합산
+        current_expense_total = sum(entry["amount"] for entry in ledger if entry["type"] == "expense")
+        print(f"설정된 예산은 {budget}원이고, 남은 예산은 {budget - current_expense_total} 원입니다.")
+        if current_expense_total > budget:
+            print(f"경고: 예산 초과! 현재 지출: {current_expense_total} 원")
 
 # 지출 카테고리 분석 함수
-def analyze_categories():
+def analyze_expense_categories():
     category_totals = {}
     for entry in ledger:
-        category = entry["category"]
-        if category not in category_totals:
-            category_totals[category] = 0
-        category_totals[category] += entry["amount"]
+        if entry["type"] == "expense":  # 지출 항목만 분석
+            category = entry["category"]
+            if category not in category_totals:
+                category_totals[category] = 0
+            category_totals[category] += entry["amount"]
+    print("지출 카테고리 분석:")
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+# 수입 카테고리 분석 함수
+def analyze_income_categories():
+    category_totals = {}
+    for entry in ledger:
+        if entry["type"] == "income":  # 수입 항목만 분석
+            category = entry["category"]
+            if category not in category_totals:
+                category_totals[category] = 0
+            category_totals[category] += entry["amount"]
+    print("수입 카테고리 분석:")
+    for category, total in category_totals.items():
+        print(f"{category}: {total} 원")
 
 
 def calculate_monthly_savings(target_amount, target_date):
     """
     목표 금액과 목표 날짜를 기준으로 매월 저축해야 할 금액과 남은 달 수를 계산합니다.
-    
+
     @Param
         target_amount : 목표 금액.
         target_date : 목표 날짜 (YYYY-MM-DD 형식).
@@ -837,7 +870,7 @@ def calculate_monthly_savings(target_amount, target_date):
 def track_savings(savings, target_amount, months_left):
     """
     현재까지의 저축액, 목표 금액, 매월 저축해야 할 금액, 남은 달 수를 바탕으로 남은 금액과 수정된 월간 저축액을 계산합니다.
-    
+
     @Param
         savings : 현재까지 저축된 금액.
         target_amount : 목표 금액.
@@ -882,7 +915,7 @@ def view_expenses():
         if data:
             # 데이터가 존재하면 각 지출 내역을 출력
             for idx, expense in enumerate(data, start=1):
-                print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원")
+                print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원 - {expense['type']}")
         else:
             # 데이터가 비어 있으면 해당 메시지 출력
             print("저장된 지출 내역이 없습니다.")
@@ -905,17 +938,16 @@ def input_expense():
 
 # 기능 3: 지출 내역 삭제
 def delete_expense():
-    # 삭제할 지출 항목의 인덱스를 입력받음
     index = input("삭제할 지출 항목의 번호를 입력하세요: ")
 
-    # 저장된 지출 내역을 불러옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    # 입력받은 인덱스가 유효한지 확인하고 삭제
     try:
         index = int(index)
-        if 1 <= index <= len(data):
-            deleted_expense = data.pop(index - 1)
+        expense_data = [entry for entry in data if entry["type"] == "expense"]  # 지출 항목만 필터링
+        if 1 <= index <= len(expense_data):
+            deleted_expense = expense_data.pop(index - 1)
+            data = [entry for entry in data if entry != deleted_expense]  # 전체 데이터에서 삭제
             with open(expenses_file, 'w') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
             print(f"다음 내역이 삭제되었습니다: {deleted_expense}")
@@ -962,10 +994,8 @@ def validate_amount(amount):
         print("금액은 숫자 또는 소수점으로 입력하세요.")
         return False
 
+# 지출 내역을 날짜순으로 정렬하여 출력하는 함수
 def sort_entries_by_date():
-    """
-    지출 내역을 날짜순으로 정렬하여 출력하는 함수
-    """
     if not ledger:
         print("저장된 지출 내역이 없습니다.")
         return
@@ -973,12 +1003,11 @@ def sort_entries_by_date():
     sorted_entries = sorted(ledger, key=lambda x: x['date'])
     print("지출 내역 (날짜순):")
     for entry in sorted_entries:
-        print(entry)
+        if entry["type"] == "expense":  # 지출 항목만 출력
+            print(entry)
 
+# 지출 내역을 금액순으로 정렬하여 출력하는 함수
 def sort_entries_by_amount():
-    """
-    지출 내역을 금액순으로 정렬하여 출력하는 함수
-    """
     if not ledger:
         print("저장된 지출 내역이 없습니다.")
         return
@@ -986,53 +1015,44 @@ def sort_entries_by_amount():
     sorted_entries = sorted(ledger, key=lambda x: x['amount'])
     print("지출 내역 (금액순):")
     for entry in sorted_entries:
-        print(entry)
-
+        if entry["type"] == "expense":  # 지출 항목만 출력
+            print(entry)
 
 # 지출 내역을 수정하는 함수
 def modify_expense():
-    # 저장된 지출 내역이 없는 경우
     if not ledger:
         print("저장된 지출 내역이 없습니다.")
         return
 
-    # 저장된 지출 내역을 출력하여 사용자가 선택할 수 있도록 함
     print("저장된 지출 내역:")
-    for idx, expense in enumerate(ledger, start=1):
+    expense_entries = [entry for entry in ledger if entry["type"] == "expense"]  # 지출 항목만 필터링
+    for idx, expense in enumerate(expense_entries, start=1):
         print(f"{idx}. 날짜: {expense['date']}, 카테고리: {expense['category']}, 설명: {expense['description']}, 금액: {expense['amount']}원")
 
-    # 사용자로부터 수정할 지출 항목의 번호를 입력받음
     index = input("수정할 지출 항목의 번호를 입력하세요: ")
 
     try:
         index = int(index)
-        #사용자에게 입력 받은 수정할 지출 항목의 내역을 출력한다
-        if 1 <= index <= len(ledger):
-            expense = ledger[index - 1]
+        if 1 <= index <= len(expense_entries):
+            expense = expense_entries[index - 1]
             print(f"수정하고자 하는 지출 내역: {expense}")
 
             while True:
-                # 새로운 값들을 입력 받음
                 date = input(f"새 지출 날짜 (현재값: {expense['date']}) : ")
-                # 입력 받은 값이  날짜 형식인지 검사
                 if date and not validate_date(date):
                     continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
                 category = input(f"새 카테고리 (현재값: {expense['category']}) : ")
                 description = input(f"새 설명 (현재값: {expense['description']}) : ")
 
                 amount = input(f"새 금액 (현재값: {expense['amount']}) : ")
-
-                # 입력 받은 금액 값이  숫자 형식 인지 검사
                 if amount and not validate_amount(amount):
                     continue  # 다시 입력 받기 위해 반복문의 처음으로 이동
 
-                # 데이터 형식에 맞게 입력 받았다면 입력 받은 값으로 업데이트
                 expense['date'] = date if date else expense['date']
                 expense['category'] = category if category else expense['category']
                 expense['description'] = description if description else expense['description']
-                expense['amount'] = amount if amount else expense['amount']
+                expense['amount'] = float(amount) if amount else expense['amount']
 
-                # 입력 받은 값이 모두 유효한 경우 반복문 종료
                 break
 
             print("지출 내역이 수정되었습니다.")
@@ -1249,9 +1269,9 @@ def print_Login_help(): #user interface 도움말
     2: 로그인
     3. 아이디 찾기
     4. 비밀번호 찾기
-    
+
     아무거나 입력시 프로그램 종료
-    
+
     ?: 로그인 도움말 출력
     """)
 
@@ -1300,7 +1320,7 @@ def Login_interface(): #로그인 인터페이스
     except Exception as e:
         print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
         return 0
-    
+
     cnt = 0
 
     login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
@@ -1519,7 +1539,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
+    print("user:", user.name)  # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -1531,15 +1551,16 @@ while not b_is_exit:
     elif func == "4":
         set_budget()
     elif func == "5":
-        analyze_categories()
+        analyze_expense_categories()  # 지출 카테고리 분석 호출
+    elif func == "6":
+        analyze_income_categories()  # 수입 카테고리 분석 호출
     elif func == "?":
         print_help()
-    elif func == "exit" or func == "x" or func =="종료":
+    elif func == "exit" or func == "x" or func == "종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
     elif func == "memo":
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")

@@ -32,7 +32,7 @@ def check_daily_limit():
     if limit is None:
         print("설정된 일일 지출 한도가 없습니다.")
         return
-    
+
     total_spent_today = 0
     today = datetime.today().strftime('%Y-%m-%d')
     # expenses.json 파일에서 오늘의 지출 내역을 읽어옴
@@ -41,21 +41,19 @@ def check_daily_limit():
         for expense in data:
             if expense['date'] == today:
                 total_spent_today += float(expense['amount'])
-    
+
     print(f"오늘 지출: {total_spent_today}원")
     if total_spent_today > limit:
         print(f"경고: 오늘의 지출이 한도를 초과했습니다! ({limit}원 초과)")
     else:
         print(f"남은 한도: {limit - total_spent_today}원")
 
-# 2. 특정 기간 내 지출 분석 기능
-# 사용자가 지정한 기간 내의 지출 내역을 분석하는 함수
+# 특정 기간 지출 분석 함수
 def analyze_expenses_in_period():
     start_date = input("시작 날짜를 입력하세요 (예: 2024-05-01): ")
     end_date = input("종료 날짜를 입력하세요 (예: 2024-05-31): ")
 
     try:
-        # 입력받은 날짜 문자열을 datetime 객체로 변환
         start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
         end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
     except ValueError:
@@ -64,13 +62,11 @@ def analyze_expenses_in_period():
 
     total_expense = 0
     category_totals = {}
-    # expenses.json 파일에서 지출 내역을 읽어옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for expense in data:
             expense_date_obj = datetime.strptime(expense['date'], "%Y-%m-%d")
-            # 지출 내역이 지정한 기간 내에 속하는지 확인
-            if start_date_obj <= expense_date_obj <= end_date_obj:
+            if start_date_obj <= expense_date_obj <= end_date_obj and expense["type"] == "expense":  # 지출 항목만 분석
                 amount = float(expense['amount'])
                 total_expense += amount
                 category = expense['item']
@@ -90,20 +86,18 @@ def predict_future_expenses():
     total_expense = 0
     days_count = 0
 
-    # expenses.json 파일에서 지출 내역을 읽어옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for expense in data:
-            total_expense += float(expense['amount'])
-            days_count += 1
+            if expense["type"] == "expense":  # 지출 항목만 합산
+                total_expense += float(expense['amount'])
+                days_count += 1
 
     if days_count == 0:
         print("지출 내역이 없습니다.")
         return
 
-    # 일일 평균 지출 계산
     daily_average_expense = total_expense / days_count
-    # 지정한 일 수 동안의 예상 지출 계산
     future_expense = daily_average_expense * days
     print(f"예상 일일 평균 지출: {daily_average_expense:.2f} 원")
     print(f"{days}일 후 예상 총 지출: {future_expense:.2f} 원")
