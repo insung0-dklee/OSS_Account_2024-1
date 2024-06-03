@@ -20,6 +20,15 @@ class AccountRegistry:
     def find_account(self, name):
         return self.accounts.get(name, None)
 
+    def input_account_number(self, name):
+        while True:
+            account_number = input(f"{name}의 계좌번호를 입력하세요: ")
+            if account_number.isdigit():
+                return account_number
+            else:
+                print("계좌번호는 숫자로만 이루어져야 합니다. 다시 입력해주세요.")
+
+
 def main():
     registry = AccountRegistry()
 
@@ -28,7 +37,7 @@ def main():
         name = input("저장하고 싶은 계좌주의 이름을 입력하세요 (종료하려면 '종료' 입력): ")
         if name == "종료":
             break
-        account_number = input(f"{name}의 계좌번호를 입력하세요: ")
+        account_number = registry.input_account_number(name)
         registry.add_account(name, account_number)
 
     # 계좌 찾기
