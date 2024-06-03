@@ -2,6 +2,7 @@ import hashlib #hashlib 사용
 import os
 import json
 from datetime import datetime, date
+from prettytable import PrettyTable
 import pickle
 import Account_book
 import random
@@ -633,10 +634,22 @@ def show_favorites():
 
 # 항목 조회 함수
 def view_entries():
-    for entry in ledger:
-        print(entry)
-        if "score" in entry:
-            print(f"평가 점수: {entry['score']}")
+    if not ledger:
+        print("저장된 지출 내역이 없습니다.")
+        return
+        
+    table = PrettyTable()
+    table.field_names = ["번호", "날짜", "카테고리", "설명", "금액", "평가 점수"]
+
+    for idx, entry in enumerate(ledger, start=1):
+        date = entry.get("date", "")
+        category = entry.get("category", "")
+        description = entry.get("description", "")
+        amount = entry.get("amount", "")
+        score = entry.get("score", "N/A")  # 평가 점수 없을 시 N/A로 표시
+        table.add_row([idx, date, category, description, amount, score])
+         
+    print(table)
 
 
 def day_evaluation():
