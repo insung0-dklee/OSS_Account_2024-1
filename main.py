@@ -1535,19 +1535,6 @@ def read_user_acc():
             
     return user_accinfo #이후 유저 어카운트 호출을 위한 return
 
-function_list = ["지출 내역 정리", "주식 추천", "세금 환급 기능", "누르면 10원 기능", "날씨에 따른 주식 추천"]
-
-def recommend_function():
-    print(function_list[random.randint(0,4)], end ="");
-    print("은 어떠세요?");
-
-recommend_acc = ["가계부 1", "저축 계좌", "user_님의 저축 계좌", "여행 적금 관리", "간식 사먹을 돈", "저금통", "시간은 금이다"]#추천 계좌 이름 리스트
-
-def print_recommend_name():
-    print(recommend_acc[random.randint(0,6)],"는 어떠세요?");
-
-
-
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
