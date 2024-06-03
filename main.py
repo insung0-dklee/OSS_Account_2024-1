@@ -761,30 +761,54 @@ def compare_financial_goal(user1, user2, goal):
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
-    monthly_total = 0
+    monthly_expense_total = 0
+    monthly_income_total = 0
+    expense_category_totals = {}
+    income_category_totals = {}
     scores = []  # 평가 점수를 저장할 리스트
-    category_totals = {}
+
     for entry in ledger:
-        if entry["date"].startswith(month) and entry["type"] == "expense":  # 지출 항목만 합산
-            monthly_total += entry["amount"]
-            category = entry["category"]
-            if category not in category_totals:
-                category_totals[category] = 0
-            category_totals[category] += entry["amount"]
+        if entry["date"].startswith(month):
+            if entry["type"] == "expense":  # 지출 항목만 합산
+                monthly_expense_total += entry["amount"]
+                category = entry["category"]
+                if category not in expense_category_totals:
+                    expense_category_totals[category] = 0
+                expense_category_totals[category] += entry["amount"]
+            elif entry["type"] == "income":  # 수입 항목만 합산
+                monthly_income_total += entry["amount"]
+                category = entry["category"]
+                if category not in income_category_totals:
+                    income_category_totals[category] = 0
+                income_category_totals[category] += entry["amount"]
             print(entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
-    print(f"{month}월 총 지출: {monthly_total} 원")
+
+    # 지출 내역 출력
+    print(f"{month}월 총 지출: {monthly_expense_total} 원")
     print(f"{month}월 각 카테고리별 지출 내역:")
-    for category, total in category_totals.items():
+    for category, total in expense_category_totals.items():
+        print(f"{category}: {total} 원")
+
+    # 수입 내역 출력
+    print(f"{month}월 총 수입: {monthly_income_total} 원")
+    print(f"{month}월 각 카테고리별 수입 내역:")
+    for category, total in income_category_totals.items():
         print(f"{category}: {total} 원")
 
     average_score = calculate_average_score(scores)
-    if category_totals:
-        max_category = max(category_totals, key=category_totals.get)
-        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+    if expense_category_totals:
+        max_expense_category = max(expense_category_totals, key=expense_category_totals.get)
+        print(f"\n가장 지출이 많은 카테고리: {max_expense_category} ({expense_category_totals[max_expense_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
+
+    if income_category_totals:
+        max_income_category = max(income_category_totals, key=income_category_totals.get)
+        print(f"\n가장 수입이 많은 카테고리: {max_income_category} ({income_category_totals[max_income_category]} 원)")
+    else:
+        print("해당 월에는 수입 내역이 없습니다.")
 
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
