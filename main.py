@@ -1485,7 +1485,15 @@ def financial_goal_loop(user):
         #재정 목표 관리 반복문에 없는 번호 입력시 사용자에게 다시 입력 받습니다.
         else:
             print("올바른 기능을 선택하세요.")
-
+         #더치페이 함수 금액과 인원수를 입력하면 일인당 얼마를 내야하는지 알려주는 함수
+def dutchpay():
+    total_amount = float(input("총 금액을 입력하세요: "))
+    num_people = int(input("인원을 입력하세요: "))
+    
+    if num_people == 0:
+        return "인원은 0명일 수 없습니다."
+    print("일인당 내야하는 금액은 .",total_amount/num_people,"원 입니다")
+   
 
 
 
