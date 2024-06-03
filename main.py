@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 저축금 계산기      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1190,6 +1191,52 @@ def view_d_day():
     else:
         print("저장된 디데이 정보가 없습니다.")
 
+#저축금 계산기
+class DepositCalculator:
+    def __init__(self, principal, rate, time, compounding_frequency=None):
+        self.principal = principal
+        self.rate = rate
+        self.time = time
+        self.compounding_frequency = compounding_frequency
+
+    def simple_interest(self):
+        """
+        단리 계산기
+        """
+        amount = self.principal * (1 + (self.rate * self.time))
+        return amount
+
+    def compound_interest(self):
+        """
+        복리 계산기
+        """
+        if self.compounding_frequency is None:
+            raise ValueError("Compounding frequency must be specified for compound interest calculation")
+
+        amount = self.principal * (1 + (self.rate / self.compounding_frequency))**(self.compounding_frequency * self.time)
+        return amount
+
+def deposit_calculator_menu():
+    while True:
+        print("저축금 계산기를 시작합니다.")
+        principal = float(input("원금을 입력하세요: "))
+        rate = float(input("연이율을 입력하세요 (소수점 형태로 예: 0.05): "))
+        time = float(input("기간(년)을 입력하세요: "))
+        compounding_frequency = int(input("복리 계산 횟수를 입력하세요 (연 몇 회로 계산할지, 단리는 1 입력): "))
+
+        calculator = DepositCalculator(principal, rate, time, compounding_frequency)
+
+        simple_interest_amount = calculator.simple_interest()
+        print(f"단리 계산 결과: {simple_interest_amount:.2f} 원")
+
+        if compounding_frequency > 1:
+            compound_interest_amount = calculator.compound_interest()
+            print(f"복리 계산 결과: {compound_interest_amount:.2f} 원")
+
+        more_calculations = input("다시 계산하시겠습니까? (Y/N): ")
+        if more_calculations.upper() != 'Y':
+            break
+        
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
 a = Account_book.Account_book("가계부 1",1000000)
@@ -1532,6 +1579,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        deposit_calculator_menu()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
