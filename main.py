@@ -1586,16 +1586,19 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
-def calculate_present_value(future_value, inflation_rate, years):
+def input_balances_and_calculate_total():
     """
-    목표 저축액의 현재 가치를 계산하는 함수
-    :param future_value: 목표 저축액 (미래 가치)
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    :param years: 목표 달성까지 남은 기간 (년 단위)
-    :return: 현재 가치
+    사용자로부터 각 가계부의 잔액을 입력받아 합계를 계산하는 함수.
     """
-    present_value = future_value / ((1 + inflation_rate / 100) ** years)
-    return present_value
+    num_accounts = int(input("총 몇 개의 가계부 잔액을 입력하시겠습니까? "))
+    total_balance = 0
+
+    for i in range(num_accounts):
+        balance = float(input(f"가계부 {i + 1}의 잔액을 입력하세요: "))
+        total_balance += balance
+
+    print(f"모든 가계부의 잔액 합계: {total_balance} 원")
+    return total_balance
 
 
 ###########################################################
