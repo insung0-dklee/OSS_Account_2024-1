@@ -287,3 +287,63 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+import os
+import json
+from datetime import datetime
+
+class Expense:
+    def __init__(self, name, amount, is_recurring):
+        self.name = name
+        self.amount = amount
+        self.is_recurring = is_recurring
+        self.date = datetime.now().strftime('%Y-%m-%d')
+
+class ExpenseManager:
+    def __init__(self, file_path='expenses.json'):
+        self.file_path = file_path
+        self.recurring_expenses = []
+        self.non_recurring_expenses = []
+        self.load_expenses()
+
+    def load_expenses(self):
+        if os.path.exists(self.file_path):
+            with open(self.file_path, 'r') as f:
+                data = json.load(f)
+                self.recurring_expenses = [Expense(**expense) for expense in data['recurring']]
+                self.non_recurring_expenses = [Expense(**expense) for expense in data['non_recurring']]
+        else:
+            self.save_expenses()
+
+    def save_expenses(self):
+        data = {
+            'recurring': [expense.__dict__ for expense in self.recurring_expenses],
+            'non_recurring': [expense.__dict__ for expense in self.non_recurring_expenses]
+        }
+        with open(self.file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    def add_expense(self, name, amount, is_recurring=False):
+        expense = Expense(name, amount, is_recurring)
+        if is_recurring:
+            self.recurring_expenses.append(expense)
+        else:
+            self.non_recurring_expenses.append(expense)
+        self.save_expenses()
+
+    def view_expenses(self):
+        print("정기 지출:")
+        for expense in self.recurring_expenses:
+            print(f"{expense.name} - {expense.amount}원 ({expense.date})")
+        print("\n비정기 지출:")
+        for expense in self.non_recurring_expenses:
+            print(f"{expense.name} - {expense.amount}원 ({expense.date})")
+
+# 사용 예시
+expense_manager = ExpenseManager()
+expense_manager.add_expense('월세', 500000, True)
+expense_manager.add_expense('식비', 300000, True)
+expense_manager.add_expense('교통비', 50000, True)
+expense_manager.add_expense('새 노트북', 1200000, False)
+expense_manager.add_expense('치과 진료', 150000, False)
+expense_manager.view_expenses()
