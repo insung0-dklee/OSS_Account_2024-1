@@ -556,6 +556,7 @@ def print_help():
     5: 지출 카테고리 분석
     6: 연봉계산(세전)
     7: 세금계산
+    8: 사대보험 계산
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1549,7 +1550,28 @@ def calculate_taxable_income(pre_tax_income):
 
     return tax
 
+def calculate_social_insurance(pre_tax_income):
+    """
+    세전 연봉을 입력받아 사대보험을 계산하는 함수 (한국 기준)
+    parameters -
+    pre_tax_income : 세전 연봉
+    returns -
+    total_insurance : 총 사대보험 공제액
+    """
+    # 국민연금, 건강보험, 고용보험의 공제율
+    pension_rate = 0.045    # 국민연금 4.5%
+    health_insurance_rate = 0.03365    # 건강보험 3.365%
+    employment_insurance_rate = 0.008    # 고용보험 0.8%
 
+    # 각 보험의 공제액 계산
+    pension_deduction = pre_tax_income * pension_rate
+    health_insurance_deduction = pre_tax_income * health_insurance_rate
+    employment_insurance_deduction = pre_tax_income * employment_insurance_rate
+
+    # 총 사대보험 공제액 계산
+    total_insurance = pension_deduction + health_insurance_deduction + employment_insurance_deduction
+
+    return total_insurance
 
 
 # 메인 루프
@@ -1584,6 +1606,15 @@ while not b_is_exit:
         # 세금을 계산하여 출력
             tax = calculate_taxable_income(pre_tax_income)
             print(f"세금은 {tax:.2f}원 입니다.")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+    elif func == "8":
+        try:
+        # 사용자에게 세전 연봉을 입력받음
+            pre_tax_income = float(input("세전 연봉을 입력하세요: "))
+        # 사대보험을 계산하여 출력
+            total_insurance = calculate_social_insurance(pre_tax_income)
+            print(f"사대보험 공제액은 {total_insurance:.2f}원 입니다.")
         except ValueError:
             print("올바른 숫자를 입력하세요.")
     elif func == "?":
