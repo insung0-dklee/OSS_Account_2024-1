@@ -1,81 +1,79 @@
-import datetime
-import os
+import json
+from datetime import datetime, timedelta
 
-# 지출 항목을 저장할 리스트
-ledger = []
+def record_credit_score():
+    # 현재 날짜를 가져옵니다.
+    today = datetime.today().strftime('%Y-%m-%d')
 
-def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
-    amount = float(input("금액: "))
-    emotion = input("당시 느낀 감정: ")
-    photo = input("사진 경로 (옵션): ")
-    memo = input("메모 (옵션): ")
-    location = input("위치 (옵션): ")
-    
-    entry = {
-        "date": date,
-        "category": category,
-        "description": description,
-        "amount": amount,
-        "emotion": emotion,
-        "photo": photo,
-        "memo": memo,
-        "location": location
-    }
-    ledger.append(entry)
-    print("항목이 추가되었습니다.")
+    # 이전에 저장된 신용점수 데이터를 불러옵니다.
+    try:
+        with open('credit_score.json', 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        # 만약 파일이 없으면 빈 데이터를 생성합니다.
+        data = {}
 
-def view_entry_chronicle():
-    date = input("조회할 날짜를 입력하세요 (YYYY-MM-DD): ")
-    entries = [entry for entry in ledger if entry["date"] == date]
-    
-    if entries:
-        for entry in entries:
-            print(f"날짜: {entry['date']}")
-            print(f"카테고리: {entry['category']}")
-            print(f"설명: {entry['description']}")
-            print(f"금액: {entry['amount']}")
-            print(f"감정: {entry['emotion']}")
-            if entry["photo"]:
-                print(f"사진 경로: {entry['photo']}")
-                try:
-                    if os.name == 'posix':
-                        os.system(f'open "{os.path.dirname(entry["photo"])}"')
-                    elif os.name == 'nt':
-                        os.startfile(os.path.dirname(entry["photo"]))
-                    elif os.name == 'mac':
-                        os.system(f'open "{os.path.dirname(entry["photo"])}"')
-                except Exception as e:
-                    print(f"사진 경로를 열 수 없습니다: {e}")
-            if entry["memo"]:
-                print(f"메모: {entry['memo']}")
-            if entry["location"]:
-                print(f"위치: {entry['location']}")
-            print("-" * 30)
+    # 현재 날짜를 키로 사용하여 신용점수를 입력받습니다.
+    current_score = float(input("현재 신용점수를 입력하세요: "))
+
+    # 이전 달의 신용점수를 입력받습니다.
+    last_month = (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+    if last_month in data:
+        last_month_score = data[last_month]
+        print(f"저번 달의 신용점수: {last_month_score}")
+        # 현재 신용점수와 비교하여 상승인지 하락인지 출력합니다.
+        if current_score > last_month_score:
+            trend = "상승"
+        elif current_score < last_month_score:
+            trend = "하락"
+        else:
+            trend = "변동 없음"
+        print(f"전체적인 신용점수 변동: {trend}")
+
+    # 현재 날짜를 키로 사용하여 신용점수를 저장합니다.
+    data[today] = current_score
+
+    # 데이터를 파일에 저장합니다.
+    with open('credit_score.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+    # 다음 달의 예상 신용점수를 계속해서 입력받습니다.
+    while True:
+        next_month = (datetime.today() + timedelta(days=30)).strftime('%Y-%m-%d')
+        next_month_score = float(input("다음 달 예상 신용점수를 입력하세요: "))
+        data[next_month] = next_month_score
+
+        # 데이터를 파일에 저장합니다.
+        with open('credit_score.json', 'w') as file:
+            json.dump(data, file, indent=4)
+
+        # 사용자가 더 이상 입력할 지 여부를 물어봅니다.
+        more_input = input("더 입력하시겠습니까? (y/n): ")
+        if more_input.lower() != 'y':
+            break
+
+def check_credit_score_trend():
+    try:
+        with open('credit_score.json', 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print("신용점수 데이터가 없습니다.")
+        return
+
+    if len(data) < 2:
+        print("데이터가 충분하지 않습니다.")
+        return
+
+    scores = list(data.values())
+    if scores[-1] > scores[0]:
+        trend = "상승"
+    elif scores[-1] < scores[0]:
+        trend = "하락"
     else:
-        print("해당 날짜에 지출 기록이 없습니다.")
+        trend = "변동 없음"
+    
+    print(f"전체적인 신용점수 변동: {trend}")
 
-def print_help():
-    print("""
-    1: 지출 항목 추가
-    2: 지출 연대기 조회
-    ?: 도움말 출력
-    exit: 종료
-    """)
-
-# 메인 코드
-while True:
-    func = input("기능 입력 (? 입력시 도움말) : ")
-
-    if func == "1":
-        add_entry()
-    elif func == "2":
-        view_entry_chronicle()
-    elif func == "?":
-        print_help()
-    elif func == "exit":
-        break
-    else:
-        print("올바른 기능을 입력해 주세요.")
+# 테스트용으로 함수를 호출합니다.
+record_credit_score()
+check_credit_score_trend()
