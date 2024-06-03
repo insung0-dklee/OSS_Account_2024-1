@@ -1190,6 +1190,31 @@ def view_d_day():
     else:
         print("저장된 디데이 정보가 없습니다.")
 
+#달러를 원으로 바꾸는 기능
+
+def usd_to_krw(amount_usd, exchange_rate):
+    amount_krw = amount_usd * exchange_rate
+    return amount_krw
+
+def main():
+    exchange_rate_usd_to_krw = 1200  # 예시 환율: 1달러 = 1200원
+
+    while True:
+        amount_input = input("달러로 표시된 금액을 입력하세요 (종료하려면 'q' 입력): ")
+        if amount_input.lower() == 'q':
+            print("프로그램을 종료합니다.")
+            break
+
+        try:
+            amount_usd = float(amount_input)
+            amount_krw = usd_to_krw(amount_usd, exchange_rate_usd_to_krw)
+            print(f"{amount_usd} 달러는 {amount_krw:.2f} 원입니다.")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+
+if __name__ == "__main__":
+    main()
+
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
 a = Account_book.Account_book("가계부 1",1000000)
