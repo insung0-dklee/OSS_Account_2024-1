@@ -1149,42 +1149,42 @@ def analyze_and_advise():
     else:
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
 
-#디데이 기능
 d_day_file = 'd_day.json' 
 
-def save_d_day(target_date_str):
+def save_d_day(target_date_str, title): #디데이 날짜, 제목 저장
     with open(d_day_file, 'w') as file:
-        json.dump({"target_date": target_date_str}, file)
+        json.dump({"target_date": target_date_str, "title": title}, file)
 
-def load_d_day():
+def load_d_day(): #디데이 날짜와 제목 불러오는 기능
     if os.path.exists(d_day_file):
         with open(d_day_file, 'r') as file:
             data = json.load(file)
-        return data.get("target_date", None)
-    return None
+        return data.get("target_date", None), data.get("title", None)
+    return None, None
 
 def add_d_day():
     try:
+        title = input("디데이 제목을 입력하세요: ") #디데이 제목 출력기능 추가
         target_date_str = input("디데이 날짜를 입력하세요 (예: 2024-12-31): ")
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
         today = datetime.today()
         d_day = (target_date - today).days
         if d_day >= 0:
-            print(f"D-Day: {d_day}일 남았습니다.")
-            save_d_day(target_date_str)
+            print(f"D-Day {title}: {d_day}일 남았습니다.")
+            save_d_day(target_date_str, title)
         else:
             print("이미 지난 날짜입니다.")
     except ValueError:
         print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
 
 def view_d_day():
-    target_date_str = load_d_day()
+    target_date_str, title = load_d_day() #디데이 날짜와 제목을 모두 받아오도록 기능 수정
     if target_date_str:
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d")
         today = datetime.today()
         d_day = (target_date - today).days
         if d_day >= 0:
-            print(f"D-Day: {d_day}일 남았습니다.")
+            print(f"D-Day {title}: {d_day}일 남았습니다.") #기능과 날짜 모두 출력
         else:
             print("이미 지난 디데이입니다.")
     else:
