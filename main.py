@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import requests
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1486,6 +1487,50 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+#실시간 금시세확인 
+
+def get_gold_price():
+    url = "https://www.alphavantage.co/query"
+    api_key = '39F4DLYE9KLUHJVR'  # Alpha Vantage API 키
+
+    # API 요청 매개변수
+    params = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": "XAUUSD",  # XAUUSD는 금 시세를 의미합니다.
+        "apikey": api_key
+    }
+
+    response = requests.get(url, params=params)  # API 요청 매개변수 보내기
+    data = response.json()  # 응답 데이터 확인하기
+
+    # 현재 금 시세 추출
+    if "Global Quote" in data:
+        gold_price = data["Global Quote"]["05. price"]
+        return gold_price  # 금 시세 반환하기
+    else:
+        return "금 시세를 가져오는 데 실패했습니다."
+
+def get_silver_price():
+    url = "https://www.alphavantage.co/query"
+    api_key = '39F4DLYE9KLUHJVR'  # Alpha Vantage API 키
+
+    # API 요청 매개변수
+    params = {
+        "function": "GLOBAL_QUOTE",
+        "symbol": "XAGUSD",  # XAGUSD는 은 시세를 의미합니다.
+        "apikey": api_key
+    }
+
+    response = requests.get(url, params=params)  # API 요청 매개변수 보내기
+    data = response.json()  # 응답 데이터 확인하기
+
+    # 현재 은 시세 추출
+    if "Global Quote" in data:
+        silver_price = data["Global Quote"]["05. price"]
+        return silver_price  # 은 시세 반환하기
+    else:
+        return "은 시세를 가져오는 데 실패했습니다."
+
 
 
 
@@ -1540,6 +1585,10 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "gold":
+        print("현재 금시세:", get_gold_price())
+    elif func == "silver":
+        print("현재 은시세", get_silver_price())
     else:
         
         print("올바른 기능을 입력해 주세요.")
