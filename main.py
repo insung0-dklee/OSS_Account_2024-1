@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import shutil
+from threading import Timer
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1249,6 +1251,8 @@ def print_Login_help(): #user interface 도움말
     2: 로그인
     3. 아이디 찾기
     4. 비밀번호 찾기
+    backup. 백업하기
+    restore. 복구하기
     
     아무거나 입력시 프로그램 종료
     
@@ -1506,8 +1510,41 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 
+backup_dir = "backups"
 
+def backup_data():
+    if not os.path.exists(backup_dir):
+        os.makedirs(backup_dir)
+    shutil.copy("login.txt", os.path.join(backup_dir, f"login_backup_{datetime.now().strftime('%Y%m%d%H%M%S')}.txt"))
+    shutil.copy("expenses.json", os.path.join(backup_dir, f"expenses_backup_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"))
+    print("데이터가 백업되었습니다.")
+    # 1시간마다 백업 수행
+    Timer(3600, backup_data).start()
 
+# 복구 함수
+def restore_data():
+    backups = sorted([f for f in os.listdir(backup_dir) if os.path.isfile(os.path.join(backup_dir, f))], reverse=True)
+    if not backups:
+        print("백업 파일이 없습니다.")
+        return
+
+    print("복구 가능한 백업 파일 목록:")
+    for i, backup in enumerate(backups, 1):
+        print(f"{i}. {backup}")
+
+    choice = int(input("복구할 백업 파일 번호를 선택하세요: ")) - 1
+    if 0 <= choice < len(backups):
+        backup_file = backups[choice]
+        if backup_file.startswith("login_backup_"):
+            shutil.copy(os.path.join(backup_dir, backup_file), "login.txt")
+        elif backup_file.startswith("expenses_backup_"):
+            shutil.copy(os.path.join(backup_dir, backup_file), "expenses.json")
+        print("데이터가 복구되었습니다.")
+    else:
+        print("잘못된 선택입니다.")
+
+if not os.path.exists(backup_dir):
+    os.makedirs(backup_dir)
 
 ###########################################################
 
@@ -1559,6 +1596,10 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "backup":
+        backup_data()
+    elif func == "restore":
+        restore_data()
     else:
-        
+
         print("올바른 기능을 입력해 주세요.")
