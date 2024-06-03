@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import tkinter as tk
+from calculator import Calculator
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1486,9 +1488,18 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+def Cal():
+    root = tk.Tk()
+    root.title("계산기")
 
+    # 계산기 창에 대한 내용
+    calculator_window = Calculator(root)
+    calculator_window.pack()
 
+    root.mainloop()
 
+if __name__ == "__main__":
+    Cal()
 
 ###########################################################
 
