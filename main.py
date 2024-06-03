@@ -1248,7 +1248,7 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
-    Time();
+    Time()
 
 def print_Login_help(): #user interface 도움말
     print("""
