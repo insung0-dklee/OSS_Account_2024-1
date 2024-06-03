@@ -113,7 +113,22 @@ class ACC_BOOK:
 
     # 7. 금액 입력 기능
     def exp_err_check(self):
-        pass
+        while True:
+            print("\n작성 형식: 10000")
+            try:
+                expense = int(input("금액: "))
+                while True:
+                    answer = input(f"\n입력하신 금액이 맞습니까?\n금액: {expense}\n[Y/N]: ")
+                    if answer == 'y' or answer == 'Y':
+                        return expense
+                    elif answer == 'n' or answer == "N":
+                        print("\n금액을 다시 입력해주세요.\n")
+                        break
+                    else:
+                        print("\n잘못된 입력입니다. 다시 입력해주세요.\n")
+            except Exception:
+                print("\n숫자만 입력해주세요.\n")
+                continue
 
     # 8. 카테고리 입력 기능
     def ctgry_err_check(self):
