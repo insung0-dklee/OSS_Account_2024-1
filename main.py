@@ -1215,6 +1215,32 @@ def asset_management(user_id):
         else:
             print("잘못된 입력입니다. 다시 시도하세요.")
 
+# 방문 기록 파일 이름
+visit_logs_filename = 'visit_logs.txt'
+
+# 방문 기록 로드
+def load_visit_logs():
+    try:
+        with open(visit_logs_filename, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+# 방문 기록 저장
+def save_visit_logs(visit_logs):
+    with open(visit_logs_filename, 'w', encoding='utf-8') as file:
+        json.dump(visit_logs, file, ensure_ascii=False)
+
+# 사용자 방문 기록
+def record_visit(user):
+    visit_logs = load_visit_logs()
+    if user.name in visit_logs:
+        visit_logs[user.name] += 1
+    else:
+        visit_logs[user.name] = 1
+    save_visit_logs(visit_logs)
+    print(f"{user.name}님 오늘은 {visit_logs[user.name]}번째 방문입니다.")
+
 #디데이 기능
 d_day_file = 'd_day.json' 
 
@@ -1570,6 +1596,8 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user_reg_include_name_phone() #회원가입 함수 - 이미 존재
     elif interface == "2":
         user = Login_interface()#유저 상태를 user 변수에 저장 - 이후 기능 사용시 user에 해당하는 자료에서 산출
+        if user: # 로그인 성공 시
+            record_visit(user) # 사용자 방문 기록
     elif interface == "3":
         find_id_by_phone() #id 찾기 - 이미 존재
     elif interface == "4": 
