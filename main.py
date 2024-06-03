@@ -8,6 +8,48 @@ import random
 import webbrowser
 import re
 import Add_function
+import calendar
+
+def show_calendar():
+    nowcal = datetime.now() #현재 시간 객체 생성
+    calyear = nowcal.year #현재 년으로 설정
+    calmonth = nowcal.month #현재 달로 설정
+    print(calendar.month(calyear,calmonth)) #달력 출력
+
+    while(1):
+        calmenu = input("달력 메뉴(0.종료, 1.다음달, 2.저번달, 3.전체 달력, 4.년도와 월 선택, 5.가계부 입력) :") #달력 메뉴
+
+        if calmenu == "0": #종료
+            break;
+        
+        elif calmenu == "1": #다음달 출력
+            calmonth += 1
+            if calmonth == 13: #13월 이라면 년도를 +1후 1월로 설정
+                calyear += 1
+                calmonth = 1
+            print(calendar.month(calyear,calmonth))
+        
+        elif calmenu == "2": #저번달 출력
+            calmonth -= 1
+            if calmonth == 0: #0월 이라면 년도를 -1후 12월로 설정
+                calyear -= 1
+                calmonth = 12
+            print(calendar.month(calyear,calmonth))
+
+        elif calmenu == "3": #년도 전체 달력 출력
+            print(calendar.calendar(calyear))
+        
+        elif calmenu == "4": #입력받은 달력 출력
+            calyear = int(input("년도 입력:"))
+            calmonth = int(input("월 입력:"))
+            print(calendar.month(calyear,calmonth))
+
+        elif calmenu == "5": #가계부 입력
+            add_entry()
+
+        else:
+            print("다시 입력해 주세요")
+
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1540,6 +1582,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "calendar":
+        show_calendar()
     else:
         
         print("올바른 기능을 입력해 주세요.")
