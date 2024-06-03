@@ -396,7 +396,9 @@ def add_memo():
 
         # 디렉토리가 존재하지 않으면 생성
         if directory and not os.path.exists(directory):
-            os.makedirs(directory)
+            os.makedirs(directory) #디렉토리 설정
+        elif not directory:
+            directory = os.getcwd() #현재 작업 디렉토리로 설정
 
         # 파일 열기
         with open(str_title, "w", encoding="utf8") as new_f:
@@ -424,7 +426,7 @@ def list_memo():
         try:
             # 지정된 디렉토리에서 파일 목록을 가져옴
             for file in os.listdir(directory):
-                if file.endswith(".txt"):
+                if file.endswith(".txt") and file != "login.txt": #login.txt의 경우 출력하지 않도록 설정
                     # 전체 파일 경로를 구성하여 리스트에 추가
                     memo_files.append(os.path.join(directory, file))
         except FileNotFoundError:
@@ -436,7 +438,8 @@ def list_memo():
     if memo_files:
         print("메모장 목록:")
         for idx, memo_file in enumerate(memo_files, start=1):
-            print(f"{idx}. {memo_file}")
+            # 파일 이름만 출력
+            print(f"{idx}. {os.path.basename(memo_file)}")
     else:
         print("메모장이 존재하지 않습니다.")
 
