@@ -596,9 +596,11 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 빚 관리
     memo: 메모장
     calendar: 달력
     calculator: 계산기
+    reset: 데이터 리셋 
     ?: 도움말 출력
     exit,x,종료: 종료
     """)
@@ -1577,6 +1579,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        debt_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1589,6 +1593,12 @@ while not b_is_exit:
         show_calendar()
     elif func == "calculator":
         calculator()
+    elif func == "reset":
+        resetms = input("모든 데이터가 사라집니다. 정말 리셋 하시겠습니까? 동의한다면 '동의'입력 :")
+        if resetms == "동의":
+            reset_data()
+        else:
+            print("올바르지 않습니다. 처음부터 다시 해주세요.")
     else:
         
         print("올바른 기능을 입력해 주세요.")
