@@ -743,6 +743,9 @@ def compare_financial_goal(user1, user2, goal):
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
 
+# 코멘트를 저장할 사전
+monthly_comments = {}
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
@@ -775,6 +778,16 @@ def generate_monthly_report():
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
+    # 해당 월의 코멘트를 추가하거나 수정합니다.
+    if month in monthly_comments:
+        print(f"{month}월의 기존 코멘트: {monthly_comments[month]}")
+        update_comment = input("기존 코멘트를 수정하시겠습니까? (예/아니오): ").strip().lower()
+        if update_comment == "예":
+            new_comment = input("새로운 코멘트를 입력하세요: ")
+            monthly_comments[month] = new_comment
+    else:
+        new_comment = input("해당 월의 코멘트를 입력하세요: ")
+        monthly_comments[month] = new_comment
 
 budget = None #전역변수 budget의 기본값 설정
 
