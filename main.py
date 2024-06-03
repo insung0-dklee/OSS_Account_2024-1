@@ -555,6 +555,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 연봉계산(세전)
+    7: 세금계산
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1516,17 +1517,39 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
-def calculate_annual_income(monthly_income):
+def calculate_taxable_income(pre_tax_income):
     """
-    월급을 입력받아 연봉을 계산하는 함수
+    세전 연봉을 입력받아 세금을 계산하는 함수 (한국 기준)
     parameters -
-    monthly_income : 월급
+    pre_tax_income : 세전 연봉
     returns -
-    annual_income : 연봉
+    tax : 세금
     """
-    # 연봉 = 월급 * 12
-    annual_income = monthly_income * 12
-    return annual_income
+    # 연봉에 따른 세율 구간과 세율
+    tax_brackets = [(12000000, 0.06), (46000000, 0.15), (88000000, 0.24), (150000000, 0.35)]
+    # 초과 구간의 세율
+    exceeding_rate = 0.38
+
+    # 세금 계산
+    tax = 0
+    remaining_income = pre_tax_income
+    for bracket, rate in tax_brackets:
+        if remaining_income <= 0:
+            break
+        if remaining_income >= bracket:
+            taxable_amount = bracket
+        else:
+            taxable_amount = remaining_income
+        tax += taxable_amount * rate
+        remaining_income -= bracket
+
+    # 초과 구간의 세율 적용
+    if remaining_income > 0:
+        tax += remaining_income * exceeding_rate
+
+    return tax
+
+
 
 
 # 메인 루프
@@ -1552,6 +1575,15 @@ while not b_is_exit:
         # 연봉을 계산하여 출력
             annual_income = calculate_annual_income(monthly_income)
             print(f"연봉은 {annual_income}원 입니다.(세전)")
+        except ValueError:
+            print("올바른 숫자를 입력하세요.")
+    elif func == "7":
+        try:
+        # 사용자에게 세전 연봉을 입력받음
+            pre_tax_income = float(input("세전 연봉을 입력하세요: "))
+        # 세금을 계산하여 출력
+            tax = calculate_taxable_income(pre_tax_income)
+            print(f"세금은 {tax:.2f}원 입니다.")
         except ValueError:
             print("올바른 숫자를 입력하세요.")
     elif func == "?":
