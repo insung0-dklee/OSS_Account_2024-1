@@ -23,6 +23,7 @@ usernames = {}
 userphones = {}
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+    print("회원가입")
     id = input("id 입력: ")  # 회원가입 시의 id 입력
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
@@ -67,6 +68,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
 전화번호를 통해 아이디를 찾는 함수
 """
 def find_id_by_phone():
+    print("id 찾기")
     phone = input("찾고자 하는 사용자의 전화번호 입력: ")  # 사용자가 찾고자 하는 전화번호를 입력받음
     if phone in userphones:  # 입력받은 전화번호가 userphones 딕셔너리에 존재하는지 확인
         print(f'해당 전화번호로 등록된 아이디는 {userphones[phone]}입니다.')  # 존재하면 해당 전화번호에 매핑된 아이디를 출력
@@ -77,6 +79,7 @@ def find_id_by_phone():
 회원 정보를 수정하는 함수
 """
 def modify_user_info():
+    print("회원정보 수정")
     id_to_modify = input("수정할 사용자의 id 입력: ")  # 수정하고자 하는 사용자의 id 입력
 
     # 해당 id가 userdata2에 존재하는지 확인
@@ -369,8 +372,8 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
 
 memo_directory = []
 def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
+    print("메모 추가")
+    str_title = input("메모장 제목: ")
     if not str_title.endswith(".txt"):
         str_title += ".txt"
     if '/' in str_title:
@@ -401,6 +404,7 @@ def add_memo():
         print(f"다른 오류가 발생했습니다: {e}")
 
 def list_memo():
+    print("메모 목록")
     """
     현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
     """
@@ -426,8 +430,8 @@ def list_memo():
         print("메모장이 존재하지 않습니다.")
 
 def read_memo():
-    print("열고 싶은 메모장 제목: ")
-    str_title = input()
+    print("메모 열기")
+    str_title = input("열고 싶은 메모장 제목: ")
     try:
         with open(str_title, "r", encoding="utf8") as f:
             content = f.read()
@@ -437,8 +441,8 @@ def read_memo():
         print("해당 제목의 메모장을 찾을 수 없습니다.")
 
 def delete_memo():
-    print("삭제할 메모장 제목: ")
-    str_title = input()
+    print("메모 삭제")
+    str_title = input("삭제할 메모장 제목: ")
     if os.path.exists(str_title):
         os.remove(str_title)
         print(f"{str_title} 메모가 삭제되었습니다.")
@@ -447,6 +451,7 @@ def delete_memo():
 
 def memo():
     while True:
+        print("메모장")
         print("-----------------------")
         print("user:",user.name) # 현재 user가 누구인지 출력
         print("""
@@ -466,6 +471,7 @@ def memo():
         elif choice == "4":
             delete_memo()
         elif choice == "5":
+            print("메모 종료")
             break
         else:
             print("잘못된 선택입니다.")
@@ -539,6 +545,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 메모장 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -574,6 +581,7 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    print("수입/지출 항목 추가")
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
@@ -618,6 +626,7 @@ def show_favorites():
 
 # 항목 조회 함수
 def view_entries():
+    print("항목 조회")
     for entry in ledger:
         print(entry)
         if "score" in entry:
@@ -730,6 +739,7 @@ def compare_financial_goal(user1, user2, goal):
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
+    print("월별 보고서 생성")
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
@@ -765,6 +775,7 @@ budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
+    print("예산 설정 및 초과 알림")
     global budget 
     budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
     current_total = sum(float(entry["amount"]) for entry in ledger)
@@ -784,6 +795,7 @@ def check_budget():
 
 # 지출 카테고리 분석 함수
 def analyze_categories():
+    print("지출 카테고리 분석")
     category_totals = {}
     for entry in ledger:
         category = entry["category"]
@@ -1308,6 +1320,7 @@ def Login_interface(): #로그인 인터페이스
     return 0
 
 def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
+    print("비밀번호 찾기")
     check = 0
 
     ID = input("찾고자 하는 사용자의 ID 입력: ")  # 사용자가 찾고자 하는 ID를 입력받음
@@ -1319,6 +1332,10 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
         if phone in userphones:
             while(True):#비밀번호를 바꿀때 까지 무한루프
                 P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", P): #암호 변경 시에도 특수 문자를 검사하도록 함.
+                    print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+                    continue
+
                 check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
 
                 if(check == "1"): #주의 - check는 input으로 받으므로 char 형임
@@ -1492,7 +1509,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
     elif interface == "3":
         find_id_by_phone() #id 찾기 - 이미 존재
     elif interface == "4": 
-        change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형
+        change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형 
     elif interface == "?":
         print_Login_help() #?입력시 Login 도움말 띄우기
     else:
@@ -1517,13 +1534,13 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_memo()
+        memo()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
     else:
         print("올바른 기능을 입력해 주세요.")
