@@ -1597,6 +1597,24 @@ def calculate_present_value(future_value, inflation_rate, years):
     present_value = future_value / ((1 + inflation_rate / 100) ** years)
     return present_value
 
+def calculate_compound_interest():
+    """
+    투자 금액, 수익률, 기간을 입력받아 복리로 계산하여 최종 금액을 반환하는 함수.
+    """
+    principal = float(input("투자 금액을 입력하세요: "))
+    rate = float(input("연 수익률을 입력하세요 (예: 5%이면 5 입력): ")) / 100
+    years = int(input("투자 기간을 입력하세요 (년 단위): "))
+
+    final_amount = principal * (1 + rate) ** years
+
+    print(f"최초 투자 금액: {principal} 원")
+    print(f"연 수익률: {rate * 100} %")
+    print(f"투자 기간: {years} 년")
+    print(f"복리로 계산된 최종 금액: {final_amount:.2f} 원")
+
+    return final_amount
+
+
 
 ###########################################################
 
