@@ -594,12 +594,14 @@ def add_entry():
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    payment_method = get_payment_method()
     entry = {
         "date": date,
         "category": category,
         "description": description,
         "amount": amount,
-        "score": score  # 평가 점수 추가
+        "score": score,    # 평가 점수 추가
+        "payment_method": payment_method
     }
     ledger.append(entry)
     print("항목이 추가되었습니다.")
@@ -615,6 +617,26 @@ def add_entry():
 
 
 favorites = []
+
+def get_payment_method():
+    while True:
+        print("결제 수단을 선택하세요:")
+        print("1: 현금")
+        print("2: 카드")
+        print("3: 은행")
+        print("4: 직접 입력")
+        choice = input("선택 (1-4): ").strip()
+
+        if choice == "1":
+            return "현금"
+        elif choice == "2":
+            return "카드"
+        elif choice == "3":
+            return "은행"
+        elif choice == "4":
+            return input("결제 수단을 직접 입력하세요: ").strip()
+        else:
+            print("유효한 선택이 아닙니다. 다시 선택하세요.")
 
 def add_favorite_category(category): #즐겨찾기 항목에 추가.
     if category not in favorites:  #카테고리가 즐겨찾기에 존재하지 않는다면, 즐겨찾기 추가. 그렇지 않다면, 경고창 출력.
