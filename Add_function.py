@@ -79,6 +79,37 @@ def analyze_expenses_in_period():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+# 특정 기간 수입 분석 함수
+def analyze_income_in_period():
+    start_date = input("시작 날짜를 입력하세요 (예: 2024-05-01): ")
+    end_date = input("종료 날짜를 입력하세요 (예: 2024-05-31): ")
+
+    try:
+        start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
+        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+    except ValueError:
+        print("올바른 날짜 형식을 입력하세요 (YYYY-MM-DD).")
+        return
+
+    total_income = 0
+    category_totals = {}
+    with open(expenses_file, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        for income in data:
+            income_date_obj = datetime.strptime(income['date'], "%Y-%m-%d")
+            if start_date_obj <= income_date_obj <= end_date_obj and income["type"] == "income":  # 수입 항목만 분석
+                amount = float(income['amount'])
+                total_income += amount
+                category = income['item']
+                if category not in category_totals:
+                    category_totals[category] = 0
+                category_totals[category] += amount
+
+    print(f"{start_date}부터 {end_date}까지의 총 수입: {total_income} 원")
+    print("카테고리별 수입 내역:")
+    for category, total in category_totals.items():
+        print(f"{category}: {total} 원")
+
 # 3. 지출 패턴 예측 기능
 # 사용자가 지정한 일 수 이후의 예상 지출을 예측하는 함수
 def predict_future_expenses():
@@ -101,3 +132,26 @@ def predict_future_expenses():
     future_expense = daily_average_expense * days
     print(f"예상 일일 평균 지출: {daily_average_expense:.2f} 원")
     print(f"{days}일 후 예상 총 지출: {future_expense:.2f} 원")
+
+# 수입 패턴 예측 기능
+# 사용자가 지정한 일 수 이후의 예상 수입을 예측하는 함수
+def predict_future_income():
+    days = int(input("몇 일 후까지의 수입을 예측하시겠습니까? (예: 30): "))
+    total_income = 0
+    days_count = 0
+
+    with open(expenses_file, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        for income in data:
+            if income["type"] == "income":  # 수입 항목만 합산
+                total_income += float(income['amount'])
+                days_count += 1
+
+    if days_count == 0:
+        print("수입 내역이 없습니다.")
+        return
+
+    daily_average_income = total_income / days_count
+    future_income = daily_average_income * days
+    print(f"예상 일일 평균 수입: {daily_average_income:.2f} 원")
+    print(f"{days}일 후 예상 총 수입: {future_income:.2f} 원")
