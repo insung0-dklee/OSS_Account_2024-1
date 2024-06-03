@@ -8,6 +8,10 @@ import random
 import webbrowser
 import re
 import Add_function
+import pytesseract
+from PIL import Image
+import pandas as pd
+import datetime
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1543,3 +1547,43 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
+# Tesseract OCR 엔진 경로 설정 (예시: Windows)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# 이미지에서 텍스트 추출
+def extract_text_from_image(image_path):
+    img = Image.open(image_path)
+    text = pytesseract.image_to_string(img)
+    return text
+
+# 추출된 텍스트 파싱
+def parse_receipt(text):
+    lines = text.split('\n')
+    parsed_data = []
+    for line in lines:
+        if any(char.isdigit() for char in line):
+            parsed_data.append(line)
+    return parsed_data
+
+# 파싱된 데이터를 데이터프레임에 추가
+def add_to_budget(parsed_data):
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    data = {'Date': [], 'Description': [], 'Amount': []}
+    for item in parsed_data:
+        parts = item.split()
+        amount = float(parts[-1])
+        description = ' '.join(parts[:-1])
+        data['Date'].append(today)
+        data['Description'].append(description)
+        data['Amount'].append(amount)
+    
+    df = pd.DataFrame(data)
+    return df
+
+# 실행 예시
+image_path = 'receipt.jpg'
+receipt_text = extract_text_from_image(image_path)
+parsed_receipt = parse_receipt(receipt_text)
+budget_df = add_to_budget(parsed_receipt)
+print(budget_df)
