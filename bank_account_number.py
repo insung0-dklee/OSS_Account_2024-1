@@ -31,6 +31,14 @@ class AccountRegistry:
         self.accounts[new_name] = Account(new_name, new_account_number)
         print("계좌 정보가 수정되었습니다.")
 
+    def delete_account(self, name):
+        account = self.find_account(name)
+        if not account:
+            print("해당하는 계좌를 찾을 수 없습니다.")
+            return
+        self.accounts.pop(account.name)
+        print(f"{name}의 계좌가 삭제되었습니다.")
+
 def main():
     registry = AccountRegistry()
 
@@ -39,7 +47,8 @@ def main():
         print("1. 계좌 등록")
         print("2. 계좌 검색")
         print("3. 계좌 수정")
-        print("4. 종료")
+        print("4. 계좌 삭제")
+        print("5. 종료")
         choice = input("원하는 작업을 선택하세요: ")
 
         if choice == '1':
@@ -57,6 +66,9 @@ def main():
             name = input("수정할 계좌주의 이름을 입력하세요: ")
             registry.edit_account(name)
         elif choice == '4':
+            name = input("삭제할 계좌주의 이름을 입력하세요: ")
+            registry.delete_account(name)
+        elif choice == '5':
             print("프로그램을 종료합니다.")
             break
         else:
