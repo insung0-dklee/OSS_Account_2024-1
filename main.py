@@ -1225,6 +1225,12 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
+# 시간과 날짜를 출력하는 함수
+def Time():
+    now = datetime.now()
+    print("현재 날짜 및 시간:", now.year, "년", now.month, "월", now.day, "일", now.hour, "시", now.minute, "분", now.second, "초\n")
+
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1242,6 +1248,7 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+    Time();
 
 def print_Login_help(): #user interface 도움말
     print("""
