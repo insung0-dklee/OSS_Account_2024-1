@@ -155,9 +155,35 @@ def calculate_inheritance_tax():
     print(f"상속세 공제액: {deduction} 원")
     print(f"상속세: {inheritance_tax:.2f} 원")
 
+def calculate_gift_tax():
+    print("증여세 계산 기능입니다.")
+    total_gift = float(input("총 증여 재산을 입력하세요 (원): "))
+    if total_gift <= 100000000:
+        tax_rate = 0.1
+        deduction = 0
+    elif total_gift <= 500000000:
+        tax_rate = 0.2
+        deduction = 10000000
+    elif total_gift <= 1000000000:
+        tax_rate = 0.3
+        deduction = 60000000
+    elif total_gift <= 3000000000:
+        tax_rate = 0.4
+        deduction = 160000000
+    else:
+        tax_rate = 0.5
+        deduction = 460000000
+
+    gift_tax = total_gift * tax_rate - deduction
+
+    print(f"총 증여 재산: {total_gift} 원")
+    print(f"증여세율: {tax_rate * 100}%")
+    print(f"증여세 공제액: {deduction} 원")
+    print(f"증여세: {gift_tax:.2f} 원")
+
 def tax_menu():
     while True:
-        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n0: 돌아가기\n선택: ")
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n0: 돌아가기\n선택: ")
         if tax_func == "1":
             calculate_comprehensive_income_tax()
         elif tax_func == "2":
@@ -170,7 +196,10 @@ def tax_menu():
             year_end_settlement_simulation()
         elif tax_func == "6":
             calculate_inheritance_tax()
+        elif tax_func == "7":
+            calculate_gift_tax()
         elif tax_func == "0":
             break
         else:
             print("올바른 선택이 아닙니다.")
+
