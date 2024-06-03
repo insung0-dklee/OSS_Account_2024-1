@@ -1428,6 +1428,7 @@ def financial_goal_loop(user):
         print("2: 목표 목록 확인")
         print("3: 목표 저축액 추가")
         print("4: 목표 진행 상황 확인")
+        print("5: 목표 목록 삭제")
         print("0: 메인 메뉴로 돌아가기")
 
         # 사용자로부터 기능 선택을 입력받습니다.
@@ -1476,6 +1477,21 @@ def financial_goal_loop(user):
                 selected_goal = user.get_goal(goal_index)
                 if selected_goal:
                     selected_goal.check_progress()
+                else:
+                    print("올바른 목표를 선택하세요.")
+        # 목표를 삭제하는 기능입니다.
+        elif choice == "5":
+            if not user.goals:
+                print("등록된 목표가 없습니다. 먼저 목표를 추가하세요.")
+            else:
+                print("등록된 목표 목록:")
+                for idx, goal in enumerate(user.goals, start=1):
+                    print(f"{idx}: {goal.name}")
+                goal_index = int(input("삭제할 목표를 선택하세요: ")) - 1
+                selected_goal = user.get_goal(goal_index)
+                if selected_goal:
+                    user.goals.pop(goal_index)
+                    print(f"목표 '{selected_goal.name}'가 삭제되었습니다.")
                 else:
                     print("올바른 목표를 선택하세요.")
         #메인 메뉴로 돌아가는 기능입니다.
