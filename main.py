@@ -1243,6 +1243,25 @@ def YU_Account():
     """
     print(welcome_message)
 
+"""
+end_message : 프로그램 종료 화면 출력
+@Parm
+    None
+@return
+    None
+"""  
+def end_message():
+    exit_message = """=======================================
+*                                     *
+*           YU_Account_Book           *
+*                                     *
+=======================================
+- 모든 변경 사항이 저장되었습니다.
+- 가계부 프로그램을 종료합니다.
+- 이용해 주셔서 감사합니다.
+    """
+    print(exit_message)
+
 def print_Login_help(): #user interface 도움말
     print("""
     1: 회원가입
@@ -1535,7 +1554,7 @@ while not b_is_exit:
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
-        print("프로그램을 종료합니다.")
+        end_message() #프로그램 종료시 띄우는 문구
         b_is_exit = True
     elif func == "memo":
         add_memo()
