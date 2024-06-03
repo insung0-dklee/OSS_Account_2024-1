@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import matplotlib.pyplot as plt
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -743,7 +744,7 @@ def compare_financial_goal(user1, user2, goal):
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
 
-# 월별 보고서 생성 함수
+#월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
     monthly_total = 0
@@ -763,18 +764,30 @@ def generate_monthly_report():
     print(f"{month}월 각 카테고리별 지출 내역:")
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
-
     average_score = calculate_average_score(scores)
+    if average_score is not None:
+        print(f"{month}월 평균 점수: {average_score:.2f} 점")
+        # 월별 평균 점수 그래프 생성
+        plot_monthly_average_score(month, average_score)
+    else:
+        print(f"{month}월에는 평가된 점수가 없습니다.")
     if category_totals:
         max_category = max(category_totals, key=category_totals.get)
         print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
-    if average_score is not None:
-        print(f"{month}월 평균 점수: {average_score:.2f} 점")
-    else:
-        print(f"{month}월에는 평가된 점수가 없습니다.")
+
+def plot_monthly_average_score(month, average_score):
+    """
+    월별 평균 점수를 그래프로 표시합니다.
+    """
+    plt.figure(figsize=(8, 6))
+    plt.bar(month, average_score)
+    plt.xlabel("월")
+    plt.ylabel("평균 점수")
+    plt.title(f"{month}월 평균 점수")
+    plt.grid(True)
+    plt.show()
 
 budget = None #전역변수 budget의 기본값 설정
 
