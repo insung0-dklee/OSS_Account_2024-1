@@ -1571,7 +1571,7 @@ if __name__ == "__main__":
     # 지출 기록
     record_expense(1500, budget_manager)
 
-#지난달과 비교해 더 많은 지출이 생겼을 시 "정신차리라"고 메시지를 보내주는 기능 추가
+#지난달과 지출을 비교해 칭찬/동기부여 하는 기능 추가.
 
 class BudgetManager:
     def __init__(self, budget):
@@ -1597,6 +1597,8 @@ def record_expense(amount, budget_manager):
 
     if amount > budget_manager.get_previous_month_expense():
         print("주의: 이번 달의 지출이 지난 달보다 많습니다. 정신을 차리세요!")
+    else:
+        print("지난 달에 비해 지출이 적습니다. 잘하셨어요!")
 
 
 if __name__ == "__main__":
@@ -1604,11 +1606,11 @@ if __name__ == "__main__":
     budget_manager = BudgetManager(1000)
 
     # 지난 달의 지출
-    last_month_expense = 800
+    last_month_expense = 1200
     budget_manager.set_previous_month_expense(last_month_expense)
 
     # 현재 달의 지출
-    current_month_expense = 1500
+    current_month_expense = 1000
 
     # 지출 기록
     record_expense(current_month_expense, budget_manager)
