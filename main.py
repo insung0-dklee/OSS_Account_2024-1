@@ -543,6 +543,58 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#연봉 계산기
+class SalaryCalculator:
+    def __init__(self):
+        self.monthly_salary = 0
+        self.tax_rate = 0
+        self.deductions = 0
+
+    def calculate_net_annual_salary(self, monthly_salary, tax_rate, deductions):
+        self.monthly_salary = monthly_salary
+        self.tax_rate = tax_rate
+        self.deductions = deductions * 10000  # 만원 단위로 입력받은 공제를 원 단위로 변환
+
+        # 연봉 계산 (만원 단위로 입력받은 월급을 원 단위로 변환)
+        annual_salary = monthly_salary * 12 * 10000
+
+        # 세금 및 공제를 적용한 연봉 계산
+        tax_amount = annual_salary * tax_rate
+        net_annual_salary = annual_salary - tax_amount - self.deductions
+
+        print(f"세후 연봉: {net_annual_salary:,.0f}원")
+        return net_annual_salary
+
+    def calculate_net_monthly_salary(self, monthly_salary, tax_rate, deductions):
+        net_annual_salary = self.calculate_net_annual_salary(monthly_salary, tax_rate, deductions)
+        net_monthly_salary = net_annual_salary / 12
+        print(f"세후 월급: {net_monthly_salary:,.0f}원")
+
+#연금 계산기
+class PensionCalculator:
+    def __init__(self):
+        self.monthly_amount = 0
+        self.years = 0
+        self.interest_rate = 0
+
+    def calculate_required_amount(self, monthly_amount, years, interest_rate):
+        self.monthly_amount = monthly_amount
+        self.years = years
+        self.interest_rate = interest_rate
+
+        # 매월 수령액을 연간으로 환산
+        annual_amount = monthly_amount * 12 * 10000
+
+        # 수령 기간 동안의 총 금액 계산
+        total_amount = annual_amount * years
+
+        # 복리 이자를 고려한 현재 필요 금액 계산 (간단하게 계산)
+        current_amount = total_amount / ((1 + interest_rate) ** years)
+
+        print(f"매월 {monthly_amount}만원을 {years}년 간 수령하기 위해 현재 필요 금액은 다음과 같습니다.")
+        print(f"＊ 연금부리이율은 {interest_rate * 100}%로 계산합니다.")
+        print(f"현재 필요 금액: {current_amount:,.0f}원")
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +606,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 연봉 계산기
+    7: 연금 계산기      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1586,47 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        SalaryCalculator()
+        salary_calculator = SalaryCalculator()
+        print("-----------------------")
+        print("연봉 계산기")
+        print("1: 세후 연봉 및 월급 계산")
+        print("2: 종료")
+        option = input("기능을 선택하세요: ")
+
+        if option == "1":
+            monthly_salary = float(input("월급을 입력하세요 (만원): "))
+            tax_rate = float(input("세율을 소수로 입력하세요 (예: 0.2): "))
+            deductions = float(input("기타 공제를 입력하세요 (만원): "))
+            salary_calculator.calculate_net_monthly_salary(monthly_salary, tax_rate, deductions)
+        elif option == "2":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
+            
+    elif func =="7":
+        PensionCalculator()
+        pension_calculator = PensionCalculator()
+
+  
+        print("-----------------------")
+        print("연금 계산기")
+        print("1: 연금 계산")
+        print("2: 종료")
+        option = input("기능을 선택하세요: ")
+
+        if option == "1":
+            monthly_amount = float(input("매월 수령액을 입력하세요 (만원): "))
+            years = int(input("수령 기간을 입력하세요 (년): "))
+            interest_rate = float(input("연금부리이율을 소수로 입력하세요 (예: 0.05): "))
+            pension_calculator.calculate_required_amount(monthly_amount, years, interest_rate)
+        elif option == "2":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
