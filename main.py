@@ -1562,6 +1562,48 @@ def find_highest_expense_day():
     return warning_message
 
 
+# 가계부 별점 데이터를 저장할 딕셔너리
+ratings = {}
+
+# 별점을 남기는 함수
+def leave_rating(date, rating):
+    if 1 <= rating <= 5:
+        ratings[date] = rating
+        return f"{date}에 {rating}점을 남겼습니다."
+    else:
+        return "별점은 1점에서 5점 사이여야 합니다."
+
+# 별점을 조회하는 함수
+def get_rating(date):
+    return ratings.get(date, "해당 날짜에 남긴 별점이 없습니다.")
+
+# 별점 데이터를 파일에 저장하는 함수
+def save_ratings(filename="ratings.json"):
+    with open(filename, 'w') as file:
+        json.dump(ratings, file)
+        return "별점 데이터를 저장했습니다."
+
+# 파일에서 별점 데이터를 불러오는 함수
+def load_ratings(filename="ratings.json"):
+    global ratings
+    try:
+        with open(filename, 'r') as file:
+            ratings = json.load(file)
+            return "별점 데이터를 불러왔습니다."
+    except FileNotFoundError:
+        return "파일을 찾을 수 없습니다."
+
+# 오늘 날짜의 별점을 남기는 함수
+def leave_today_rating(rating):
+    today = datetime.today().strftime('%Y-%m-%d')
+    return leave_rating(today, rating)
+
+# 오늘 날짜의 별점을 조회하는 함수
+def get_today_rating():
+    today = datetime.today().strftime('%Y-%m-%d')
+    return get_rating(today)
+
+
 
 ###########################################################
 
@@ -1617,6 +1659,11 @@ while not b_is_exit:
         print("현재 금시세:", get_gold_price())
     elif func == "silver":
         print("현재 은시세", get_silver_price())
+    elif func == "rate":
+        rating = int(input("오늘의 별점을 입력하세요 (1-5): "))
+        print(leave_today_rating(rating))
+    elif func == "view rating":
+        print("오늘의 별점:", get_today_rating())
     else:
         
         print("올바른 기능을 입력해 주세요.")
