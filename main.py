@@ -1091,6 +1091,15 @@ def analyze_and_advise():
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
 
 #디데이 기능
+"""
+save_d_day(target_date_str) : 입력된 디데이 날짜를 JSON 파일에 저장하는 함수
+load_d_day() : 저장된 디데이 날짜를 JSON파일에서 읽어서 불러오는 함수
+add_d_day() : 디데이 날짜를 입력받아 오늘과 비교하여 남은 일수를 계산하는 함수
++ 양수 일수 = 디데이까지 남은 일수 출력
++ 음수 일수 = 디데이가 지났다는 문구 출력
+view_d_day() : 저장된 디데이 날짜를 불러와 남은 일수 계산 및 출력
++ 저장된 디데이 X일 경우 데이터 정보 없다는 문구 출력
+"""
 d_day_file = 'd_day.json' 
 
 def save_d_day(target_date_str):
@@ -1372,6 +1381,7 @@ YU_Account() #프로그램 시작 화면
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
+
 # 메인 루프
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
@@ -1401,3 +1411,4 @@ while not b_is_exit:
         b_is_exit = not b_is_exit 
 
         print("올바른 기능을 입력해 주세요.")
+        
