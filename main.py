@@ -596,8 +596,11 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    memo: 메모장
+    calendar: 달력
+    calculator: 계산기
     ?: 도움말 출력
-    exit: 종료
+    exit,x,종료: 종료
     """)
 
 """
@@ -1584,6 +1587,8 @@ while not b_is_exit:
         memo()
     elif func == "calendar":
         show_calendar()
+    elif func == "calculator":
+        calculator()
     else:
         
         print("올바른 기능을 입력해 주세요.")
