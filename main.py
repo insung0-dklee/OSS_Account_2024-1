@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 이달의 재물운 확인하기
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1111,6 +1112,12 @@ def load_expenses():
     except Exception as e:
         print(f"An error occurred while loading expenses: {e}")
         return []
+#이달의 운세를 확인하는 웹사이트 접속 기능 추가
+def check_horoscope():
+    url = "https://shinhanlife.sinbiun.com/unse/saju/saju.php?unse_code=A103"
+    webbrowser.open(url)
+    print("웹 브라우저에서 이달의 운세 페이지를 여는 중입니다.")
+
 
 def analyze_and_advise():
     """
@@ -1532,6 +1539,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        check_horoscope()  # 이달의 운세 확인 함수 호출    
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
