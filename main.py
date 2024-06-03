@@ -587,6 +587,32 @@ def get_valid_amount_input():
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+            
+#이전 달 지출 총액 계산 함수            
+def get_previous_month_total():
+    from datetime import datetime, timedelta
+
+    today = datetime.today()
+    first_day_of_this_month = today.replace(day=1)
+    last_day_of_previous_month = first_day_of_this_month - timedelta(days=1)
+    previous_month = last_day_of_previous_month.strftime('%Y-%m')
+
+    previous_month_total = sum(entry['amount'] for entry in ledger if entry['date'].startswith(previous_month))
+    return previous_month_total
+
+#금월의 20일 이전 지출 총액 계산 함수 
+def get_current_month_total_before_20th():
+    from datetime import datetime
+
+    today = datetime.today()
+    current_month = today.strftime('%Y-%m')
+
+    current_month_total_before_20th = sum(
+        entry['amount'] for entry in ledger 
+        if entry['date'].startswith(current_month) and int(entry['date'][-2:]) <= 20
+    )
+    return current_month_total_before_20th
+
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
@@ -604,6 +630,13 @@ def add_entry():
     ledger.append(entry)
     print("항목이 추가되었습니다.")
 
+    #경고 메시지 로직 추가 - 금월 20일 이전에 이전 달 지출 총액을 넘기면 경고
+    previous_month_total = get_previous_month_total()
+    current_month_total_before_20th = get_current_month_total_before_20th()
+
+    if current_month_total_before_20th > previous_month_total:
+        print("경고: 금월 현재 지출이 이전 달의 지출 총액을 초과했습니다!")
+     
     category_count = sum(1 for e in ledger if e["category"] == category)
 
     if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
