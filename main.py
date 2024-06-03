@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import matplotlib.pyplot as plt  # 시각화를 위해 matplotlib 라이브러리 추가
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -743,6 +744,26 @@ def compare_financial_goal(user1, user2, goal):
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
 
+def visualize_monthly_report(category_totals, month):
+    """
+    주어진 달의 카테고리별 지출을 시각화하는 함수입니다.
+    
+    Parameters:
+    category_totals (dict): 카테고리별 총 지출을 나타내는 딕셔너리
+    month (str): 보고서 생성 월 (YYYY-MM 형식)
+    """
+    categories = list(category_totals.keys())  # 카테고리 목록을 가져옵니다.
+    totals = list(category_totals.values())  # 카테고리별 지출 총액을 가져옵니다.
+
+    plt.figure(figsize=(10, 6))  # 그래프 크기를 설정합니다.
+    plt.bar(categories, totals, color='skyblue')  # 막대 그래프를 생성합니다.
+    plt.xlabel('Category')  # x축 레이블을 설정합니다.
+    plt.ylabel('Amount')  # y축 레이블을 설정합니다.
+    plt.title(f'Expenses by Category for {month}')  # 그래프 제목을 설정합니다.
+    plt.xticks(rotation=45)  # x축 레이블을 45도 회전시킵니다.
+    plt.tight_layout()  # 레이아웃을 자동으로 조정합니다.
+    plt.show()  # 그래프를 표시합니다.
+
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
@@ -775,6 +796,9 @@ def generate_monthly_report():
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
+
+# 시각화 부분 추가
+    visualize_monthly_report(category_totals, month)  # 시각화 함수 호출
 
 budget = None #전역변수 budget의 기본값 설정
 
