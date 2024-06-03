@@ -36,11 +36,12 @@ def check_daily_limit():
     total_spent_today = 0
     today = datetime.today().strftime('%Y-%m-%d')
     # expenses.json 파일에서 오늘의 지출 내역을 읽어옴
-    with open(expenses_file, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        for expense in data:
-            if expense['date'] == today:
-                total_spent_today += float(expense['amount'])
+    if os.path.exists(expenses_file):
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            for expense in data:
+                if expense['date'] == today:
+                    total_spent_today += float(expense['amount'])
     
     print(f"오늘 지출: {total_spent_today}원")
     if total_spent_today > limit:
@@ -65,18 +66,19 @@ def analyze_expenses_in_period():
     total_expense = 0
     category_totals = {}
     # expenses.json 파일에서 지출 내역을 읽어옴
-    with open(expenses_file, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        for expense in data:
-            expense_date_obj = datetime.strptime(expense['date'], "%Y-%m-%d")
-            # 지출 내역이 지정한 기간 내에 속하는지 확인
-            if start_date_obj <= expense_date_obj <= end_date_obj:
-                amount = float(expense['amount'])
-                total_expense += amount
-                category = expense['item']
-                if category not in category_totals:
-                    category_totals[category] = 0
-                category_totals[category] += amount
+    if os.path.exists(expenses_file):
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            for expense in data:
+                expense_date_obj = datetime.strptime(expense['date'], "%Y-%m-%d")
+                # 지출 내역이 지정한 기간 내에 속하는지 확인
+                if start_date_obj <= expense_date_obj <= end_date_obj:
+                    amount = float(expense['amount'])
+                    total_expense += amount
+                    category = expense['item']
+                    if category not in category_totals:
+                        category_totals[category] = 0
+                    category_totals[category] += amount
 
     print(f"{start_date}부터 {end_date}까지의 총 지출: {total_expense} 원")
     print("카테고리별 지출 내역:")
@@ -86,16 +88,25 @@ def analyze_expenses_in_period():
 # 3. 지출 패턴 예측 기능
 # 사용자가 지정한 일 수 이후의 예상 지출을 예측하는 함수
 def predict_future_expenses():
-    days = int(input("몇 일 후까지의 지출을 예측하시겠습니까? (예: 30): "))
+    try:
+        days = int(input("몇 일 후까지의 지출을 예측하시겠습니까? (예: 30): "))
+    except ValueError:
+        print("유효한 숫자를 입력하세요.")
+        return
+
     total_expense = 0
     days_count = 0
 
     # expenses.json 파일에서 지출 내역을 읽어옴
-    with open(expenses_file, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        for expense in data:
-            total_expense += float(expense['amount'])
-            days_count += 1
+    if os.path.exists(expenses_file):
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            for expense in data:
+                total_expense += float(expense['amount'])
+                days_count += 1
+    else:
+        print("지출 내역 파일이 없습니다.")
+        return
 
     if days_count == 0:
         print("지출 내역이 없습니다.")
