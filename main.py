@@ -9,6 +9,12 @@ import webbrowser
 import re
 import Add_function
 
+# 감가상각비 사용 예시
+cost = 10000  # 취득원가
+residual_value = 1000  # 잔존가치
+useful_life = 5  # 내용연수
+
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
@@ -77,6 +83,26 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
 
+def calculate_depreciation(cost, residual_value, useful_life):
+    """
+    감가상각비를 계산하는 함수
+    
+    :param cost: 취득원가 (float)
+    :param residual_value: 잔존가치 (float)
+    :param useful_life: 내용연수 (int)
+    :return: 연간 감가상각비 (float)
+    """
+    try:
+        # 유효한 입력 값 확인
+        if cost < 0 or residual_value < 0 or useful_life <= 0:
+            raise ValueError("취득원가, 잔존가치, 내용연수는 각각 0 이상의 값이어야 하며, 내용연수는 1 이상의 값이어야 합니다.")
+        
+        # 연간 감가상각비 계산
+        annual_depreciation = (cost - residual_value) / useful_life
+        
+        return annual_depreciation
+    except TypeError:
+        return "입력 값이 유효한 숫자가 아닙니다. 취득원가, 잔존가치, 내용연수는 모두 숫자여야 합니다."
 
 """
 전화번호를 통해 아이디를 찾는 함수
@@ -554,6 +580,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 감가상각비 계산      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1559,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        depreciation = calculate_depreciation(cost, residual_value, useful_life)
+        print(f"연간 감가상각비: {depreciation:.2f}원")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
