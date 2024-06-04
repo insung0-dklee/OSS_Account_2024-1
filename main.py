@@ -1353,6 +1353,65 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
     else:
         print("ID가 존재하지 않습니다.") #ID 존재 X
 
+"""
+NoticeBoard : 공지사항을 관리하는 클래스
+@Parm
+    None
+@return
+    None
+"""
+class NoticeBoard:
+    """
+    __init__() : 초기화 함수, 공지사항을 저장할 리스트를 생성
+    @Parm
+        None
+    @return
+        None
+    """
+    def __init__(self):
+        self.notices = []
+    """
+    add_notice(title, content) : 공지사항을 추가하는 함수
+    @Parm
+        title : 공지사항의 제목
+        content : 공지사항의 내용
+    @return
+        None
+    """
+    def add_notice(self, title, content):
+        self.notices.append({'title': title, 'content': content})
+    """
+    view_notices() : 모든 공지사항을 출력하는 함수
+    @Parm
+        None
+    @return
+        None
+    """
+    def view_notices(self):
+        for i, notice in enumerate(self.notices, 1):
+            print(f"공지사항 {i}:")
+            print(f"제목: {notice['title']}")
+            print(f"내용: {notice['content']}")
+"""
+notice() : 공지사항을 추가하는 함수
+@Parm
+    None
+@return
+    None
+"""
+def notice() :
+    notice_board = NoticeBoard()
+    ask = input("공지사항을 추가하시겠습니까? (y or n) ")
+    if (ask == 'y') :
+        notice_title = input("공지사항 제목을 입력해주세요 : ")
+        notice_memo = input("공지사항 내용을 입력해주세요 : ")
+        notice_board.add_notice(notice_title, notice_memo)
+        print("공지사항을 출력합니다.")
+        print("-"*15)
+        notice_board.view_notices()
+    elif (ask == 'n') :
+        return
+notice()
 YU_Account() #프로그램 시작 화면
 
 version = "1.0.0"  # 프로그램 버전
