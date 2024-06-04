@@ -8,11 +8,19 @@ import random
 import webbrowser
 import re
 import Add_function
+import smtplib
+from email.mime.text import MIMEText
+
 
 # 감가상각비 사용 예시
 cost = 10000  # 취득원가
 residual_value = 1000  # 잔존가치
 useful_life = 5  # 내용연수
+
+# 이메일 정산 메세지 기능 사용 예시
+settlement_amount = 1000.0
+email_addresses = ['example1@example.com', 'example2@example.com', 'example3@example.com', 'example4@example.com']
+
 
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
@@ -103,6 +111,35 @@ def calculate_depreciation(cost, residual_value, useful_life):
         return annual_depreciation
     except TypeError:
         return "입력 값이 유효한 숫자가 아닙니다. 취득원가, 잔존가치, 내용연수는 모두 숫자여야 합니다."
+    
+def send_settlement_emails(settlement_amount, email_addresses):
+    # 이메일 서버 설정
+    smtp_server = 'smtp.example.com'
+    smtp_port = 587
+    smtp_username = 'your_username'
+    smtp_password = 'your_password'
+
+    # 이메일 내용
+    subject = '정산금액 안내'
+    body_template = '안녕하세요! 정산금액은 ${:.2f}입니다. 감사합니다.'
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+
+            for email in email_addresses:
+                msg = MIMEText(body_template.format(settlement_amount), 'plain')
+                msg['Subject'] = subject
+                msg['From'] = smtp_username
+                msg['To'] = email
+
+                server.sendmail(smtp_username, [email], msg.as_string())
+                print(f"메일을 {email}로 보냈습니다.")
+
+        print("모든 메일을 성공적으로 보냈습니다.")
+    except Exception as e:
+        print(f"메일 보내기 실패: {e}")
 
 """
 전화번호를 통해 아이디를 찾는 함수
@@ -580,7 +617,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 감가상각비 계산      
+    6: 감가상각비 계산  
+    7: 이메일 정산메세지 기능
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1562,6 +1600,8 @@ while not b_is_exit:
     elif func == "6":
         depreciation = calculate_depreciation(cost, residual_value, useful_life)
         print(f"연간 감가상각비: {depreciation:.2f}원")
+    elif func == "7":
+        send_settlement_emails(settlement_amount, email_addresses)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
