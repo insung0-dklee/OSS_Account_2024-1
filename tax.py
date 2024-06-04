@@ -1,7 +1,3 @@
-'''
-세금과 보험 항목을 다루는 파이썬 파일
-'''
-
 def calculate_tax(income):
     if income <= 14000000:
         return income * 0.06
@@ -181,9 +177,50 @@ def calculate_gift_tax():
     print(f"증여세 공제액: {deduction} 원")
     print(f"증여세: {gift_tax:.2f} 원")
 
+def calculate_real_estate_transfer_tax():
+    print("부동산 양도소득세 계산 기능입니다.")
+    purchase_price = float(input("취득가액을 입력하세요 (원): "))
+    selling_price = float(input("양도가액을 입력하세요 (원): "))
+    other_costs = float(input("기타 비용을 입력하세요 (원): "))
+    holding_period = int(input("보유 기간을 입력하세요 (년): "))
+
+    capital_gain = selling_price - purchase_price - other_costs
+
+    if holding_period <= 1:
+        tax_rate = 0.5
+    elif holding_period <= 2:
+        tax_rate = 0.4
+    else:
+        if capital_gain <= 12000000:
+            tax_rate = 0.06
+        elif capital_gain <= 46000000:
+            tax_rate = 0.15
+        elif capital_gain <= 88000000:
+            tax_rate = 0.24
+        elif capital_gain <= 150000000:
+            tax_rate = 0.35
+        elif capital_gain <= 300000000:
+            tax_rate = 0.38
+        elif capital_gain <= 500000000:
+            tax_rate = 0.40
+        elif capital_gain <= 1000000000:
+            tax_rate = 0.42
+        else:
+            tax_rate = 0.45
+
+    transfer_tax = capital_gain * tax_rate
+
+    print(f"취득가액: {purchase_price} 원")
+    print(f"양도가액: {selling_price} 원")
+    print(f"기타 비용: {other_costs} 원")
+    print(f"양도차익: {capital_gain} 원")
+    print(f"보유 기간: {holding_period} 년")
+    print(f"양도소득세율: {tax_rate * 100}%")
+    print(f"양도소득세: {transfer_tax:.2f} 원")
+
 def tax_menu():
     while True:
-        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n0: 돌아가기\n선택: ")
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n0: 돌아가기\n선택: ")
         if tax_func == "1":
             calculate_comprehensive_income_tax()
         elif tax_func == "2":
@@ -198,8 +235,11 @@ def tax_menu():
             calculate_inheritance_tax()
         elif tax_func == "7":
             calculate_gift_tax()
+        elif tax_func == "8":
+            calculate_real_estate_transfer_tax()
         elif tax_func == "0":
             break
         else:
             print("올바른 선택이 아닙니다.")
+
 
