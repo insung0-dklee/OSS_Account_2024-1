@@ -562,6 +562,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 저축 기능
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1501,6 +1502,47 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+# 저축 계좌 클래스
+class Account:
+    def __init__(self):
+        self.savings = 0
+
+    def deposit(self, amount):
+        self.savings += amount
+        print(f"{amount}원이 저축 계좌에 입금되었습니다.")
+
+    def withdraw(self, amount):
+        if amount <= self.savings: # 현재 저축 계좌 잔액과 출금액 비교
+            self.savings -= amount # 출금액이 계좌 잔액보다 적을 시 출금 가능
+            print(f"{amount}원이 저축 계좌에서 출금되었습니다.")
+        else:
+            print("잔액이 부족합니다.")
+
+    def check_balance(self):
+        print(f"현재 저축 계좌 잔액은 {self.savings}원 입니다.")
+
+account = Account()
+
+# 저축 계좌 기능 실행 함수
+def Account_Run():
+    while True:
+        print("1. 입금 2. 출금 3. 잔액 확인 4. 종료")
+        choice = input("원하는 작업을 선택하세요: ")
+
+        if choice == '1':
+            amount = int(input("입금할 금액을 입력하세요: "))
+            account.deposit(amount)
+        elif choice == '2':
+            amount = int(input("출금할 금액을 입력하세요: "))
+            account.withdraw(amount)
+        elif choice == '3':
+            account.check_balance()
+        elif choice == '4':
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("잘못된 선택입니다. 다시 입력해주세요.")
+
 
 
 
@@ -1547,6 +1589,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        Account_Run()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
