@@ -765,31 +765,49 @@ def compare_financial_goal(user1, user2, goal):
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
-    monthly_total = 0
+    monthly_income_total = 0
+    monthly_expense_total = 0
     scores = []  # 평가 점수를 저장할 리스트
-    category_totals = {}
+    category_totals = {"수입": {}, "지출": {}}  # 수입과 지출을 각각의 카테고리별로 나눈다.
+
     for entry in ledger:
         if entry["date"].startswith(month):
-            monthly_total += float(entry["amount"])
-            category = entry["category"]
-            if category not in category_totals:
-                category_totals[category] = 0
-            category_totals[category] += entry["amount"]
+            if entry["type"] == "수입":
+                monthly_income_total += float(entry["amount"])
+                category = entry["category"]
+                if category not in category_totals["수입"]:
+                    category_totals["수입"][category] = 0
+                category_totals["수입"][category] += entry["amount"]
+            elif entry["type"] == "지출":
+                monthly_expense_total += float(entry["amount"])
+                category = entry["category"]
+                if category not in category_totals["지출"]:
+                    category_totals["지출"][category] = 0
+                category_totals["지출"][category] += entry["amount"]
+
             print(entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
-    print(f"{month}월 총 지출: {monthly_total} 원")
+
+    print(f"{month}월 총 수입: {monthly_income_total} 원")
+    print(f"{month}월 총 지출: {monthly_expense_total} 원")
+
+    print(f"{month}월 각 카테고리별 수입 내역:")
+    for category, total in category_totals["수입"].items():
+        print(f"{category}: {total} 원")
+
     print(f"{month}월 각 카테고리별 지출 내역:")
-    for category, total in category_totals.items():
+    for category, total in category_totals["지출"].items():
         print(f"{category}: {total} 원")
 
     average_score = calculate_average_score(scores)
-    if category_totals:
-        max_category = max(category_totals, key=category_totals.get)
-        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+
+    if category_totals["지출"]:
+        max_expense_category = max(category_totals["지출"], key=category_totals["지출"].get)
+        print(f"\n가장 지출이 많은 카테고리: {max_expense_category} ({category_totals['지출'][max_expense_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
-    
+
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
     else:
@@ -799,13 +817,14 @@ budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
-    global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
-    current_total = sum(float(entry["amount"]) for entry in ledger)
-    if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+    global budget
+    budget = float(input("예산 설정 (원): "))  # budget을 전역변수로 변경
+    current_expense_total = sum(float(entry["amount"]) for entry in ledger if entry["type"] == "지출")  #지출 항목만 합산됨
+
+    if current_expense_total > budget:
+        print(f"경고: 예산 초과! 현재 지출: {current_expense_total} 원")
     else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        print(f"예산 설정 완료. 현재 지출: {current_expense_total} 원, 남은 예산: {budget - current_expense_total} 원")
 
 # 예산 확인 함수
 def check_budget():
