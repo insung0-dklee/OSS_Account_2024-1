@@ -2317,10 +2317,29 @@ def extra_money(months):
     # 각 월의 잉여 돈(수입 - 소비)을 계산
     ex_money = {month: income - monthly_expense.get(month, 0) for month, income in monthly_income.items()}
     # 잉여 돈의 평균을 계산
-    average_ex_money = sum(ex_money.values()) / len(ex_money)
+    if ex_money:
+        average_ex_money = sum(ex_money.values()) / len(ex_money)
+    else: #버그 회피용(빈 딕셔너리일 경우 오류 방지)
+        average_ex_money = 0
 
     # 잉여 돈의 평균을 반환
     return average_ex_money
+
+def reco_saving():
+    while True:
+        try:
+            months = int(input("최근 몇 개월 동안의 잉여 돈의 평균을 계산할까요? "))
+            if months < 0: #버그 회피용 (음수 및 문자 입력시 오류 방지)
+                print("개월 수는 음수일 수 없습니다. 다시 입력해주세요.")
+                continue
+            break
+        except ValueError:
+            print("유효한 숫자를 입력해주세요.")
+    average_ex_money = extra_money(months)
+    print(f"최근 {months}개월 동안의 잉여 돈의 평균은 {average_ex_money:.2f}원입니다.")
+    #현재 저축은행 평균 금리인 3.67%로 계산 (출저: https://www.daehanbank.co.kr/DepComCalc0200.act )
+    print(f"이를 예금 하였다면 월 별 {(average_ex_money * 0.0367/12):.2f}원의 이자를 얻을 수 있습니다.") 
+
 
 
 ###########################################################
