@@ -1629,7 +1629,42 @@ def investment_tracker():
 
 
 
+# 사용자가 입력한 정보를 기반으로 은퇴 목표를 설정하고, 그 목표를 달성하기 위한 계획을 수립합니다.
+def retirement_planner():
+     # 사용자로부터 현재 나이, 목표 은퇴 연령, 목표 은퇴 시점까지의 재정 목표 금액을 입력 받습니다.
+    current_age = int(input("현재 나이를 입력하세요: "))
+    retirement_age = int(input("목표 은퇴 연령을 입력하세요: "))
+    target_amount = float(input("목표 은퇴 시점까지의 재정 목표 금액을 입력하세요: "))
+    # 은퇴까지 남은 연수를 계산합니다.
+    years_to_retirement = retirement_age - current_age
 
+    # 사용자로부터 연 이율을 입력 받습니다. 입력하지 않으면 기본값인 5%가 적용됩니다.
+    user_input = input("연 이율을 입력하세요 (기본값은 5%입니다. 입력하지 않으면 기본값이 적용됩니다.): ")
+    if user_input:
+        interest_rate = float(user_input) / 100
+    else:
+        interest_rate = 0.05
+
+    # 연금 저축 계획
+    pension_savings = target_amount / years_to_retirement
+
+    # 투자 계획
+    investment_savings = target_amount / ((1 + interest_rate) ** years_to_retirement - 1) * interest_rate
+
+    # 저축 계획
+    saving_savings = target_amount / years_to_retirement
+
+    # 연금, 투자, 저축 계획을 월별로 변환하여 출력합니다.
+    monthly_pension_savings = pension_savings / 12
+    monthly_investment_savings = investment_savings / 12
+    monthly_saving_savings = saving_savings / 12
+
+    print("---------------------------------")
+    print("\n은퇴 계획 결과\n")
+    print("---------------------------------")
+    print(f"연금 저축 계획\n {pension_savings:.2f} 달러/년   {monthly_pension_savings:.2f} 달러/월\n")
+    print(f"투자 계획\n {investment_savings:.2f} 달러/년   {monthly_investment_savings:.2f} 달러/월\n")
+    print(f"저축 계획\n {saving_savings:.2f} 달러/년   {monthly_saving_savings:.2f} 달러/월\n")
 
 
 
@@ -1681,6 +1716,8 @@ while not b_is_exit:
 
     elif func == "6":
         investment_tracker()
+    elif func =="7":
+        retirement_planner()
 
     elif func == "?":
         print_help()
