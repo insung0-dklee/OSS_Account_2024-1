@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -16,6 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+
 
 
 # 약속을 담을 리스트
@@ -1249,12 +1250,14 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    type = input("항목 종류 (1:수입 2:지출): ")
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
     entry = {
+        'type' : type,
         "date": date,
         "category": category,
         "description": description,
@@ -1272,6 +1275,8 @@ def add_entry():
             add_favorite_category(category)
         else:
             print("카테고리에 추가되지 않았습니다.")
+
+
 
 
 favorites = []
@@ -2286,6 +2291,36 @@ def check_progress_with_inflation(goal, inflation_rate):
         print(f"축하합니다! '{goal.name}' 목표를 달성했습니다! \n 목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n")
     else:
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
+
+#지정된 개월 수 동안의 잉여 돈의 평균을 계산하는 함수
+def extra_money(months):
+    # 월별 수입과 소비를 저장할 딕셔너리
+    monthly_income = {}
+    monthly_expense = {}
+
+    # 지정된 개월 수 전의 날짜를 계산(한달을 대략 30일로 가정)
+    months_len = (datetime.now() - timedelta(days=30*months)).strftime('%Y-%m')
+
+    for entry in ledger:
+        date = datetime.strptime(entry['date'], '%Y-%m-%d')
+        month = date.strftime('%Y-%m')
+
+        # 지정된 개월 수 이내인 경우에만 계산
+        if month >= months_len:
+            # 항목이 수입인 경우, 해당 월의 수입을 증가.
+            if entry['type'] == '1':
+                monthly_income[month] = monthly_income.get(month, 0) + entry['amount']
+            # 항목이 소비인 경우, 해당 월의 소비를 증가
+            else:
+                monthly_expense[month] = monthly_expense.get(month, 0) + entry['amount']
+
+    # 각 월의 잉여 돈(수입 - 소비)을 계산
+    ex_money = {month: income - monthly_expense.get(month, 0) for month, income in monthly_income.items()}
+    # 잉여 돈의 평균을 계산
+    average_ex_money = sum(ex_money.values()) / len(ex_money)
+
+    # 잉여 돈의 평균을 반환
+    return average_ex_money
 
 
 ###########################################################
