@@ -132,7 +132,15 @@ class ACC_BOOK:
 
     # 8. 카테고리 입력 기능
     def ctgry_err_check(self):
-        pass
+        while True:
+            print("\n작성 형식: 식비, 카페, 쇼핑, 이체, 교통 등")
+            category = input("카테고리: ")
+            try:
+                category = int(category)
+                print("\n최소 문자 1개 이상 포함해주세요.\n")
+                continue
+            except Exception:
+                return category
 
 
 """ 
