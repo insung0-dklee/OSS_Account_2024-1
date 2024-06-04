@@ -1,79 +1,88 @@
-import json
-from datetime import datetime, timedelta
+class Expense:
+    def __init__(self, name, amount, completed=False):
+        self.name = name
+        self.amount = amount
+        self.completed = completed
 
-def record_credit_score():
-    # 현재 날짜를 가져옵니다.
-    today = datetime.today().strftime('%Y-%m-%d')
+    def __repr__(self):
+        status = "완료" if self.completed else "미완료"
+        return f"{self.name}: {self.amount}원 ({status})"
 
-    # 이전에 저장된 신용점수 데이터를 불러옵니다.
-    try:
-        with open('credit_score.json', 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        # 만약 파일이 없으면 빈 데이터를 생성합니다.
-        data = {}
+class Event:
+    def __init__(self, name, date):
+        self.name = name
+        self.date = date
+        self.expenses = []
 
-    # 현재 날짜를 키로 사용하여 신용점수를 입력받습니다.
-    current_score = float(input("현재 신용점수를 입력하세요: "))
+    def add_expense(self, expense):
+        self.expenses.append(expense)
 
-    # 이전 달의 신용점수를 입력받습니다.
-    last_month = (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d')
-    if last_month in data:
-        last_month_score = data[last_month]
-        print(f"저번 달의 신용점수: {last_month_score}")
-        # 현재 신용점수와 비교하여 상승인지 하락인지 출력합니다.
-        if current_score > last_month_score:
-            trend = "상승"
-        elif current_score < last_month_score:
-            trend = "하락"
-        else:
-            trend = "변동 없음"
-        print(f"전체적인 신용점수 변동: {trend}")
+    def complete_expense(self, expense_name):
+        for expense in self.expenses:
+            if expense.name == expense_name:
+                expense.completed = True
+                break
 
-    # 현재 날짜를 키로 사용하여 신용점수를 저장합니다.
-    data[today] = current_score
+    def total_cost(self):
+        return sum(expense.amount for expense in self.expenses)
 
-    # 데이터를 파일에 저장합니다.
-    with open('credit_score.json', 'w') as file:
-        json.dump(data, file, indent=4)
+    def __repr__(self):
+        return f"이벤트: {self.name} ({self.date})\n지출 목록:\n" + "\n".join(str(expense) for expense in self.expenses)
 
-    # 다음 달의 예상 신용점수를 계속해서 입력받습니다.
+def main():
+    events = []
+
     while True:
-        next_month = (datetime.today() + timedelta(days=30)).strftime('%Y-%m-%d')
-        next_month_score = float(input("다음 달 예상 신용점수를 입력하세요: "))
-        data[next_month] = next_month_score
+        print("\n1. 이벤트 추가")
+        print("2. 이벤트 조회")
+        print("3. 지출 항목 추가")
+        print("4. 지출 항목 완료 처리")
+        print("5. 총 지출 금액 조회")
+        print("6. 종료")
+        
+        choice = input("원하는 작업의 번호를 선택하세요: ")
 
-        # 데이터를 파일에 저장합니다.
-        with open('credit_score.json', 'w') as file:
-            json.dump(data, file, indent=4)
+        if choice == '1':
+            name = input("이벤트 이름: ")
+            date = input("이벤트 날짜 (YYYY-MM-DD): ")
+            events.append(Event(name, date))
+            print(f"이벤트 '{name}'가 추가되었습니다.")
+        
+        elif choice == '2':
+            for idx, event in enumerate(events):
+                print(f"{idx + 1}. {event.name} ({event.date})")
+            event_idx = int(input("조회할 이벤트 번호를 선택하세요: ")) - 1
+            print(events[event_idx])
 
-        # 사용자가 더 이상 입력할 지 여부를 물어봅니다.
-        more_input = input("더 입력하시겠습니까? (y/n): ")
-        if more_input.lower() != 'y':
+        elif choice == '3':
+            for idx, event in enumerate(events):
+                print(f"{idx + 1}. {event.name} ({event.date})")
+            event_idx = int(input("지출 항목을 추가할 이벤트 번호를 선택하세요: ")) - 1
+            expense_name = input("지출 항목 이름: ")
+            expense_amount = int(input("지출 금액: "))
+            events[event_idx].add_expense(Expense(expense_name, expense_amount))
+            print(f"지출 항목 '{expense_name}'가 이벤트 '{events[event_idx].name}'에 추가되었습니다.")
+        
+        elif choice == '4':
+            for idx, event in enumerate(events):
+                print(f"{idx + 1}. {event.name} ({event.date})")
+            event_idx = int(input("지출 항목 완료 처리를 할 이벤트 번호를 선택하세요: ")) - 1
+            expense_name = input("완료 처리할 지출 항목 이름: ")
+            events[event_idx].complete_expense(expense_name)
+            print(f"지출 항목 '{expense_name}'가 완료 처리되었습니다.")
+        
+        elif choice == '5':
+            for idx, event in enumerate(events):
+                print(f"{idx + 1}. {event.name} ({event.date})")
+            event_idx = int(input("총 지출 금액을 조회할 이벤트 번호를 선택하세요: ")) - 1
+            print(f"총 지출 금액: {events[event_idx].total_cost()}원")
+        
+        elif choice == '6':
+            print("프로그램을 종료합니다.")
             break
 
-def check_credit_score_trend():
-    try:
-        with open('credit_score.json', 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        print("신용점수 데이터가 없습니다.")
-        return
+        else:
+            print("잘못된 입력입니다. 다시 선택해주세요.")
 
-    if len(data) < 2:
-        print("데이터가 충분하지 않습니다.")
-        return
-
-    scores = list(data.values())
-    if scores[-1] > scores[0]:
-        trend = "상승"
-    elif scores[-1] < scores[0]:
-        trend = "하락"
-    else:
-        trend = "변동 없음"
-    
-    print(f"전체적인 신용점수 변동: {trend}")
-
-# 테스트용으로 함수를 호출합니다.
-record_credit_score()
-check_credit_score_trend()
+if __name__ == "__main__":
+    main()
