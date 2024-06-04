@@ -218,9 +218,20 @@ def calculate_real_estate_transfer_tax():
     print(f"양도소득세율: {tax_rate * 100}%")
     print(f"양도소득세: {transfer_tax:.2f} 원")
 
+def calculate_local_income_tax():
+    print("지방소득세 계산 기능입니다.")
+    total_income = float(input("총 소득을 입력하세요 (원): "))
+    local_income_tax_rate = 0.1  # 지방소득세율 10%
+
+    local_income_tax = total_income * local_income_tax_rate
+
+    print(f"총 소득: {total_income} 원")
+    print(f"지방소득세율: {local_income_tax_rate * 100}%")
+    print(f"지방소득세: {local_income_tax:.2f} 원")
+
 def tax_menu():
     while True:
-        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n0: 돌아가기\n선택: ")
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n9: 지방소득세 계산\n0: 돌아가기\n선택: ")
         if tax_func == "1":
             calculate_comprehensive_income_tax()
         elif tax_func == "2":
@@ -237,6 +248,8 @@ def tax_menu():
             calculate_gift_tax()
         elif tax_func == "8":
             calculate_real_estate_transfer_tax()
+        elif tax_func == "9":
+            calculate_local_income_tax()
         elif tax_func == "0":
             break
         else:
