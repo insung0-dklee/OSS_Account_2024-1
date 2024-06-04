@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import getpass
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -63,7 +64,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-    pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+    pw = getpass.getpass("password 입력: ")  # 회원가입 시의 pw 입력
 
     h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
     h.update(pw.encode())  # sha256으로 암호화
@@ -1286,7 +1287,7 @@ def Login_interface(): #로그인 인터페이스
         return 0
     print("로그인(ID와 PW를 입력해 주세요.)")
     ID = input("ID: ")
-    PW = input("PW: ")
+    PW = getpass.getpass("PW: ")
 
     h = hashlib.sha256()
 
