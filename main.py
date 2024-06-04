@@ -64,20 +64,29 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-    pw = getpass.getpass("password 입력: ")  # 회원가입 시의 pw 입력
+    while True:
+        pw = getpass.getpass("password 입력: ")  # 회원가입 시의 pw 입력
 
-    h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
-    h.update(pw.encode())  # sha256으로 암호화
-    pw_data = h.hexdigest()  # 16진수로 변환
+        """
+        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+        """
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
 
-    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
-    usernames[name] = id  # 이름과 아이디 매핑
-    userphones[phone] = id  # 전화번호와 아이디 매핑
+        h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+        h.update(pw.encode())  # sha256으로 암호화
+        pw_data = h.hexdigest()  # 16진수로 변환
 
-    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-        for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        usernames[name] = id  # 이름과 아이디 매핑
+        userphones[phone] = id  # 전화번호와 아이디 매핑
 
+        with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+        break
 
 """
 전화번호를 통해 아이디를 찾는 함수
