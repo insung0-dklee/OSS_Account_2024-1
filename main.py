@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 즐겨찾는 카테고리 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -628,9 +629,30 @@ def show_favorites():
         print("즐겨찾기 카테고리 목록이 비어 있습니다.")
     else:
         print("즐겨찾는 카테고리 목록:")
-        for category in favorites:
-            print(f"- {category}")
+        for i, category in enumerate(favorites, start=1):
+            print(f"{i}- {category}")
+        while True:
+            choice = input("랭킹을 볼 카테고리를 선택해 주세요 (번호 입력): ")
+            if choice.isdigit() and 1 <= int(choice) <= len(favorites):
+                favorite_rank(favorites[int(choice) - 1])
+                break
+            else:
+                print("잘못된 선택입니다. 다시 시도해주세요.")
 
+def favorite_rank(category):
+    for category in favorites:
+        list=[entry['description'] for entry in ledger if entry['category'] == category] #같은 카테고리 내의 설명을 리스트로 저장
+        count_list = {} #같은 설명이 몇개 있는지 저장할 딕셔너리
+        for description in list: #같은 설명이 없으면 횟수리스트생성, 없으면 횟수 추가
+            if description not in count_list:
+                count_list[description] = 1
+            else:
+                count_list[description] += 1
+    rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True) #횟수를 기준으로 내림차순 정렬 
+    print(f"{category}의 인기 순위")  
+    for rank, (description, count) in enumerate(rank, 1):
+        print(f"{rank}. {description} ({count}회)")         
+        
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
@@ -1540,6 +1562,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "6":
+        show_favorites()
     else:
         
         print("올바른 기능을 입력해 주세요.")
