@@ -1586,18 +1586,23 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
-def calculate_present_value(future_value, inflation_rate, years):
-    """
-    목표 저축액의 현재 가치를 계산하는 함수
-    :param future_value: 목표 저축액 (미래 가치)
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    :param years: 목표 달성까지 남은 기간 (년 단위)
-    :return: 현재 가치
-    """
-    present_value = future_value / ((1 + inflation_rate / 100) ** years)
-    return present_value
 
+def input_expense_and_score():
+    # 지출 정보 입력
+    expense = input("지출 내용을 입력하세요: ")
 
+    # 지출 점수 입력
+    while True:
+        try:
+            score = int(input("지출의 점수를 입력하세요 (1~10): "))
+            if 1 <= score <= 10:
+                break  # 유효한 범위 내이므로 루프 종료
+            else:
+                print("점수는 1부터 10 사이의 숫자여야 합니다.")
+        except ValueError:
+            print("올바른 숫자를 입력해주세요.")
+
+    print(f"입력하신 지출 내용은 '{expense}'이고, 점수는 {score}입니다.")
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
