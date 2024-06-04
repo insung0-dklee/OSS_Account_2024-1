@@ -289,6 +289,29 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+def split_expense():
+    """
+    금액을 입력받고 나눌 사람의 수를 입력받아 각 사람당 부담할 금액을 계산하는 함수
+    """
+    amount = input("총 금액을 입력하세요: ")
+    # 금액 형식이 유효한지 검사
+    if not validate_amount(amount):
+        return
+    amount = float(amount)
+
+    people = input("나눌 사람의 수를 입력하세요: ")
+    try:
+        people = int(people)
+        if people <= 0:
+            print("사람 수는 1명 이상이어야 합니다.")
+            return
+    except ValueError:
+        print("사람 수는 정수로 입력하세요.")
+        return
+
+    split_amount = amount / people
+    print(f"각 사람당 부담할 금액: {split_amount:.2f}원")
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
@@ -554,6 +577,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 정산 기능
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1556,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        split_expense()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
