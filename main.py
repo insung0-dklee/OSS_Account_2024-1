@@ -69,7 +69,11 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             return #로그인 기능으로 다시 돌려줌
     while True:
         pw = input("password 입력: ")  # 회원가입 시의 pw 입력
-
+        
+        if len(pw)<8:
+            print("비밀번호는 최소 8자 이상이어야 합니다.")
+            continue
+    
         # 비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능 추가
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
             print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
