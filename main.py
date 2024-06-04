@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+from collections import defaultdict
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1572,3 +1573,33 @@ class BudgetBook:
             print(f"{self.user.name}님이 {other_user.name}님의 가계부에 지출을 추가하였습니다.")
         else:
             print(f"{other_user.name}님과 가계부를 공유하고 있지 않습니다.")
+            
+def find_highest_expense_day():
+    """
+    소비가 가장 많았던 날을 찾아 경고 메시지를 출력하는 함수
+    
+    amount : 각 지출내역의 금액
+    expenses = 여러 지출 내역을 포함하는 리스트
+    
+    """
+    expenses = load_expenses() 
+
+    if not expenses:
+        return "지출 내역이 없습니다."
+
+    # 날짜별 지출 합계를 저장할 딕셔너리
+    expense_by_date = defaultdict(float)
+
+    # 지출 내역을 날짜별로 합산
+    for expense in expenses:
+        date = expense.get('date')
+        amount = expense.get('amount', 0) #amount의 키가 없는 경우 0을 기본값으로 사용
+        expense_by_date[date] += amount
+
+    highest_expense_day = max(expense_by_date, key=expense_by_date.get)
+    highest_expense_amount = expense_by_date[highest_expense_day]
+
+    warning_message = (
+        f"경고: {highest_expense_day}에 {highest_expense_amount:.2f}원의 소비가 있었습니다."
+    )
+    return warning_message
