@@ -497,6 +497,35 @@ def memo():
 
 
 
+# 정기 지출 목록
+recurring_expenses = []
+
+# 정기 지출 추가 함수
+def add_recurring_expense():
+    name = input("정기 지출 이름: ")
+    amount = float(input("정기 지출 금액: "))
+    frequency = input("지출 빈도 (예: 매월, 매주 등): ")
+    date = input("다음 지출 날짜 (YYYY-MM-DD): ")
+
+    expense = {
+        "name": name,
+        "amount": amount,
+        "frequency": frequency,
+        "next_date": date
+    }
+    recurring_expenses.append(expense)
+    print("정기 지출이 추가되었습니다.")
+
+# 정기 지출 확인 함수
+def view_recurring_expenses():
+    if not recurring_expenses:
+        print("등록된 정기 지출이 없습니다.")
+    else:
+        for expense in recurring_expenses:
+            print(expense)
+
+
+
 def guide_link():
     webbrowser.open("https://help.3o3.co.kr/hc/ko/articles/15516331018521")
 
@@ -565,6 +594,8 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 지출 항목 검색 
+    7: 정기 지출 추가
+    8: 정기 지출 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1545,6 +1576,10 @@ while not b_is_exit:
         analyze_categories()
     elif func == '6':
         search_entries()
+    elif func == "7":
+        add_recurring_expense()
+    elif func == "8":
+        view_recurring_expenses()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
