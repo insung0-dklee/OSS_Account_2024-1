@@ -321,6 +321,7 @@ def export_account(account):
     parameters -
     account : 내보낼 가계부 객체
     """
+    if(account == 0): return 0 #가계부가 없는 경우 탈출
     filename = f"{account.name}_export.json"
     account_data = {
         'name': account.name,
@@ -329,13 +330,15 @@ def export_account(account):
     }
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(account_data, file, ensure_ascii=False, indent=4)
-    print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.")
+    #print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.") - 출력 되면 안됨
 
-def import_account():
+def import_account(acc_name):#acc_name 매개변수 추가 - 이름을 입력하면 해당하는 가계부 찾아 출력 위함
     """
     JSON 파일로부터 가계부 데이터를 가져와 가계부 리스트에 추가하기.
     """
-    filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ")
+    if (acc_name == "" or acc_name == 0): return []
+    #filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ") - 변경
+    filename = f"{acc_name}_export.json" #매개변수 값으로 가계부를 직접 찾도록 변경
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             account_data = json.load(file)
@@ -345,10 +348,9 @@ def import_account():
         new_account.spend_total = account_data['history'][2]
         new_account.spend_list = account_data['history'][3]
         Account_list.append(new_account)
-        print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
+        #print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.") - 인터페이스 구현시 미필요
     except Exception as e:
         print(f"파일을 가져오는 중 오류가 발생했습니다: {e}")
-
 """
 여기까지 입니다.
 """
