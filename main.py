@@ -1353,6 +1353,32 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
     else:
         print("ID가 존재하지 않습니다.") #ID 존재 X
 
+"""
+part_time_job_cal : 알바 급여계산기
+@Parm
+    None
+@return
+    None
+"""
+def part_time_job_cal():
+    hourly_wage = int(input("시급을 입력하시오 : "))
+    day_working_hours = int(input("일일 근무시간을 입력하시오 (하루에 몇 시간 일하는 지) : "))
+    week_working_num = int(input("일주 근무일수를 입력하시오 (일주일에 몇 번 일하는 지) : "))
+    month_working_hours = int(input("한 달동안 근무한 시간을 입력하시오 : "))
+    month_extended_hours = int(input("월 연장 근무 시간을 입력하시오 : "))
+    week_working_hours = day_working_hours * week_working_num # 주당 몇 시간 일했는 지
+    if (week_working_hours >= 15) : #주휴수당 계산 (일주일 기준)
+        holiday_pay = (week_working_hours / 40) * 8 * hourly_wage
+    else :
+        holiday_pay = 0
+    if (month_extended_hours > 0) : #한 달 연장근로 수당
+        extended_wage = month_extended_hours * hourly_wage * 0.5
+    else :
+        extended_wage = 0
+    month_wage = (hourly_wage * month_working_hours) + holiday_pay*4 + extended_wage #한 달 급여 계산
+    print("예상되는 아르바이트 급여는 ", month_wage, "입니다.")
+    print("위 금액은 연장근로 수당과 주휴수당을 적용한 금액입니다.(세금, 수습 미적용)")
+
 YU_Account() #프로그램 시작 화면
 
 version = "1.0.0"  # 프로그램 버전
