@@ -1498,12 +1498,13 @@ def financial_goal_loop(user):
 user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
 user = "Kim"# 임의의 user 값 추가 - 이후 삭제
 
-def save_user_acc(user):
+def save_user_acc(user): #user 이름과 user에 해당하는 계좌 이름의 파일 을 반환
     x = []
     
-    for i in Account_list:
-        x.append(i.name)
-        x.append("/") #계좌를 쉽게 구분하기 위해 '/' 추가 - 이후 read_user_acc에서 사용 편하게 하기 위함
+    if Account_list != []:
+        for i in Account_list:
+            x.append(i.name)
+            x.append("/") #계좌를 쉽게 구분하기 위해 '/' 추가 - 이후 read_user_acc에서 사용 편하게 하기 위함
         
     user_acc_data = {f"{user}" : x} #key 값을 지정할 때 user_acc_data[user] = x - 사용 불가능함(리스트 객체)
     
@@ -1512,7 +1513,6 @@ def save_user_acc(user):
     
 def read_user_acc():
     with open("user_accdata.txt",'r',encoding='UTF-8') as f:
-        user_accinfo = []#파일 정보 저장
     #한줄씩 읽어 온 후 리스트에 저장
         while True:
             line = f.readline()
@@ -1523,17 +1523,12 @@ def read_user_acc():
                 line = line.replace('[','')
                 line = line.replace(']','')
                 line = line.split(" : ")
-            #파일에서 딕셔너리로 복구 시켜주는 코드
+            #파일에서 값을 복구 시켜주는 코드
         
-                user_accinfo.append(line)
-                user_name = str(line[0])
                 user_acc = line[1]
-                user_acc = user_acc[:-2] #마지막의 ' /' 제거
-                
-                user_accinfo = {f"{user_name}" : user_acc.split(" / ")} 
-                break
-            
-    return user_accinfo #이후 유저 어카운트 호출을 위한 return
+                user_acc_list = user_acc[:-2] #마지막의 ' /' 제거
+                return user_acc_list #이후 유저 어카운트 호출을 위한 return - list 반환
+        return 0 #계좌에 값이 없으면 0 반환
 
 ###########################################################
 
