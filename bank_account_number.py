@@ -1,3 +1,4 @@
+import random
 class Account:
     def __init__(self, name, account_number):
         self.name = name
@@ -47,6 +48,13 @@ class AccountRegistry:
         for name, account in self.accounts.items():
             print(f"{name} - {account.account_number}")
 
+def generate_random_name():
+    first_names = ['김', '이', '박', '최', '정']
+    last_names = ['철수', '영희', '민수', '수지', '지훈']
+    return random.choice(first_names) + random.choice(last_names)
+
+
+
 def main():
     registry = AccountRegistry()
 
@@ -61,9 +69,16 @@ def main():
         choice = input("원하는 작업을 선택하세요: ")
 
         if choice == '1':
-            name = input("저장하고 싶은 계좌주의 이름을 입력하세요: ")
+            use_random_name = input("랜덤 이름을 사용하시겠습니까? (예/아니오): ")
+            if use_random_name.lower() == '예':
+                name = generate_random_name()
+                print(f"추천된 이름: {name}")
+            else:
+                name = input("저장하고 싶은 계좌주의 이름을 입력하세요: ")
+
             account_number = input(f"{name}의 계좌번호를 입력하세요: ")
             registry.add_account(name, account_number)
+
         elif choice == '2':
             search_name = input("찾고 싶은 계좌주의 이름을 입력하세요: ")
             account = registry.find_account(search_name)
@@ -71,14 +86,18 @@ def main():
                 print(f"{account.name}의 계좌번호: {account.account_number}")
             else:
                 print("해당하는 계좌를 찾을 수 없습니다.")
+
         elif choice == '3':
             registry.list_accounts()
+
         elif choice == '4':
             name = input("수정할 계좌주의 이름을 입력하세요: ")
             registry.edit_account(name)
+
         elif choice == '5':
             name = input("삭제할 계좌주의 이름을 입력하세요: ")
             registry.delete_account(name)
+
         elif choice == '6':
             print("프로그램을 종료합니다.")
             break
