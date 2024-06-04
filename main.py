@@ -8,7 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
-import portfolio_management
+import points_system  # 포인트 시스템 추가
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1533,8 +1533,6 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":  # 새로운 기능을 위한 메뉴 추가
-        portfolio_management.portfolio_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1543,6 +1541,14 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "earn_points":
+        amount = float(input("포인트를 적립할 금액(원): "))
+        points_system.earn_points(user.name, amount)
+    elif func == "use_points":
+        points = float(input("사용할 포인트: "))
+        points_system.use_points(user.name, points)
+    elif func == "check_points":
+        points_system.check_points(user.name)
     else:
         
         print("올바른 기능을 입력해 주세요.")
