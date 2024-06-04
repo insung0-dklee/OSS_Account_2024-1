@@ -1614,6 +1614,21 @@ def print_fact_about_number():
     print(fact_about_numbers(number))
 
 
+# 랜덤으로 쇼핑 광고 사이트 중 한 곳을 오픈
+def open_random_shopping_site():
+    shopping_sites = [
+        "https://www.coupang.com/",
+        "https://www.gmarket.co.kr/",
+        "https://www.11st.co.kr/",
+        "https://www.auction.co.kr/",
+        "https://www.tmon.co.kr/",
+        "https://www.wemakeprice.com/"
+    ]
+    
+    selected_site = random.choice(shopping_sites)
+    webbrowser.open(selected_site)
+
+
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
@@ -1640,6 +1655,7 @@ while not b_is_exit:
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
         print("프로그램을 종료합니다.")
+        open_random_shopping_site()
         b_is_exit = True
     elif func == "memo":
         add_memo()
