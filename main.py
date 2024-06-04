@@ -585,6 +585,7 @@ def print_help():
     5: 지출 카테고리 분석
     6: 세금 계산 프로그램 실행
     7: 더치페이 프로그램 실행
+    8: 일주일 예산 챌린지 프로그램 실행
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1353,7 +1354,74 @@ def calculate_payment():
         except ValueError:
             print("숫자를 입력하세요.")
 
+"""
+일주일 예산 챌린지 프로그램
+단, 양의 정수만 입력 가능하다.
+get_amount(prompt) : 금액을 입력받아 정수로 반환(음수/문자등은 유효하지 않다고 문구 출력 및 재입력)
+daily_check(day, expected_amount) : 요일들의 사용 금액을 입력받아 각 날의 예산과 비교하여 결과 출력
+day : 요일
+expected_amount : 해당 요일의 에산(사용 예정 금액)
+budget_challenge() : 일주일 예산 챌린지 결과 출력
+"""
 
+
+def get_amount(prompt):
+    while True:
+        try:
+            amount = int(input(prompt))  # int로 변경하여 소수점 입력 금지
+            if amount < 0:
+                print("금액은 음수일 수 없습니다. 다시 입력해주세요.")
+                continue
+            return amount
+        except ValueError:
+            print("양의 정수를 입력하세요.")
+
+def daily_check(day, expected_amount):
+    actual_amount = get_amount(f"{day}에 사용한 금액 : ")
+    if actual_amount < expected_amount:
+        print(f"{expected_amount - actual_amount}원 적게 썼군요. 잘했습니다!")
+    elif actual_amount > expected_amount:
+        print(f"{actual_amount - expected_amount}원 많이 썼군요. 소비를 줄일 필요가 있습니다.")
+    else:
+        print("예산만큼 썼어요.")
+    return actual_amount
+
+def budget_challenge():
+    days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    expected_amounts = []
+    actual_amounts = []
+
+    print("각 요일의 사용 예정 금액을 입력하세요.(소수점 입력 불가)")
+    for day in days:
+        expected_amount = get_amount(f"{day} 사용 예정 금액: ")
+        expected_amounts.append(expected_amount)
+
+    emergency_fund = get_amount("비상금 : ")
+
+    for day, expected_amount in zip(days, expected_amounts):
+        actual_amount = daily_check(day, expected_amount)
+        actual_amounts.append(actual_amount)
+
+    total_expected = sum(expected_amounts) + emergency_fund
+    total_actual = sum(actual_amounts)
+
+    print("\n------- 일주일 예산 챌린지 결과 -------")
+    for day, expected, actual in zip(days, expected_amounts, actual_amounts):
+        difference = actual - expected
+        if difference > 0:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {difference}원 초과")
+        elif difference < 0:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {-difference}원 절약")
+        else:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, 예산에 맞춰 사용")
+
+    print("\n--------------- 총결과 ---------------")
+    if total_actual < total_expected:
+        print(f"{total_expected - total_actual}원 덜 썼습니다. 예산 챌린지 성공!")
+    elif total_actual > total_expected:
+        print(f"{total_actual - total_expected}원 더 썼습니다. 소비를 줄이세요!")
+    else:
+        print("예산만큼 사용했습니다. 예산 챌린지 성공!")
 
 
 
@@ -1400,6 +1468,8 @@ while not b_is_exit:
         tax_program()
     elif func == "7":
         calculate_payment()
+    elif func == "8":
+        budget_challenge()
     elif func == "?":
         print_help()
     elif func == "exit":
