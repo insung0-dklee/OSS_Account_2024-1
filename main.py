@@ -8,6 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
+import random
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -373,6 +374,21 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
+
+"""
+lotto_num : 입력한 세트만큼 (6자리 1세트) Lotto 번호를 추천해주는 기능
+@Parm
+    None
+@Return
+    None
+"""
+def lotto_num():
+    range_num = int(input("Lotto 번호 추천 세트 입력:"))#원하는 세트 입력
+    print("<<추천 번호>>")
+    for s in range(range_num):
+        random_numbers = random.sample(range(1, 46), 6) #중복되지 않는 6자리 lotto번호 1세트 생성
+        random_numbers.sort() #오름차순 정렬
+        print(random_numbers) #lotto 번호 세트 출력
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -1532,6 +1548,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "lotto":
+        lotto_num()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
