@@ -16,12 +16,14 @@ def user_reg():  # 회원가입
     while True:
         pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+        # 비밀번호에 특수 문자가 포함되었는지 확인
+        if not re.search(r"[@#$%^&*(),.?\":{}|<>]", pw):
             print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
+
+        confirm_pw = input("비밀번호 확인 입력: ")  # 비밀번호 확인 입력 받기
+        if pw!= confirm_pw:
+            print("입력하신 비밀번호가 일치하지 않습니다. 다시 입력해주세요.")
             continue
 
         h = hashlib.sha256()
@@ -54,14 +56,14 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
         
         # 전화번호 형식 체크
-        if len(phone) != 11 or not phone.isdigit():
+        if len(phone)!= 11 or not phone.isdigit():
             print("전화번호의 형식이 옳지 않습니다. 전화번호의 전체를 11자리 숫자로 입력해주세요.")
             continue
 
         # 전화번호 중복 체크
         while phone in userphones:
             print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
-            print("(만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오)")
+            print("(만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우?를 입력하시오)")
             phone = input("전화번호 입력: ")
             if phone == '?':  # 전화번호로 등록된 id를 찾고 싶은 경우
                 find_id_by_phone()
@@ -70,6 +72,16 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         break
 
     pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+
+    # 비밀번호에 특수 문자가 포함되었는지 확인
+    if not re.search(r"[@#$%^&*(),.?\":{}|<>]", pw):
+        print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+        return  # 조건을 만족하지 않을 경우 함수 종료
+
+    confirm_pw = input("비밀번호 확인 입력: ")  # 비밀번호 확인 입력 받기
+    if pw!= confirm_pw:
+        print("입력하신 비밀번호가 일치하지 않습니다. 다시 입력해주세요.")
+        return  # 입력이 일치하지 않을 경우 함수 종료
 
     h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
     h.update(pw.encode())  # sha256으로 암호화
@@ -81,11 +93,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
 
     with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
-
-
-
-
+            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호
 """
 전화번호를 통해 아이디를 찾는 함수
 """
