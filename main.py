@@ -38,7 +38,7 @@ def user_reg():  # 회원가입
     with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
         for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
-    print("회원가입이 완료되었습니다!")
+            print("회원가입이 완료되었습니다!")
         
 
 class User:    # 사용자 정보 저장 (이름)
@@ -67,6 +67,13 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             find_id_by_phone()
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
+        
+    while id in userdata2:
+        print("이미 등록된 아이디입니다. 아이디를 입력해주세요.")
+        print("로그인 기능으로 다시 돌아갑니다.")
+        return #로그인 기능으로 다시 돌려줌
+        
+
     while True:
         pw = input("password 입력: ")  # 회원가입 시의 pw 입력
         
