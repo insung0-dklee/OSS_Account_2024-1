@@ -1,5 +1,18 @@
 from datetime import datetime, timedelta
+"""
+__init__ 메서드:
+self.events 리스트를 초기화하여 기념일을 저장합니다.
 
+add_event 메서드:
+name (기념일 이름)과 date (기념일 날짜)를 입력받아 새로운 기념일을 추가합니다.
+기념일을 딕셔너리 형태로 self.events 리스트에 저장합니다.
+기념일이 추가되었음을 알리는 메시지를 출력합니다.
+
+get_upcoming_events 메서드:
+기본적으로 30일 이내의 다가오는 기념일을 조회합니다.
+days 파라미터로 조회 기간을 조정할 수 있습니다.
+현재 날짜부터 지정된 기간 내의 기념일을 필터링하여 반환합니다.
+"""
 class EventManager:
     def __init__(self):
         self.events = []  # 기념일을 저장할 리스트

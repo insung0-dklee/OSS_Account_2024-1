@@ -19,6 +19,12 @@ def set_daily_limit():
         print("유효한 금액을 입력하세요.")
 
 # daily_limit.json 파일에서 일일 지출 한도를 가져오는 함수
+"""
+파일 존재 확인: os.path.exists('daily_limit.json')로 파일의 존재를 확인합니다.
+파일 읽기: 파일이 존재하면 open('daily_limit.json', 'r')로 파일을 읽기 모드로 열고, json.load(file)로 JSON 데이터를 파싱합니다.
+한도 값 추출: 파싱된 데이터에서 limit 키의 값을 data.get("limit", None)로 가져옵니다. limit 키가 없으면 기본값으로 None을 반환합니다.
+파일이 없을 때: 파일이 존재하지 않으면 None을 반환합니다.
+"""
 def get_daily_limit():
     if os.path.exists('daily_limit.json'):
         with open('daily_limit.json', 'r') as file:
