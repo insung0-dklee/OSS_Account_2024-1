@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import tkinter as tk
+from tkinter import messagebox
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -575,43 +577,102 @@ def reset_data():
         os.remove('login.txt')
     print("모든 데이터가 초기화되었습니다.")
 
-def get_valid_amount_input(): 
+def get_valid_amount_input(amount_entry): 
     """
     사용자로부터 유효한 금액을 입력받는 함수.
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
-    while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
-        else:
-            print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+    amount = amount_entry.get() # 사용자로부터 금액 입력 요청
+    if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
+        return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
+    else:
+        print("<금액 입력 error>숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+        return -1 #flag -1
+
+"""
+add_entry_window : entry를 사용하여 값을 입력받고 기존 함수 (수입/지출 항목 추가 함수) add_entry()에 값을 전달
+@Param
+    None
+@Return
+    None
+"""
+def add_entry_window():
+    add_entry_ = tk.Tk() #add_entry_window 생성
+    add_entry_.title("수입/지출 항목 추가")
+
+    #날짜 입력받는 entry 생성
+    tk.Label(add_entry_, text="날짜 (YYYY-MM-DD):").grid(row=0, column=0, padx=10, pady=10)
+    global date_entry 
+    date_entry = tk.Entry(add_entry_)
+    date_entry.grid(row=0, column=1, padx=10, pady=10)
+    
+    #카테고리 입력받는 entry 생성
+    tk.Label(add_entry_, text="카테고리:").grid(row=1, column=0, padx=10, pady=10)
+    global category_entry
+    category_entry = tk.Entry(add_entry_)
+    category_entry.grid(row=1, column=1, padx=10, pady=10)
+
+    #description 입력받는 entry 생성
+    tk.Label(add_entry_, text="설명:").grid(row=2, column=0, padx=10, pady=10)
+    global description_entry
+    description_entry = tk.Entry(add_entry_)
+    description_entry.grid(row=2, column=1, padx=10, pady=10)
+
+    #score 입력받는 entry 생성
+    tk.Label(add_entry_, text="오늘의 평가:").grid(row=3, column=0, padx=10, pady=10)
+    global score_entry
+    score_entry = tk.Entry(add_entry_)
+    score_entry.grid(row=3, column=1, padx=10, pady=10)
+
+    #금액 입력받는 entry 생성
+    tk.Label(add_entry_, text="금액:").grid(row=4, column=0, padx=10, pady=10)
+    global amount_entry
+    amount_entry = tk.Entry(add_entry_)
+    amount_entry.grid(row=4, column=1, padx=10, pady=10)
+
+    #입력 버튼 ->add_entry_button_click()에 변수 전달됨
+    add_entry_button = tk.Button(add_entry_, text="입력", command=lambda: add_entry_button_click(add_entry_,date_entry,category_entry,description_entry,score_entry,amount_entry))
+    add_entry_button.grid(row=5, columnspan=2, pady=10)
+
+    add_entry_.mainloop()
+
+# add_entry_window()에서 입력된 값을 add_entry()에 전달
+def add_entry_button_click(window,date_entry,category_entry,description_entry,score_entry,amount_entry):
+    add_entry(window,date_entry,category_entry,description_entry,score_entry,amount_entry)
 
 # 수입/지출 항목 추가 함수
-def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
-    score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
-    entry = {
-        "date": date,
-        "category": category,
-        "description": description,
-        "amount": amount,
-        "score": score  # 평가 점수 추가
-    }
-    ledger.append(entry)
-    print("항목이 추가되었습니다.")
+def add_entry(window,date_entry,category_entry,description_entry,score_entry,amount_entry):
+    # 모든 값을 entry에서 값을읽어오도록 수정함
+    date = date_entry.get()
+    category = category_entry.get()
+    description = description_entry.get()
+    score = day_evaluation(score_entry)
+    amount = get_valid_amount_input(amount_entry)  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
 
-    category_count = sum(1 for e in ledger if e["category"] == category)
+    #함수를 통해 return된 값이 -1인 경우 잘못된 입력임을 알리고 window 창 종료
+    if ((score == -1)or(amount == -1)):
+        messagebox.showerror("오류","잘못된 입력값입니다.")
+        window.destroy()
+    else:
+        entry = {
+            "date": date,
+            "category": category,
+            "description": description,
+            "amount": amount,
+            "score": score  # 평가 점수 추가
+        }
+        ledger.append(entry)
+        print("항목이 추가되었습니다.")
+        window.destroy()
 
-    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
-        response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
-        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
-            add_favorite_category(category)
-        else:
-            print("카테고리에 추가되지 않았습니다.")
+        category_count = sum(1 for e in ledger if e["category"] == category)
+
+        if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
+            response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
+            if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
+                add_favorite_category(category)
+            else:
+                print("카테고리에 추가되지 않았습니다.")
 
 
 favorites = []
@@ -638,20 +699,19 @@ def view_entries():
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
 
-
-def day_evaluation():
-    # 사용자로부터 그날의 평가를 입력 받음
-    while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
-        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
-        try:
-            evaluation = float(evaluation)
-            if 0 <= evaluation <= 10:
-                print(f"오늘의 평가는 {evaluation}점입니다.")
-                return evaluation
-            else:
-                print("평가는 0에서 10 사이의 숫자여야 합니다.")
-        except ValueError:
-            print("올바른 숫자를 입력하세요.")
+def day_evaluation(score_entry):
+    evaluation = score_entry.get() #entry에서 값을 읽음
+    try:
+        evaluation = float(evaluation)
+        if 0 <= evaluation <= 10:
+            messagebox.showinfo("오늘의 평가!",f"오늘의 평가는 {evaluation}점입니다.")
+            return evaluation
+        else:
+            print("<평가 점수 입력 error>평가는 0에서 10 사이의 숫자여야 합니다.")
+            return -1 #falg -1
+    except ValueError:
+        print("<평가 점수 입력 error>올바른 숫자를 입력하세요.")
+        return -1 #falg -1
 
 def calculate_average_score(scores):
     if scores:
@@ -1523,7 +1583,7 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        add_entry()
+        add_entry_window()
     elif func == "2":
         view_entries()
     elif func == "3":
