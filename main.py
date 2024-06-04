@@ -1586,18 +1586,26 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
-def calculate_present_value(future_value, inflation_rate, years):
+def calculate_monthly_payment():
     """
-    목표 저축액의 현재 가치를 계산하는 함수
-    :param future_value: 목표 저축액 (미래 가치)
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    :param years: 목표 달성까지 남은 기간 (년 단위)
-    :return: 현재 가치
+    대출금과 이자율을 입력받아 월별 상환 금액을 계산하는 함수.
     """
-    present_value = future_value / ((1 + inflation_rate / 100) ** years)
-    return present_value
+    loan_amount = float(input("대출금을 입력하세요: "))
+    annual_interest_rate = float(input("연 이자율을 입력하세요 (예: 5 for 5%): "))
+    loan_term_years = int(input("대출 기간을 입력하세요 (년 단위): "))
 
+    # 월 이자율 계산
+    monthly_interest_rate = annual_interest_rate / 100 / 12
+    # 총 상환 개월 수
+    number_of_payments = loan_term_years * 12
 
+    # 월 상환금 계산 (원리금 균등 상환 방식)
+    if monthly_interest_rate > 0:
+        monthly_payment = loan_amount * monthly_interest_rate / (1 - (1 + monthly_interest_rate) ** -number_of_payments)
+    else:
+        monthly_payment = loan_amount / number_of_payments
+
+    print(f"매월 상환 금액은 {monthly_payment:.2f} 원입니다.")
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
