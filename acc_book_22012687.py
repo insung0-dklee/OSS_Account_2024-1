@@ -5,6 +5,7 @@
         2. 내역 수정:     가계부의 수입/지출 내역을 수정
         3. 내역 삭제:     가계부의 수입/지출 내역을 삭제
         4. 내역 조회:     가계부의 수입/지출 내역을 조회
+    4-(1). 조회 형식:     사용자로부터 입력받은 조회 형식을 반환
         5. 날짜 입력:     사용자로부터 입력받은 날짜를 반환
         6. 요일 입력:     사용자로부터 입력받은 요일을 반환
         7. 금액 입력:     사용자로부터 입력받은 금액을 반환
@@ -19,33 +20,49 @@
 
 class ACC_BOOK:
     def __init__(self):
-        self.date = []
-        self.day_of_week = []
-        self.expense = []
-        self.category = []        
+        self.dates = {}
 
     # 1. 내역 추가 기능
     def add_statement(self):
-        result, date = self.date_err_check()
-        if result == True:
-            self.date.append(date)
-        
-        result, day_of_week = self.DoW_err_check()
-        if result == True:
-            self.day_of_week.append(day_of_week)
-        
-        result, expense = self.exp_err_check()
-        if result == True:
-            self.expense.append(expense)
-
-        print("\n작성 형식: 식비, 카페, 쇼핑, 이체, 교통 등")
-        category = input("카테고리: ")
-        self.category.append(category)
+        date = self.date_err_check()
+        self.dates[date] = [self.DoW_err_check(), self.exp_err_check(), self.ctgry_err_check()]
         print("\n가계부에 내역서가 추가되었습니다.\n")
 
     # 2. 내역 수정 기능
     def edit_statement(self):
-        pass
+        date = self.date_err_check()
+
+        if date in self.dates:      
+            day_of_week = self.dates[date][0]
+            expense = self.dates[date][1]
+            category = self.dates[date][2]     
+
+            print("\n======= 기존 정보 =======")
+            print(f"날짜: {date} ({day_of_week}) 금액: {expense} 카테고리: {category}")
+
+            while True:
+                print("\n======== 수정 항목 ========")
+                print("[1] 요일 수정")    
+                print("[2] 금액 수정")    
+                print("[3] 카테고리 수정")
+                print("[0] 수정 종료")
+                print("==========================")
+                
+                try:
+                    sel_num = int(input("수정 항목 선택: "))
+                except Exception:
+                    print("\n 숫자만 입력해주세요.\n")
+                    continue
+
+                if sel_num == 0:
+                    print()
+                    break
+                elif sel_num == 1:
+                    self.dates[date] = [self.DoW_err_check(), expense, category]
+                elif sel_num == 2:
+                    self.dates[date] = [day_of_week, self.exp_err_check(), category]
+                elif sel_num == 3:
+                    self.dates[date] = [day_of_week, expense, self.ctgry_err_check()]
 
     # 3. 내역 삭제 기능
     def del_statement(self):
@@ -54,7 +71,7 @@ class ACC_BOOK:
     # 4. 내역 조회 기능
     def log_statement(self):
         pass
-    
+
     # 5. 날짜 입력 기능
     def date_err_check(self):
         while True:
@@ -97,7 +114,7 @@ class ACC_BOOK:
             except Exception:
                 print("\n\'번호\'의 입력 형식이 잘못되었습니다. 다시 입력해주세요.\n") 
                 continue
-            return True, date
+            return date
         
     # 6. 요일 입력 기능
     def DoW_err_check(self):
@@ -109,7 +126,6 @@ class ACC_BOOK:
                 return day_of_week
             else:
                 print("\n잘못된 입력입니다. 다시 입력해주세요.")
-
 
     # 7. 금액 입력 기능
     def exp_err_check(self):
@@ -141,7 +157,6 @@ class ACC_BOOK:
                 continue
             except Exception:
                 return category
-
 
 """ 
 @주요기능
@@ -207,7 +222,7 @@ def main():
             print("\n 숫자만 입력해주세요.\n")
 
         if sel_num == 0:
-            print("가계부 프로그램을 종료합니다.")
+            print("\n====== 가계부 프로그램을 종료합니다. ======")
             break
         elif sel_num == 1 or sel_num == 2:
             if sel_num == 1:
