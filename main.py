@@ -9,6 +9,18 @@ import webbrowser
 import re
 import Add_function
 
+def write_list(exlist, filename): #가계부 리스트 파일 쓰기
+    if not exlist:  #리스트가 비어있으면 함수 종료
+        print("리스트가 비어 있습니다. 파일을 생성하지 않습니다.")
+        return
+    
+    with open(filename, 'w') as file: #가계부 파일 쓰기
+        for item in exlist:
+            file.write(str(item) + '\n')
+
+def make_list_file(): #가계부 리스트를 Account_list.txt에 저장
+    write_list(ledger, "Account_list.txt")
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
@@ -1540,6 +1552,9 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "list":
+        make_list_file()
+        print("가계부 리스트 파일 생성")
     else:
         
         print("올바른 기능을 입력해 주세요.")
