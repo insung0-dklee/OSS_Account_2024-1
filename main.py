@@ -8,7 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
-import visualizer
+import portfolio_management
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -555,9 +555,6 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 지출 내역 시각화
-    7: 카테고리별 지출 시각화
-    8: 예산과 실제 지출 비교 시각화
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1536,16 +1533,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
-        start_date_str = input("시작 날짜를 입력하세요 (YYYY-MM-DD): ")
-        end_date_str = input("종료 날짜를 입력하세요 (YYYY-MM-DD): ")
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-        visualizer.visualize_expenses(start_date, end_date)
-    elif func == "7":
-        visualizer.visualize_income_expense()
-    elif func == "8":
-        visualizer.visualize_budget()
+    elif func == "6":  # 새로운 기능을 위한 메뉴 추가
+        portfolio_management.portfolio_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
