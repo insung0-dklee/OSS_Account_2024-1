@@ -1,84 +1,119 @@
-import hashlib #hashlib 사용
-import os
-import json
-from datetime import datetime, date
-import pickle
-import Account_book
-import random
-import webbrowser
-import re
-import Add_function
-import calendar
-import csv
-import challenge
-import time
-import simulation
-import visualizer
-import points_system  # 포인트 시스템 추가
-import portfolio_management
+import hashlib  # hashlib 모듈을 사용하여 해싱 기능 제공
+import os  # 운영 체제와 상호작용하기 위한 모듈
+import json  # JSON 형식의 데이터를 처리하기 위한 모듈
+from datetime import datetime, date  # 날짜 및 시간 관련 작업을 위한 모듈
+import pickle  # 파이썬 객체 직렬화 및 역직렬화를 위한 모듈
+import Account_book  # 가계부 기능을 위한 사용자 정의 모듈 
+import random  # 랜덤 값 생성 및 무작위 작업을 위한 모듈
+import webbrowser  # 웹 브라우저를 제어하기 위한 모듈
+import re  # 정규 표현식을 사용하여 문자열 작업을 위한 모듈
+import Add_function  # 추가 기능을 위한 사용자 정의 모듈 
+import calendar  # 달력 관련 작업을 위한 모듈
+import csv  # CSV 파일을 처리하기 위한 모듈
+import challenge  # 도전 과제 기능을 위한 사용자 정의 모듈 
+import time  # 시간 관련 작업을 위한 모듈
+import simulation  # 시뮬레이션 기능을 위한 사용자 정의 모듈 
+import visualizer  # 데이터 시각화 기능을 위한 사용자 정의 모듈 
+import points_system  # 포인트 시스템 기능을 위한 사용자 정의 모듈
+import portfolio_management  # 포트폴리오 관리 기능을 위한 사용자 정의 모듈
 
 
 # 약속을 담을 리스트
-appointments = []
-
 def add_appointment():
     """
     약속을 추가하는 함수.
+    사용자가 입력한 약속 이름, 시작 일자, 종료 일자, 예산을 바탕으로 약속 정보를 생성하고 약속 리스트에 추가합니다.
     """
-
+    # 약속 이름 입력 받기
     name = input("약속 이름: ")
+    
+    # 시작 일자 입력 받고, 문자열을 datetime 객체로 변환
     start_date = datetime.strptime(input("시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    
+    # 종료 일자 입력 받고, 문자열을 datetime 객체로 변환
     end_date = datetime.strptime(input("종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    
+    # 예산 입력 받고, 문자열을 float 형으로 변환
     budget = float(input("예산: "))
 
+    # 약속 정보를 딕셔너리 형태로 생성
     appointment = {
-        "name": name,
-        "start_date": start_date,
-        "end_date": end_date,
-        "budget": budget,
-        "expenses": []  # 약속 내에 사용한 지출을 확인하기 위한 리스트
+        "name": name,  # 약속 이름
+        "start_date": start_date,  # 시작 일자
+        "end_date": end_date,  # 종료 일자
+        "budget": budget,  # 예산
+        "expenses": []  # 약속 내에 사용한 지출을 확인하기 위한 리스트 초기화
     }
+    
+    # 약속 리스트에 약속 정보 추가
     appointments.append(appointment)
+    
+    # 약속 추가 완료 메시지 출력
     print(f"약속 '{name}'이(가) 추가되었습니다.")
 
 def add_expense():
     """
-    약속 중 지출을 설정하기 위한 함수
+    약속 중 지출을 설정하기 위한 함수.
+    사용자가 입력한 약속 이름에 해당하는 약속을 찾아, 그 약속 내에 지출 내역을 추가합니다.
     """
-
+    # 지출을 추가할 약속 이름 입력 받기
     name = input("약속 이름: ")
+    
+    # 모든 약속을 순회하면서 해당 이름의 약속을 찾기
     for appointment in appointments:
-        if appointment["name"] == name:
+        if appointment["name"] == name:  # 약속 이름이 일치하는 경우
+            # 지출 일자 입력 받고, 문자열을 datetime 객체로 변환
             date = datetime.strptime(input("지출 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+            
+            # 지출 설명 입력 받기
             description = input("지출 설명: ")
+            
+            # 지출 금액 입력 받고, 문자열을 float 형으로 변환
             amount = float(input("지출 금액: "))
 
+            # 지출 일자가 약속 기간 내에 있는지 확인
             if appointment["start_date"] <= date <= appointment["end_date"]:
+                # 지출 정보를 약속의 지출 리스트에 추가
                 appointment["expenses"].append({"date": date, "description": description, "amount": amount})
+                
+                # 현재까지의 총 지출 금액 계산
                 total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
+                
+                # 총 지출 금액이 예산을 초과하는지 확인
                 if total_expenses > appointment["budget"]:
+                    # 예산 초과 경고 메시지 출력
                     print(f"경고: 예산 초과! 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
                 else:
+                    # 지출 추가 완료 메시지 출력
                     print(f"지출이 추가되었습니다. 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
             else:
+                # 지출 일자가 약속 기간 내에 없을 경우 경고 메시지 출력
                 print("지출 일자가 약속 기간 내에 있지 않습니다.")
-            return
+            return  # 함수 종료, 더 이상의 약속 탐색 중단
+    # 약속 이름을 찾지 못한 경우 경고 메시지 출력
     print("해당 이름의 약속이 존재하지 않습니다.")
+
 
 def show_appointments():
     """
-    설정되어있는 약속들을 보여주는 함수
+    설정되어있는 약속들을 보여주는 함수.
+    각 약속의 이름, 시작 일자, 종료 일자, 예산, 그리고 지출 내역을 출력합니다.
     """
-    for appointment in appointments:
-        print(f"\n약속 이름: {appointment['name']}")
-        print(f"시작 일자: {appointment['start_date'].strftime('%Y-%m-%d')}")
-        print(f"종료 일자: {appointment['end_date'].strftime('%Y-%m-%d')}")
-        print(f"예산: {appointment['budget']}")
-        print("지출 내역:")
+    for appointment in appointments:  # 모든 약속을 순회하며 정보를 출력
+        print(f"\n약속 이름: {appointment['name']}")  # 약속 이름 출력
+        print(f"시작 일자: {appointment['start_date'].strftime('%Y-%m-%d')}")  # 시작 일자를 'YYYY-MM-DD' 형식으로 출력
+        print(f"종료 일자: {appointment['end_date'].strftime('%Y-%m-%d')}")  # 종료 일자를 'YYYY-MM-DD' 형식으로 출력
+        print(f"예산: {appointment['budget']}")  # 예산 출력
+        print("지출 내역:")  # 지출 내역 출력 시작
+
+        # 약속 내 총 지출 금액 계산
         total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
-        print(f"  * 약속 내 총 지출 : {total_expenses}")
+        print(f"  * 약속 내 총 지출: {total_expenses}")  # 약속 내 총 지출 금액 출력
+
+        # 각 지출 항목을 순회하며 지출 내역 출력
         for expense in appointment["expenses"]:
             print(f"  - 일자: {expense['date'].strftime('%Y-%m-%d')}, 설명: {expense['description']}, 금액: {expense['amount']}")
+            # 지출 일자, 설명, 금액을 출력 (지출 일자는 'YYYY-MM-DD' 형식으로 변환하여 출력)
 
 def appointment_management():
     while True:
@@ -101,25 +136,32 @@ def appointment_management():
             print("0. 메인 메뉴로 돌아가기")
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
-
 # 쿠폰 정보 저장
-coupons = {}
+coupons = {}  # 쿠폰 이름을 키로 하고 유효기간을 값으로 하는 딕셔너리
 
 # 쿠폰 추가 함수
 def add_coupon():
-    name = input("쿠폰 이름: ")
-    expiration_date = input("유효기간(YYYY-MM-DD): ")
-    coupons[name] = expiration_date
-    print("쿠폰이 추가되었습니다.")
+    """
+    새로운 쿠폰을 추가하는 함수.
+    사용자가 쿠폰 이름과 유효기간을 입력하면, 쿠폰 정보를 딕셔너리에 저장합니다.
+    """
+    name = input("쿠폰 이름: ")  # 쿠폰 이름 입력 받기
+    expiration_date = input("유효기간(YYYY-MM-DD): ")  # 유효기간 입력 받기
+    coupons[name] = expiration_date  # 입력 받은 쿠폰 이름과 유효기간을 딕셔너리에 저장
+    print("쿠폰이 추가되었습니다.")  # 쿠폰 추가 완료 메시지 출력
 
 # 쿠폰 정보 출력 함수
 def show_coupon_info():
-    if not coupons:
-        print("등록된 쿠폰이 없습니다.")
+    """
+    현재 보유한 쿠폰 정보를 출력하는 함수.
+    저장된 쿠폰이 없으면 해당 메시지를 출력하고, 있으면 각 쿠폰의 이름과 유효기간을 출력합니다.
+    """
+    if not coupons:  # 쿠폰 딕셔너리가 비어 있는지 확인
+        print("등록된 쿠폰이 없습니다.")  # 쿠폰이 없으면 메시지 출력
     else:
-        print("현재 보유한 쿠폰 정보:")
-        for name, expiration_date in coupons.items():
-            print(f"- {name}: 유효기간 {expiration_date}")
+        print("현재 보유한 쿠폰 정보:")  # 쿠폰이 있으면 메시지 출력
+        for name, expiration_date in coupons.items():  # 모든 쿠폰을 순회하며
+            print(f"- {name}: 유효기간 {expiration_date}")  # 각 쿠폰의 이름과 유효기간 출력
 
 class Deposit:
     def __init__(self, name, principal, rate, term):
@@ -135,26 +177,36 @@ class Deposit:
 
 # 예금 정보를 입력받아 저장하고 만기 이자를 계산하여 출력하는 함수
 def manage_deposits():
-    deposits = []
+    """
+    사용자가 입력한 예금 정보를 저장하고, 만기 이자를 계산하여 출력하는 함수.
+    사용자는 예금 상품 이름, 원금, 연이자율, 기간을 입력하고, 이를 바탕으로 만기 이자를 계산하여 출력합니다.
+    """
+    deposits = []  # 예금 정보를 저장할 리스트
 
-    while True:
+    while True:  # 무한 루프를 사용하여 여러 예금을 입력받음
         print("\n--- 예금 정보 입력 ---")
-        name = input("예금 상품 이름: ")
-        principal = float(input("원금 (원): "))
-        rate = float(input("연이자율 (%): "))
-        term = int(input("기간 (년): "))
+        
+        # 예금 정보 입력 받기
+        name = input("예금 상품 이름: ")  # 예금 상품 이름 입력
+        principal = float(input("원금 (원): "))  # 원금 입력 받아 실수형으로 변환
+        rate = float(input("연이자율 (%): "))  # 연이자율 입력 받아 실수형으로 변환
+        term = int(input("기간 (년): "))  # 기간 입력 받아 정수형으로 변환
 
+        # 예금 정보를 Deposit 객체로 생성하여 리스트에 추가
         deposit = Deposit(name, principal, rate, term)
         deposits.append(deposit)
 
+        # 다른 예금을 추가할지 묻기
         another = input("다른 예금을 추가하시겠습니까? (y를 누르시면 추가됩니다.): ")
-        if another.lower() != 'y':
+        if another.lower() != 'y':  # 'y'가 아니면 루프 종료
             break
 
     print("\n--- 예금 정보 및 만기 이자 ---")
-    for deposit in deposits:
-        interest = deposit.calculate_interest()
-        print(f"상품명: {deposit.name}, 만기까지의 이자액: {interest:.2f}원")
+    # 저장된 예금 정보와 만기 이자 출력
+    for deposit in deposits:  # 각 예금에 대해
+        interest = deposit.calculate_interest()  # 만기 이자 계산
+        print(f"상품명: {deposit.name}, 만기까지의 이자액: {interest:.2f}원")  # 예금 상품명과 이자액 출력
+
 
 
 """
@@ -169,62 +221,103 @@ budget_challenge() : 일주일 예산 챌린지 결과 출력
 
 
 def get_amount(prompt):
-    while True:
+    """
+    사용자로부터 양의 정수를 입력받는 함수.
+    입력받은 값이 양의 정수가 아닐 경우 반복해서 입력받습니다.
+
+    @param
+        prompt: 사용자에게 입력을 요청할 때 출력할 메시지
+    @return
+        amount: 양의 정수인 금액
+    """
+    while True:  # 무한 루프를 사용하여 유효한 입력을 받을 때까지 반복
         try:
-            amount = int(input(prompt))  # int로 변경하여 소수점 입력 금지
-            if amount < 0:
-                print("금액은 음수일 수 없습니다. 다시 입력해주세요.")
-                continue
-            return amount
-        except ValueError:
-            print("양의 정수를 입력하세요.")
+            amount = int(input(prompt))  # 사용자 입력을 정수로 변환, 소수점 입력 금지
+            if amount < 0:  # 금액이 음수일 경우
+                print("금액은 음수일 수 없습니다. 다시 입력해주세요.")  # 오류 메시지 출력
+                continue  # 루프의 처음으로 돌아가 다시 입력 받기
+            return amount  # 유효한 양의 정수를 입력받은 경우 반환
+        except ValueError:  # 입력이 정수가 아닌 경우 예외 처리
+            print("양의 정수를 입력하세요.")  # 오류 메시지 출력
+
 
 def daily_check(day, expected_amount):
+    """
+    특정 날의 실제 지출 금액을 입력받고, 예상 지출 금액과 비교하여 결과를 출력하는 함수.
+
+    @param
+        day: 지출 금액을 확인할 날 (문자열 형태)
+        expected_amount: 예상 지출 금액 (양의 정수)
+    @return
+        actual_amount: 실제 지출 금액 (양의 정수)
+    """
+    # 사용자가 입력한 실제 지출 금액을 받아오기
     actual_amount = get_amount(f"{day}에 사용한 금액 : ")
+    
+    # 실제 지출 금액이 예상 지출 금액보다 적은 경우
     if actual_amount < expected_amount:
-        print(f"{expected_amount - actual_amount}원 적게 썼군요. 잘했습니다!")
+        print(f"{expected_amount - actual_amount}원 적게 썼군요. 잘했습니다!")  # 절약 메시지 출력
+    
+    # 실제 지출 금액이 예상 지출 금액보다 많은 경우
     elif actual_amount > expected_amount:
-        print(f"{actual_amount - expected_amount}원 많이 썼군요. 소비를 줄일 필요가 있습니다.")
+        print(f"{actual_amount - expected_amount}원 많이 썼군요. 소비를 줄일 필요가 있습니다.")  # 초과 메시지 출력
+    
+    # 실제 지출 금액이 예상 지출 금액과 같은 경우
     else:
-        print("예산만큼 썼어요.")
+        print("예산만큼 썼어요.")  # 예산 맞춤 메시지 출력
+    
+    # 실제 지출 금액 반환
     return actual_amount
 
 def budget_challenge():
+    """
+    사용자가 일주일 동안의 예산을 설정하고, 실제 지출을 기록하여 비교하는 예산 챌린지 함수.
+    각 요일의 사용 예정 금액과 실제 사용 금액을 비교하여 결과를 출력합니다.
+    """
+    # 요일 목록 정의
     days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    
+    # 예상 지출 금액과 실제 지출 금액을 저장할 리스트 초기화
     expected_amounts = []
     actual_amounts = []
 
+    # 각 요일의 사용 예정 금액 입력 받기
     print("각 요일의 사용 예정 금액을 입력하세요.(소수점 입력 불가)")
     for day in days:
-        expected_amount = get_amount(f"{day} 사용 예정 금액: ")
-        expected_amounts.append(expected_amount)
+        expected_amount = get_amount(f"{day} 사용 예정 금액: ")  # 예상 금액 입력 받기
+        expected_amounts.append(expected_amount)  # 예상 금액 리스트에 추가
 
+    # 비상금 입력 받기
     emergency_fund = get_amount("비상금 : ")
 
+    # 각 요일의 실제 사용 금액 입력 받고 비교
     for day, expected_amount in zip(days, expected_amounts):
-        actual_amount = daily_check(day, expected_amount)
-        actual_amounts.append(actual_amount)
+        actual_amount = daily_check(day, expected_amount)  # 실제 사용 금액 입력 및 비교
+        actual_amounts.append(actual_amount)  # 실제 금액 리스트에 추가
 
-    total_expected = sum(expected_amounts) + emergency_fund
-    total_actual = sum(actual_amounts)
+    # 총 예상 금액과 실제 금액 계산
+    total_expected = sum(expected_amounts) + emergency_fund  # 예상 금액 합계 + 비상금
+    total_actual = sum(actual_amounts)  # 실제 사용 금액 합계
 
+    # 일주일 예산 챌린지 결과 출력
     print("\n------- 일주일 예산 챌린지 결과 -------")
     for day, expected, actual in zip(days, expected_amounts, actual_amounts):
-        difference = actual - expected
+        difference = actual - expected  # 실제 금액과 예상 금액의 차이 계산
         if difference > 0:
-            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {difference}원 초과")
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {difference}원 초과")  # 초과 금액 출력
         elif difference < 0:
-            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {-difference}원 절약")
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {-difference}원 절약")  # 절약 금액 출력
         else:
-            print(f"{day}: 예산 {expected}원, 사용 {actual}원, 예산에 맞춰 사용")
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, 예산에 맞춰 사용")  # 예산 맞춤 메시지 출력
 
+    # 총 결과 출력
     print("\n--------------- 총결과 ---------------")
     if total_actual < total_expected:
-        print(f"{total_expected - total_actual}원 덜 썼습니다. 예산 챌린지 성공!")
+        print(f"{total_expected - total_actual}원 덜 썼습니다. 예산 챌린지 성공!")  # 덜 쓴 금액 출력
     elif total_actual > total_expected:
-        print(f"{total_actual - total_expected}원 더 썼습니다. 소비를 줄이세요!")
+        print(f"{total_actual - total_expected}원 더 썼습니다. 소비를 줄이세요!")  # 초과 금액 출력
     else:
-        print("예산만큼 사용했습니다. 예산 챌린지 성공!")
+        print("예산만큼 사용했습니다. 예산 챌린지 성공!")  # 예산 맞춤 메시지 출력
 
 """
 atm 현금 인출 프로그램
@@ -233,68 +326,80 @@ input_day() : 요일 입력 받는 함수
 is_valid_day(day) :  유효한 요일인지 확인하는 함수
 """
 
-
 def atm_withdrawal():
+    """
+    ATM에서 현금을 인출하는 함수.
+    인출할 금액을 입력받고, 요일과 시간을 확인하여 인출 가능 여부를 판단한 후,
+    5만원권과 1만원권으로 인출 금액을 분배하여 출력합니다.
+    """
     while True:
         try:
+            # 인출할 금액을 만원 단위로 입력받기
             amount = int(input("인출할 금액을 입력하세요 (만원 단위): "))
-            if amount % 10000 != 0 or amount < 0:
+            if amount % 10000 != 0 or amount < 0:  # 금액이 만원 단위가 아니거나 음수인 경우
                 print("만원 단위의 양수로 입력해야 합니다. 다시 입력하세요.")
             else:
-                break
+                break  # 유효한 금액 입력 시 루프 종료
         except ValueError:
             print("숫자를 입력해야 합니다. 다시 입력하세요.")
 
-    valid_days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    valid_days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]  # 유효한 요일 목록
     while True:
+        # 요일을 입력받기
         day_of_week = input("오늘은 무슨 요일인가요? (월요일, 화요일, 수요일, 목요일, 금요일, 토요일, 일요일): ")
-        if day_of_week not in valid_days:
+        if day_of_week not in valid_days:  # 입력된 요일이 유효하지 않은 경우
             print("유효한 요일을 입력해야 합니다. 다시 입력하세요.")
         else:
-            break
+            break  # 유효한 요일 입력 시 루프 종료
 
+    # 월요일의 경우 오전 10시 이전에는 인출 불가
     if day_of_week == "월요일":
         try:
-            hour = int(input("현재 몇 시인가요? (0~23): "))
-            if hour < 10:
+            hour = int(input("현재 몇 시인가요? (0~23): "))  # 현재 시간을 입력받기
+            if hour < 10:  # 오전 10시 이전인 경우
                 print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
                 return
         except ValueError:
             print("숫자를 입력해야 합니다.")
             return
 
+    # 금요일의 경우 오후 4시 이후에는 인출 불가
     elif day_of_week == "금요일":
         try:
-            hour = int(input("현재 몇 시인가요? (0~23): "))
-            if hour >= 16:
+            hour = int(input("현재 몇 시인가요? (0~23): "))  # 현재 시간을 입력받기
+            if hour >= 16:  # 오후 4시 이후인 경우
                 print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
                 return
         except ValueError:
             print("숫자를 입력해야 합니다.")
             return
 
+    # 토요일과 일요일에는 인출 불가
     elif day_of_week in ["토요일", "일요일"]:
         print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
         return
 
     while True:
         try:
+            # 5만원권의 개수를 입력받기
             omanun_count = int(input("5만원권 몇 장을 인출하시겠습니까? "))
-            if omanun_count * 50000 > amount or omanun_count < 0:
+            if omanun_count * 50000 > amount or omanun_count < 0:  # 5만원권 금액이 인출 금액보다 크거나 음수인 경우
                 print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
             else:
-                break
+                break  # 유효한 개수 입력 시 루프 종료
         except ValueError:
             print("숫자를 입력해야 합니다. 다시 입력하세요.")
 
-    omanun_amount = omanun_count * 50000
-    manun_amount = amount - omanun_amount
-    manun_count = manun_amount // 10000
+    omanun_amount = omanun_count * 50000  # 5만원권 인출 금액 계산
+    manun_amount = amount - omanun_amount  # 1만원권 인출 금액 계산
+    manun_count = manun_amount // 10000  # 1만원권 개수 계산
 
+    # 인출 결과 출력
     print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
     print(f"총 인출 금액: {amount}원")
     print("이용해주셔서 감사합니다.")
 
+# community_file 변수 정의
 community_file = 'community.json'
 
 # 커뮤니티 메시지를 파일에 저장하는 함수
