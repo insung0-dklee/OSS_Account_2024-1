@@ -1414,9 +1414,9 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-	add_transaction_by_location()
+        add_transaction_by_location()
     elif func == "7":
-	get_transactions_by_location()
+        get_transactions_by_location()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x":
