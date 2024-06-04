@@ -270,6 +270,16 @@ def view_debt_payment_history():
         for date, amount in payment_history:
             print(f"날짜: {date}, 금액: {amount}")
 
+def search_entries():
+    keyword = input("검색할 키워드를 입력하세요: ")
+    results = [entry for entry in ledger if keyword in entry['category']]
+    if results:
+        for result in results:
+            print(result)
+    else:
+        print("검색 결과가 없습니다.")
+
+
 def debt_management():
     """
     빚 관리 기능 함수. 사용자 입력에 따라 빚 추가, 목록 보기, 상환, 상환 내역 조회 기능을 호출.
@@ -554,6 +564,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 지출 항목 검색 
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1543,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == '6':
+        search_entries()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
