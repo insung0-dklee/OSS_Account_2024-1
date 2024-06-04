@@ -1543,3 +1543,32 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
+"""
+    사용자가 저축하려는 금액을 입력하면 저축 금액에 추가합니다
+    저축 금액이 목표 금액을 초과하면 축하 메시지를 출력합니다.
+    amount : 저축 목표 금액 
+"""
+class BudgetBook:
+    def savings_challenge(self, amount): #저축 도전 기능 추가
+        self.savings += amount
+        if self.savings >= self.savings_goal:
+            print("축하합니다! 저축 목표를 달성하셨습니다!")
+
+    def share_budget_book(self, other_user): #가계부 공유 기능 추가
+        self.shared_users.append(other_user)
+        print(f"{self.user.name}님이 가계부를 {other_user.name}님과 공유하셨습니다.")
+
+    def view_shared_budget_book(self): 
+        for user in self.shared_users: #self.shared_users 리스트에 있는 각 사용자에 대해 반복
+            print(f"{user.name}님의 가계부:")
+            user.analyze_expenses() #사용자의 지출 분석
+            
+        #manage_shared_budget메소드 는 다른 사용자의 가계부에 지출을 추가하는 데 사용
+
+    def manage_shared_budget(self, other_user, category, amount): 
+        if other_user in self.shared_users:
+            other_user.track_expense(category, amount) #category와 amount를 매개변수로 받아 other_user의 가계부에 지출을 기록
+            print(f"{self.user.name}님이 {other_user.name}님의 가계부에 지출을 추가하였습니다.")
+        else:
+            print(f"{other_user.name}님과 가계부를 공유하고 있지 않습니다.")
