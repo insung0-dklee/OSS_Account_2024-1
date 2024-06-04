@@ -547,7 +547,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends': []}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
@@ -2119,6 +2119,12 @@ class FinancialGoal:
         days_left = (self.due_date - datetime.now()).days
         if remaining_amount <= 0:
             print(f"축하합니다! '{self.name}' 목표를 달성했습니다! \n 목표 금액: {self.target_amount}원\n현재 저축액: {self.saved_amount}원\n")
+            delete_choice = input("목표를 삭제하시겠습니까? (y/n): ")
+            if delete_choice.lower() == 'y':
+                user.goals.remove(self)
+                print("목표가 삭제되었습니다.")
+            else:
+                print("목표가 삭제되지 않았습니다.")
         else:
             print(f"목표: {self.name}\n목표 금액: {self.target_amount}원\n현재 저축액: {self.saved_amount}원\n남은 금액: {remaining_amount}원\n남은 기간: {days_left}일")
 
@@ -2134,6 +2140,12 @@ class User:
     def add_friend(self, friend_name):
         if friend_name not in self.friends:
             self.friends.append(friend_name)
+
+    def get_goal(self, index):
+        if 0 <= index < len(self.goals):
+            return self.goals[index]
+        else:
+            return None
 
 class Friend:
     def __init__(self, name):
