@@ -40,6 +40,9 @@ class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
         self.account_book = Account_book.AccountBook()
+        self.subscriptions = []  # 구독 서비스 목록
+
+
 
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
@@ -78,6 +81,35 @@ def evaluate_challenge(user, challenge):
     # 총 지출 금액이 목표 금액을 초과한 경우
     else:
         print(f"챌린지 실패. 목표 금액: {target_amount}, 실제 지출: {total_expenditure}")
+
+# 구독 서비스 저장 딕셔너리
+subscriptions = {}
+
+# 구독 서비스 추가 함수
+def add_subscription(user_id, name, amount, renewal_date):
+    # 사용자가 처음 구독 서비스를 추가하는 경우
+    if user_id not in subscriptions:
+        subscriptions[user_id] = []
+    # 구독 서비스 정보를 딕셔너리 형태로 저장
+    subscription = {
+        'name': name,  # 구독 서비스 이름
+        'amount': amount,  # 구독 서비스 비용
+        'renewal_date': renewal_date  # 구독 서비스 갱신 날짜
+    }
+    # 사용자의 구독 서비스 목록에 새로운 구독 서비스를 추가
+    subscriptions[user_id].append(subscription)
+    print(f"{name} 구독 서비스가 추가되었습니다. 비용: {amount}, 갱신 날짜: {renewal_date}")
+
+# 구독 서비스 목록 출력 함수
+def list_subscriptions(user_id):
+    # 사용자가 구독 서비스를 추가하지 않았거나 구독 서비스 목록이 비어 있는 경우
+    if user_id not in subscriptions or not subscriptions[user_id]:
+        print("구독 서비스가 없습니다.")
+    else:
+        # 사용자의 모든 구독 서비스 정보를 출력
+        for subscription in subscriptions[user_id]:
+            print(f"구독 서비스: {subscription['name']}, 비용: {subscription['amount']}, 갱신 날짜: {subscription['renewal_date']}")
+
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
