@@ -586,6 +586,7 @@ def print_help():
     6: 세금 계산 프로그램 실행
     7: 더치페이 프로그램 실행
     8: 일주일 예산 챌린지 프로그램 실행
+    9: atm을 통한 현금 인출
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1423,6 +1424,74 @@ def budget_challenge():
     else:
         print("예산만큼 사용했습니다. 예산 챌린지 성공!")
 
+"""
+atm 현금 인출 프로그램
+atm의 현금 인출 가능 시간과 원하는 만원권의 장수, 보유 금액에 따른 현금 인출 프로그램
+input_day() : 요일 입력 받는 함수
+is_valid_day(day) :  유효한 요일인지 확인하는 함수
+"""
+
+
+def atm_withdrawal():
+    while True:
+        try:
+            amount = int(input("인출할 금액을 입력하세요 (만원 단위): "))
+            if amount % 10000 != 0 or amount < 0:
+                print("만원 단위의 양수로 입력해야 합니다. 다시 입력하세요.")
+            else:
+                break
+        except ValueError:
+            print("숫자를 입력해야 합니다. 다시 입력하세요.")
+
+    valid_days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    while True:
+        day_of_week = input("오늘은 무슨 요일인가요? (월요일, 화요일, 수요일, 목요일, 금요일, 토요일, 일요일): ")
+        if day_of_week not in valid_days:
+            print("유효한 요일을 입력해야 합니다. 다시 입력하세요.")
+        else:
+            break
+
+    if day_of_week == "월요일":
+        try:
+            hour = int(input("현재 몇 시인가요? (0~23): "))
+            if hour < 10:
+                print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+                return
+        except ValueError:
+            print("숫자를 입력해야 합니다.")
+            return
+
+    elif day_of_week == "금요일":
+        try:
+            hour = int(input("현재 몇 시인가요? (0~23): "))
+            if hour >= 16:
+                print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+                return
+        except ValueError:
+            print("숫자를 입력해야 합니다.")
+            return
+
+    elif day_of_week in ["토요일", "일요일"]:
+        print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+        return
+
+    while True:
+        try:
+            omanun_count = int(input("5만원권 몇 장을 인출하시겠습니까? "))
+            if omanun_count * 50000 > amount or omanun_count < 0:
+                print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
+            else:
+                break
+        except ValueError:
+            print("숫자를 입력해야 합니다. 다시 입력하세요.")
+
+    omanun_amount = omanun_count * 50000
+    manun_amount = amount - omanun_amount
+    manun_count = manun_amount // 10000
+
+    print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
+    print(f"총 인출 금액: {amount}원")
+    print("이용해주셔서 감사합니다.")
 
 
 
@@ -1470,6 +1539,8 @@ while not b_is_exit:
         calculate_payment()
     elif func == "8":
         budget_challenge()
+    elif func == "9":
+        atm_withdrawal()
     elif func == "?":
         print_help()
     elif func == "exit":
