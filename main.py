@@ -647,7 +647,7 @@ def add_entry():
 
     amount = get_valid_amount_input()
 
-    # 수입/지출 여부 저장2
+    # 수입/지출 여부 저장
     if income_or_expense == "1":
         type_entry = "수입"
     else:
@@ -699,9 +699,13 @@ def show_favorites():
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
+        amount_display = entry['amount']
+        if entry['type'] == '지출':
+            amount_display = -abs(amount_display)  # 출력 시 지출 항목의 금액을 음수로 표시
+
         print(
-            f"날짜: {entry['date']}, 카테고리: {entry['category']}, 설명: {entry['description']}, 금액: {entry['amount']}원, 유형: {entry['type']}")
-        if "score" in entry:  # 날짜와 수입/지출 유형도 출력되도록 추가
+            f"날짜: {entry['date']}, 카테고리: {entry['category']}, 설명: {entry['description']}, 금액: {amount_display}원, 유형: {entry['type']}")
+        if "score" in entry:
             print(f"평가 점수: {entry['score']}")
 
 
@@ -820,28 +824,46 @@ def compare_financial_goal(user1, user2, goal):
 # 월별 보고서 생성 함수
 def generate_monthly_report():
     month = input("보고서 생성할 월 (YYYY-MM): ")
-    monthly_total = 0
+    monthly_income_total = 0
+    monthly_expense_total = 0
     scores = []  # 평가 점수를 저장할 리스트
-    category_totals = {}
+    category_totals = {"수입": {}, "지출": {}}  # 수입과 지출을 각각의 카테고리별로 나눈다.
+
     for entry in ledger:
         if entry["date"].startswith(month):
-            monthly_total += float(entry["amount"])
-            category = entry["category"]
-            if category not in category_totals:
-                category_totals[category] = 0
-            category_totals[category] += entry["amount"]
+            if entry["type"] == "수입":
+                monthly_income_total += float(entry["amount"])
+                category = entry["category"]
+                if category not in category_totals["수입"]:
+                    category_totals["수입"][category] = 0
+                category_totals["수입"][category] += entry["amount"]
+            elif entry["type"] == "지출":
+                monthly_expense_total += float(entry["amount"])
+                category = entry["category"]
+                if category not in category_totals["지출"]:
+                    category_totals["지출"][category] = 0
+                category_totals["지출"][category] += entry["amount"]
+
             print(entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
-    print(f"{month}월 총 지출: {monthly_total} 원")
+
+    print(f"{month}월 총 수입: {monthly_income_total} 원")
+    print(f"{month}월 총 지출: {monthly_expense_total} 원")
+
+    print(f"{month}월 각 카테고리별 수입 내역:")
+    for category, total in category_totals["수입"].items():
+        print(f"{category}: {total} 원")
+
     print(f"{month}월 각 카테고리별 지출 내역:")
-    for category, total in category_totals.items():
+    for category, total in category_totals["지출"].items():
         print(f"{category}: {total} 원")
 
     average_score = calculate_average_score(scores)
-    if category_totals:
-        max_category = max(category_totals, key=category_totals.get)
-        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+
+    if category_totals["지출"]:
+        max_expense_category = max(category_totals["지출"], key=category_totals["지출"].get)
+        print(f"\n가장 지출이 많은 카테고리: {max_expense_category} ({category_totals['지출'][max_expense_category]} 원)")
     else:
         print("해당 월에는 지출 내역이 없습니다.")
 
@@ -858,11 +880,12 @@ budget = None  # 전역변수 budget의 기본값 설정
 def set_budget():
     global budget
     budget = float(input("예산 설정 (원): "))  # budget을 전역변수로 변경
-    current_total = sum(float(entry["amount"]) for entry in ledger)
-    if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+    current_expense_total = sum(float(entry["amount"]) for entry in ledger if entry["type"] == "지출")  # 지출 항목만 합산
+
+    if current_expense_total > budget:
+        print(f"경고: 예산 초과! 현재 지출: {current_expense_total} 원")
     else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        print(f"예산 설정 완료. 현재 지출: {current_expense_total} 원, 남은 예산: {budget - current_expense_total} 원")
 
 
 # 예산 확인 함수
