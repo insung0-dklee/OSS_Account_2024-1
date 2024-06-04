@@ -28,6 +28,7 @@ from datetime import datetime
 import Add_function
 
 
+
 userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
 userdata2 = {}  # 아이디, 비밀번호, 이름, 전화번호 저장해둘 딕셔너리
 usernames = {}  # 이름과 아이디를 매핑하기 위한 딕셔너리
@@ -1171,6 +1172,66 @@ def modify_expense():
     except ValueError:
         print("숫자를 입력하세요.")
 
+#다음 달 지출 예측 기능
+class AccountBook:
+    def __init__(self):
+        self.records = []
+
+    def add_record(self, amount, description, date):
+        self.records.append({"amount": amount, "description": description, "date": date})
+
+    def show_records(self):
+        for record in self.records:
+            print(record)
+
+    def get_monthly_totals(self):
+        monthly_totals = {}
+        for record in self.records:
+            month = record["date"][:7]  # Extract YYYY-MM from date
+            if month not in monthly_totals:
+                monthly_totals[month] = 0
+            monthly_totals[month] += record["amount"]
+        return monthly_totals
+
+    def predict_next_month(self):
+        monthly_totals = self.get_monthly_totals()
+        months = sorted(monthly_totals.keys())
+        if len(months) < 2:
+            print("Not enough data to predict.")
+            return None
+        
+        # Calculate moving average of the last 3 months
+        total_sum = 0
+        count = 0
+        for month in months[-3:]:
+            total_sum += monthly_totals[month]
+            count += 1
+        moving_average = total_sum / count
+
+        # Predict next month based on moving average
+        print(f"Predicted spending for next month: {moving_average}")
+        return moving_average
+
+# 가계부 인스턴스 생성
+account_book = AccountBook()
+
+# 지출 기록 추가
+account_book.add_record(200, "Rent", "2023-01-01")
+account_book.add_record(50, "Groceries", "2023-01-15")
+account_book.add_record(100, "Utilities", "2023-01-20")
+account_book.add_record(150, "Rent", "2023-02-01")
+account_book.add_record(60, "Groceries", "2023-02-10")
+account_book.add_record(90, "Utilities", "2023-02-20")
+account_book.add_record(210, "Rent", "2023-03-01")
+account_book.add_record(55, "Groceries", "2023-03-15")
+account_book.add_record(95, "Utilities", "2023-03-20")
+
+# 기록 출력
+account_book.show_records()
+
+# 다음 달 지출 예측
+account_book.predict_next_month()
+
 # 엔화와 달러의 환율 정보를 정적으로 저장합니다.
 exchange_rate = {
     "USD": 0.0009,  # 1달러 = 1100원 (가상의 환율)
@@ -1866,6 +1927,5 @@ if __name__ == "__main__":
     main()
 
 
-        
-        print("올바른 기능을 입력해 주세요.")
+    print("올바른 기능을 입력해 주세요.")
 
