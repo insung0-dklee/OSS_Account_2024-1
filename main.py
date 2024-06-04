@@ -1352,6 +1352,61 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
             print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
     else:
         print("ID가 존재하지 않습니다.") #ID 존재 X
+"""
+Inquiry : 문의 관리 클래스
+@Parm
+    None
+@return
+    None
+"""
+class Inquiry:
+    """
+    __init__ : Inquiry 클래스 초기화 함수
+    @Parm
+        None
+    @return
+        None
+    """
+    def __init__(self):
+        self.inquiries = []
+    """
+    add_inquiry : 문의 추가 함수
+    @Parm
+        user_name : 사용자 이름
+        inquiry : 문의 내용
+    @return
+        None
+    """
+    def add_inquiry(self, user_name, inquiry):
+        self.inquiries.append(f'이름: {user_name}\n문의내용: {inquiry}')
+    """
+    get_inquiries : 저장된 문의 내용을 가져오는 함수
+    @Parm
+        None
+    @return
+        inquiries : 저장된 문의 내용 리스트
+    """
+    def get_inquiries(self):
+        return self.inquiries
+"""
+inquire_manager : 문의 관리 함수
+@Parm
+    None
+@return
+    None
+"""
+def inquire_manager() :
+    inquiry_section = Inquiry()
+    ask = input("개발자에게 문의할 내용이 있으십니까? (y or n) ")
+    if (ask == 'y') :
+        inquire_name = input("이름 : ") #문의 정보를 받아옴
+        inquire_memo = input("내용 : ")
+        inquiry_section.add_inquiry(inquire_name, inquire_memo) #문의내역을 저장함
+        print("위의 내용으로 문의가 접수되었습니다.")
+        for inquiry in inquiry_section.get_inquiries(): #문의내역을 보여줌
+            print(inquiry)
+    elif (ask == 'n') : 
+        return
 
 YU_Account() #프로그램 시작 화면
 
