@@ -6,15 +6,20 @@ class Account:
 class AccountRegistry:
     def __init__(self):
         self.accounts = {}
+        self.account_numbers = set()
 
     def add_account(self, name, account_number):
+        if not name or not account_number:
+            print("이름과 계좌번호는 빈 값이 될 수 없습니다.")
+            return
         if name in self.accounts:
             print(f"이미 등록된 이름입니다: {name}")
             return
-        if account_number in [account.account_number for account in self.accounts.values()]:
+        if account_number in self.account_numbers:
             print(f"이미 등록된 계좌번호입니다: {account_number}")
             return
         self.accounts[name] = Account(name, account_number)
+        self.account_numbers.add(account_number)
         print(f"{name}의 계좌 ({account_number})가 등록되었습니다.")
 
     def find_account(self, name):
