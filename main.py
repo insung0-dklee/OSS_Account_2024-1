@@ -1210,12 +1210,17 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose
+def choose_Account(Account_list):#가계부 선택 함수 - func 자리에 Account_list 추가 - 임의의 리스트 값이 존재하지 않으면 오류 발생
+    if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
+        print("가계부가 존재하지 않습니다.")
+        print("가계부를 생성해 주세요")
+        choose = 0
+    else:
+        print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
+        for i in range(0,len(Account_list)):#가계부 리스트 출력
+            print(f"가계부 {i+1}번 : ",Account_list[i].name)
+        choose =  input() #정수값을 반환하도록 수정
+    return choose #choose account 
 
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
     if(num < 0):#오류 검출
