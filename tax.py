@@ -229,9 +229,42 @@ def calculate_local_income_tax():
     print(f"지방소득세율: {local_income_tax_rate * 100}%")
     print(f"지방소득세: {local_income_tax:.2f} 원")
 
+def calculate_retirement_income_tax():
+    print("퇴직소득세 계산 기능입니다.")
+    total_income = float(input("총 퇴직 소득을 입력하세요 (원): "))
+    years_of_service = int(input("근속 연수를 입력하세요 (년): "))
+
+    average_income_per_year = total_income / years_of_service
+
+    if average_income_per_year <= 8000000:
+        tax_rate = 0.06
+    elif average_income_per_year <= 70000000:
+        tax_rate = 0.15
+    elif average_income_per_year <= 140000000:
+        tax_rate = 0.24
+    elif average_income_per_year <= 280000000:
+        tax_rate = 0.35
+    elif average_income_per_year <= 420000000:
+        tax_rate = 0.38
+    elif average_income_per_year <= 700000000:
+        tax_rate = 0.40
+    elif average_income_per_year <= 1400000000:
+        tax_rate = 0.42
+    else:
+        tax_rate = 0.45
+
+    retirement_income_tax = total_income * tax_rate
+
+    print(f"총 퇴직 소득: {total_income} 원")
+    print(f"근속 연수: {years_of_service} 년")
+    print(f"연평균 소득: {average_income_per_year} 원")
+    print(f"퇴직소득세율: {tax_rate * 100}%")
+    print(f"퇴직소득세: {retirement_income_tax:.2f} 원")
+
+
 def tax_menu():
     while True:
-        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n9: 지방소득세 계산\n0: 돌아가기\n선택: ")
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n9: 지방소득세 계산\n10: 퇴직소득세 계산\n0: 돌아가기\n선택: ")
         if tax_func == "1":
             calculate_comprehensive_income_tax()
         elif tax_func == "2":
@@ -250,9 +283,10 @@ def tax_menu():
             calculate_real_estate_transfer_tax()
         elif tax_func == "9":
             calculate_local_income_tax()
+        elif tax_func == "10":
+            calculate_retirement_income_tax()
         elif tax_func == "0":
             break
         else:
             print("올바른 선택이 아닙니다.")
-
 
