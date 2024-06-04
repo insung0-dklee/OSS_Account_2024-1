@@ -543,6 +543,27 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+# 쿠폰 정보 저장
+coupons = {}
+
+# 쿠폰 추가 함수
+def add_coupon():
+    name = input("쿠폰 이름: ")
+    expiration_date = input("유효기간(YYYY-MM-DD): ")
+    coupons[name] = expiration_date
+    print("쿠폰이 추가되었습니다.")
+
+# 쿠폰 정보 출력 함수
+def show_coupon_info():
+    if not coupons:
+        print("등록된 쿠폰이 없습니다.")
+    else:
+        print("현재 보유한 쿠폰 정보:")
+        for name, expiration_date in coupons.items():
+            print(f"- {name}: 유효기간 {expiration_date}")
+
+
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +575,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 쿠폰 추가
+    7: 쿠폰 정보 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1555,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        add_coupon()
+    elif func == "7":
+        show_coupon_info()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
