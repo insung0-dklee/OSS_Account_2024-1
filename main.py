@@ -543,6 +543,29 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#청구서 관리 
+class Bill:
+    def __init__(self, title, amount, due_date):
+        self.title = title
+        self.amount = amount
+        self.due_date = due_date
+
+class Budget:
+    def __init__(self):
+        self.bills = []
+
+    def add_bill(self, title, amount, due_date):
+        bill = Bill(title, amount, due_date)
+        self.bills.append(bill)
+        print(f"청구서 추가됨: {title}, 금액: {amount}원, 마감일: {due_date}")
+
+    def list_bills(self):
+        if not self.bills:
+            print("청구서가 없습니다.")
+        else:
+            for bill in self.bills:
+                print(f"제목: {bill.title}, 금액: {bill.amount}원, 마감일: {bill.due_date}")
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +577,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 청구서 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1556,28 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        budget = Budget()
+        while True:
+            print("\n가계부 메뉴")
+            print("1: 청구서 추가")
+            print("2: 청구서 목록 보기")
+            print("3: 종료")
+        
+            choice = input("선택: ")
+
+            if choice == '1':
+                title = input("청구서 제목: ")
+                amount = float(input("금액: "))
+                due_date = input("마감일 (YYYY-MM-DD): ")
+                budget.add_bill(title, amount, due_date)
+            elif choice == '2':
+                budget.list_bills()
+            elif choice == '3':
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("잘못된 선택입니다. 다시 시도해주세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
