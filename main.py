@@ -1490,7 +1490,153 @@ def financial_goal_loop(user):
 
 
 
-###########################################################
+
+import datetime
+
+ # 투자 종류, 투자 이름, 투자한 금액, 투자한 날짜, 현재 투자가치에 대하여 정의
+class Investment:
+    def __init__(self, type, name, amount_invested, date_invested, current_value):
+        self.type = type
+        self.name = name
+        self.amount_invested = amount_invested
+        self.date_invested = date_invested
+        self.current_value = current_value
+   
+    #투자의 손익값 계산 (현재 가치 - 투자 금액)
+    def profit_loss(self):
+        return self.current_value - self.amount_invested
+    #투자의 손익률 계산 ((손익 / 투자 금액) * 100)
+    def profit_loss_percentage(self):
+        return (self.profit_loss() / self.amount_invested) * 100
+# 투자 내역을 저장하는 리스트
+investment_list = []
+
+# 날짜 입력을 받는 함수
+# 빈칸을 입력하면 None 반환
+def input_date(prompt):
+    while True:
+        date_str = input(prompt)
+        if date_str.strip() == "":
+            return None
+        try: # 입력된 날짜 문자열을 datetime 객체로 변환
+            date_obj = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+            return date_obj
+        except ValueError: # 날짜 형식이 올바르지 않은 경우 출력
+            print("올바른 날짜 형식을 입력해 주세요. (YYYY-MM-DD)")
+
+# 금액 입력을 받는 함수
+# 빈칸을 입력하면 None 반환
+def input_amount(prompt):
+    while True:
+        amount_str = input(prompt)
+        if amount_str.strip() == "":
+            return None
+        try:# 입력된 금액 문자열을 float로 변환
+            amount = float(amount_str)
+            return amount
+        except ValueError: # 금액 형식이 올바르지 않은 경우 출력
+            print("올바른 금액을 입력해 주세요. 숫자 형식으로 입력하세요.")
+
+# 새로운 투자 내역을 추가하는 함수
+def add_investment():
+    type = input("투자 종류 (주식, 펀드, 암호화폐 등): ")
+    name = input("투자 이름: ")
+    amount_invested = input_amount("투자 금액: ")
+    date_invested = input_date("투자 날짜 (YYYY-MM-DD): ")
+    current_value = input_amount("현재 가치: ")
+
+     # 입력받은 정보를 사용하여 Investment 객체 생성
+     # 생성된 Investment 객체를 리스트에 추가
+    investment = Investment(type, name, amount_invested, date_invested, current_value)
+    investment_list.append(investment)
+    print("투자 내역이 추가되었습니다.")
+
+# 모든 투자 내역을 조회하는 함수
+def view_investments():
+    for idx, investment in enumerate(investment_list, start=1):
+        print(f"{idx}. {investment.type} - {investment.name}")
+        print(f"   투자 금액: {investment.amount_invested} 원")
+        print(f"   투자 날짜: {investment.date_invested.strftime('%Y-%m-%d')}")
+        print(f"   현재 가치: {investment.current_value} 원")
+        print(f"   손익: {investment.profit_loss()} 원 ({investment.profit_loss_percentage():.2f}%)")
+        print("-----------------------------")
+
+# 투자 내역을 수정하는 함수
+# 빈 문자열이 아니면 입력한 값으로, 아니면 기존 값으로 설정합니다.
+def update_investment():
+    view_investments()
+     # 현재 투자 내역을 조회합니다.
+    idx = int(input("수정할 투자 내역 번호: ")) - 1
+     # 선택된 투자 내역을 가져옵니다.
+      # 입력된 번호가 유효한 범위 내에 있는지 확인합니다.
+    if 0 <= idx < len(investment_list):
+        investment = investment_list[idx]
+        print("수정할 내용을 입력하세요. (빈칸으로 두면 변경되지 않습니다.)")
+        type = input(f"투자 종류 ({investment.type}): ") or investment.type
+        name = input(f"투자 이름 ({investment.name}): ") or investment.name
+        amount_invested = input_amount(f"투자 금액 ({investment.amount_invested}): ")
+        amount_invested = amount_invested if amount_invested is not None else investment.amount_invested
+        date_invested = input_date(f"투자 날짜 ({investment.date_invested.strftime('%Y-%m-%d')}): ")
+        date_invested = date_invested if date_invested is not None else investment.date_invested
+        current_value = input_amount(f"현재 가치 ({investment.current_value}): ")
+         # 빈 문자열이 아니면 입력한 값으로, 아니면 기존 값으로 설정합니다.
+        current_value = current_value if current_value is not None else investment.current_value
+        
+         # 수정된 정보를 반영하여 Investment 객체 갱신
+        investment.type = type
+        investment.name = name
+        investment.amount_invested = amount_invested
+        investment.date_invested = date_invested
+        investment.current_value = current_value
+        print("투자 내역이 수정되었습니다.")
+    else: # 잘못된 번호가 입력된 경우 오류 메시지를 출력합니다.
+        print("올바른 번호를 입력해 주세요.")
+
+# 투자 내역을 삭제하는 함수
+# 리스트에서 해당 투자 내역 삭제
+def delete_investment():
+    view_investments()
+    idx = int(input("삭제할 투자 내역 번호: ")) - 1
+    if 0 <= idx < len(investment_list):
+        investment_list.pop(idx)
+        print("투자 내역이 삭제되었습니다.")
+    else:
+        print("올바른 번호를 입력해 주세요.")
+# 투자 추적 기능 루프
+def investment_tracker():
+    while True:
+        print("-----------------------")
+        print("투자 추적 기능")
+        print("1. 투자 내역 추가")
+        print("2. 투자 내역 조회")
+        print("3. 투자 내역 수정")
+        print("4. 투자 내역 삭제")
+        print("5. 돌아가기")
+        choice = input("선택: ")
+        
+        if choice == "1":
+            add_investment()
+        elif choice == "2":
+            view_investments()
+        elif choice == "3":
+            update_investment()
+        elif choice == "4":
+            delete_investment()
+        elif choice == "5":
+            break
+        else:
+            print("올바른 선택을 해주세요.")
+
+
+
+
+
+
+
+
+
+
+
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
@@ -1532,6 +1678,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+
+    elif func == "6":
+        investment_tracker()
+
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
