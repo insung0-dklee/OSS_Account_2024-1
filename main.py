@@ -554,6 +554,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 은행 계좌 추가
+    7: 신용카드 추가
+    8: 계좌 및 카드 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1487,6 +1490,53 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 
+# 은행 계좌와 신용카드 정보를 저장할 데이터 구조
+account_data = {
+    "bank_accounts": [],
+    "credit_cards": []
+}
+
+# 은행 계좌 추가 함수
+def add_bank_account():
+    bank_name = input("은행 이름: ")
+    account_number = input("계좌 번호: ")
+    balance = float(input("잔액: "))
+    account = {
+        "type": "bank_account",
+        "bank_name": bank_name,
+        "account_number": account_number,
+        "balance": balance
+    }
+    account_data["bank_accounts"].append(account)
+    print("은행 계좌가 추가되었습니다.")
+
+# 신용카드 추가 함수
+def add_credit_card():
+    card_company = input("카드 회사: ")
+    card_number = input("카드 번호: ")
+    limit = float(input("카드 한도: "))
+    balance = float(input("현재 잔액: "))
+    card = {
+        "type": "credit_card",
+        "card_company": card_company,
+        "card_number": card_number,
+        "limit": limit,
+        "balance": balance
+    }
+    account_data["credit_cards"].append(card)
+    print("신용카드가 추가되었습니다.")
+
+# 계좌 및 카드 정보 조회 함수
+def view_accounts_and_cards():
+    print("은행 계좌 목록:")
+    for account in account_data["bank_accounts"]:
+        print(f"은행 이름: {account['bank_name']}, 계좌 번호: {account['account_number']}, 잔액: {account['balance']} 원")
+    
+    print("\n신용카드 목록:")
+    for card in account_data["credit_cards"]:
+        print(f"카드 회사: {card['card_company']}, 카드 번호: {card['card_number']}, 한도: {card['limit']} 원, 잔액: {card['balance']} 원")
+
+
 
 
 
@@ -1532,6 +1582,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 은행 계좌 추가 기능
+        add_bank_account()
+    elif func == "7":  # 신용카드 추가 기능
+        add_credit_card()
+    elif func == "8":  # 계좌 및 카드 정보 조회 기능
+        view_accounts_and_cards()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
