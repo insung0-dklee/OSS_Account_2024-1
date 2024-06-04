@@ -8,6 +8,21 @@ import random
 import webbrowser
 import re
 import Add_function
+import inspect
+
+def defined_functions(): #정의된 함수 리스트에 저장하는 함수
+    current_module = inspect.getmodule(inspect.currentframe()) #현재 모듈 가져오기
+    all_functions = inspect.getmembers(current_module, inspect.isfunction) #모듈 내에서 함수만 가져와서 리스트로 저장
+    function_names = [name for name, _ in all_functions] #함수 이름들만 추출하여 리스트로 반환
+    return function_names
+
+def get_functions(): #정의된 함수 출력하는 함수
+    defined_functions = defined_functions() #정의된 함수 리스트 불러오기
+    print("현재 스크립트에 정의된 함수:") #함수들 출력
+    for func_name in defined_functions:
+        print(func_name)
+    function_count = len(defined_functions) #함수의 개수 세기
+    print("총 함수 개수:", function_count)
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
