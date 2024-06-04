@@ -1,4 +1,4 @@
-import hashlib #hashlib 사용
+import hashlib
 import os
 import json
 from datetime import datetime, date
@@ -9,7 +9,7 @@ import webbrowser
 import re
 import Add_function
 
-userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
     id = input("id 입력: ")
@@ -30,13 +30,13 @@ def user_reg():  # 회원가입
 
         userdata[id] = pw_data
 
-        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
+        with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+            for user_id, user_pw in userdata.items():  # 딕셔너리 내에 있는 값을 모두 for문
+                fw.write(f'{user_id} : {user_pw}\n')  # key, value값을 차례로 login.txt파일에 저장
         print("회원가입이 완료되었습니다!")
         break
 
-class User:    # 사용자 정보 저장 (이름)
+class User:  # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
 
@@ -50,18 +50,24 @@ userphones = {}
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
-    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+    while True:
+        phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+        
+        # 전화번호 형식 체크
+        if len(phone) != 11 or not phone.isdigit():
+            print("전화번호의 형식이 옳지 않습니다. 전화번호의 전체를 11자리 숫자로 입력해주세요.")
+            continue
 
-    # 전화번호 중복 체크
-    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
-    while phone in userphones:
-        print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
-        print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
-        phone = input("전화번호 입력: ")
-        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
-            find_id_by_phone()
-            print("로그인 기능으로 다시 돌아갑니다.")
-            return #로그인 기능으로 다시 돌려줌
+        # 전화번호 중복 체크
+        while phone in userphones:
+            print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
+            print("(만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오)")
+            phone = input("전화번호 입력: ")
+            if phone == '?':  # 전화번호로 등록된 id를 찾고 싶은 경우
+                find_id_by_phone()
+                print("로그인 기능으로 다시 돌아갑니다.")
+                return  # 로그인 기능으로 다시 돌려줌
+        break
 
     pw = input("password 입력: ")  # 회원가입 시의 pw 입력
 
@@ -76,6 +82,8 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
         for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+
+
 
 
 """
