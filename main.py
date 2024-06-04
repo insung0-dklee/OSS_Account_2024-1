@@ -1488,6 +1488,32 @@ def financial_goal_loop(user):
 
 
 
+class User: # 친구의 가계부를 열람할 수 있는 기능
+    def __init__(self, name):
+        self.name = name
+        self.expenses = []  # 지출 내역을 저장하는 리스트
+        self.shared_users = []  # 가계부를 공유한 사용자들을 저장하는 리스트
+
+    def track_expense(self, category, amount):
+        self.expenses.append({'category': category, 'amount': amount})
+        print(f"{category} 카테고리에 {amount} 금액을 추가했습니다.")
+
+    def analyze_expenses(self):
+        # 지출 내역을 분석하는 간단한 메서드 (여기서는 총 지출을 출력)
+        total_expense = sum(expense['amount'] for expense in self.expenses)
+        print(f"{self.name}님의 총 지출: {total_expense}원")
+
+    def share_budget_book(self, other_user):
+        # 다른 사용자와 가계부를 공유하는 메서드
+        self.shared_users.append(other_user)
+        print(f"{self.name}님이 가계부를 {other_user.name}님과 공유하셨습니다.")
+
+    def view_shared_budget_book(self):
+        # 공유된 사용자들의 가계부를 보는 메서드
+        for user in self.shared_users:
+            print(f"{user.name}님의 가계부:")
+            user.analyze_expenses()  # 공유된 사용자의 지출 분석
+
 
 
 ###########################################################
