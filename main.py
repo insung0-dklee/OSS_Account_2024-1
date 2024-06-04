@@ -631,17 +631,20 @@ def get_valid_amount_input():
 
 # 수입/지출 항목 추가 함수
 def add_entry():
+    entry_type = input("항목 유형을 선택하세요 (1: 수입, 2: 지출): ")
     date = input("날짜 (YYYY-MM-DD): ")
     category = input("카테고리: ")
     description = input("설명: ")
-    score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    amount = float(input("금액: "))
+
+    if entry_type == "2":  # 지출
+        amount = -amount  # 지출은 음수로 저장
+
     entry = {
         "date": date,
         "category": category,
         "description": description,
-        "amount": amount,
-        "score": score  # 평가 점수 추가
+        "amount": amount
     }
     ledger.append(entry)
     print("항목이 추가되었습니다.")
