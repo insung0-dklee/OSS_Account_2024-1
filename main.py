@@ -639,6 +639,7 @@ def add_entry_window():
 # add_entry_window()에서 입력된 값을 add_entry()에 전달
 def add_entry_button_click(window,date_entry,category_entry,description_entry,score_entry,amount_entry):
     add_entry(window,date_entry,category_entry,description_entry,score_entry,amount_entry)
+    enable_buttons() #account_app button 활성화
 
 # 수입/지출 항목 추가 함수
 def add_entry(window,date_entry,category_entry,description_entry,score_entry,amount_entry):
@@ -698,6 +699,7 @@ def view_entries():
         print(entry)
         if "score" in entry:
             print(f"평가 점수: {entry['score']}")
+    enable_buttons() #account_app button 활성화
 
 def day_evaluation(score_entry):
     evaluation = score_entry.get() #entry에서 값을 읽음
@@ -836,6 +838,8 @@ def generate_monthly_report():
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
 
+    enable_buttons() #account_app button 활성화
+
 budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
@@ -847,6 +851,7 @@ def set_budget():
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
     else:
         print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+    enable_buttons() #account_app button 활성화
 
 # 예산 확인 함수
 def check_budget():
@@ -867,6 +872,7 @@ def analyze_categories():
         category_totals[category] += entry["amount"]
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
+    enable_buttons() #account_app button 활성화
 
 
 
@@ -1576,6 +1582,18 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
+current_window = None
+buttons = []
+#버튼 비활성화
+def disable_buttons(except_button):
+    for button in buttons:
+        if button != except_button:
+            button.config(state=tk.DISABLED)
+#버튼 활성화
+def enable_buttons():
+    for button in buttons:
+        button.config(state=tk.NORMAL)
+
 """
 account_app : 가계부 기능을 버튼으로 선택할 수 있음(기능입력을 GUI로 시각화)
 @Parm
@@ -1593,24 +1611,30 @@ def account_app():
     tk.Label(window, text=("user:",user.name)).grid(row=1, column=0, padx=10, pady=10) #유저 이름 출력
 
     #가계부 기능별 버튼
-    add_entry_button = tk.Button(window, text="수입/지출 항목 추가", command=lambda: add_entry_window(),bg="lightgray")
+    add_entry_button = tk.Button(window, text="수입/지출 항목 추가", command=lambda: (disable_buttons(add_entry_button), add_entry_window()),bg="lightgray")
     add_entry_button.grid(row=2, columnspan=2, pady=10)
+    buttons.append(add_entry_button)
 
-    view_entries_button = tk.Button(window, text="항목 조회", command=lambda: view_entries(),bg="lightgray")
+    view_entries_button = tk.Button(window, text="항목 조회", command=lambda: (disable_buttons(view_entries_button),view_entries()),bg="lightgray")
     view_entries_button.grid(row=3, columnspan=2, pady=10)
+    buttons.append(view_entries_button)
 
-    generate_monthly_report_button = tk.Button(window, text="월별 보고서 생성", command=lambda: generate_monthly_report(),bg="lightgray")
+    generate_monthly_report_button = tk.Button(window, text="월별 보고서 생성", command=lambda: (disable_buttons(generate_monthly_report_button),generate_monthly_report()),bg="lightgray")
     generate_monthly_report_button.grid(row=4, columnspan=2, pady=10)
+    buttons.append(generate_monthly_report_button)
 
-    set_budget_button = tk.Button(window, text="예산 설정 및 초과 알림", command=lambda: set_budget(),bg="lightgray")
+    set_budget_button = tk.Button(window, text="예산 설정 및 초과 알림", command=lambda: (disable_buttons(set_budget_button),set_budget()),bg="lightgray")
     set_budget_button.grid(row=5, columnspan=2, pady=10)
+    buttons.append(set_budget_button)
 
-    analyze_categories_button = tk.Button(window, text="지출 카테고리 분석", command=lambda: analyze_categories(),bg="lightgray")
+    analyze_categories_button = tk.Button(window, text="지출 카테고리 분석", command=lambda: (disable_buttons(analyze_categories_button),analyze_categories()),bg="lightgray")
     analyze_categories_button.grid(row=6, columnspan=2, pady=10)
+    buttons.append(analyze_categories_button)
 
     #실행 종료 버튼
-    exit_button = tk.Button(window, text="EXIT", command=lambda: exit(0),bg="green")
+    exit_button = tk.Button(window, text="EXIT", command=lambda: (disable_buttons(exit_button),exit(0)),bg="green")
     exit_button.grid(row=7, columnspan=2, pady=10)
+    buttons.append(exit_button)
 
     window.mainloop()
 
