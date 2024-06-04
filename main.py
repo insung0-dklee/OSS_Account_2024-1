@@ -1476,6 +1476,40 @@ def stock_functions(stock_account_book):
             break
         else:
             print("올바른 기능을 선택하세요.")
+class Deposit:
+    def __init__(self, name, principal, rate, term):
+        self.name = name  # 예금 상품 이름
+        self.principal = principal  # 원금
+        self.rate = rate  # 연이자율 (백분율로 입력)
+        self.term = term  # 기간 (년 단위)
+
+    def calculate_interest(self):
+        # 단리 계산: 이자 = 원금 * 이자율 * 기간
+        interest = self.principal * (self.rate / 100) * self.term
+        return interest
+
+# 예금 정보를 입력받아 저장하고 만기 이자를 계산하여 출력하는 함수
+def manage_deposits():
+    deposits = []
+
+    while True:
+        print("\n--- 예금 정보 입력 ---")
+        name = input("예금 상품 이름: ")
+        principal = float(input("원금 (원): "))
+        rate = float(input("연이자율 (%): "))
+        term = int(input("기간 (년): "))
+
+        deposit = Deposit(name, principal, rate, term)
+        deposits.append(deposit)
+
+        another = input("다른 예금을 추가하시겠습니까? (y를 누르시면 추가됩니다.): ")
+        if another.lower() != 'y':
+            break
+
+    print("\n--- 예금 정보 및 만기 이자 ---")
+    for deposit in deposits:
+        interest = deposit.calculate_interest()
+        print(f"상품명: {deposit.name}, 만기까지의 이자액: {interest:.2f}원")
 
 # 재정 목표를 관리하는 루프 함수입니다.
 def financial_goal_loop(user):
