@@ -1242,6 +1242,8 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+    today = datetime.now() #현재 날짜 생성
+    print("현재 시각 :",today.strftime("%Y-%m-%d %H:%M:%S")) #현재 시각 출력
 
 def print_Login_help(): #user interface 도움말
     print("""
