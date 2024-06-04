@@ -1301,7 +1301,8 @@ def YU_Account():
 -이 프로그램은 사용자가 재정을 효과적 
 으로 관리할 수 있도록 도와줍니다.
     """
-    print(welcome_message)
+    #print(welcome_message)
+    return welcome_message
 
 def print_Login_help(): #user interface 도움말
     print("""
@@ -1575,31 +1576,43 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
+"""
+account_app : 가계부 기능을 버튼으로 선택할 수 있음(기능입력을 GUI로 시각화)
+@Parm
+    None
+@return
+    None
+"""
+def account_app():
+    window = tk.Tk() #window 생성
+    window.geometry("350x500+100+100") #window size
+    window.title("Account App")
 
-# 메인 루프
-while not b_is_exit:
-    print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
-    func = input("기능 입력 (? 입력시 도움말) : ")
+    #welcome_message 출력
+    tk.Label(window, text=YU_Account()).grid(row=0, column=0, padx=10, pady=10)
+    tk.Label(window, text=("user:",user.name)).grid(row=1, column=0, padx=10, pady=10) #유저 이름 출력
 
-    if func == "1":
-        add_entry_window()
-    elif func == "2":
-        view_entries()
-    elif func == "3":
-        generate_monthly_report()
-    elif func == "4":
-        set_budget()
-    elif func == "5":
-        analyze_categories()
-    elif func == "?":
-        print_help()
-    elif func == "exit" or func == "x" or func =="종료":
-        print("프로그램을 종료합니다.")
-        b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
-    else:
-        
-        print("올바른 기능을 입력해 주세요.")
+    #가계부 기능별 버튼
+    add_entry_button = tk.Button(window, text="수입/지출 항목 추가", command=lambda: add_entry_window(),bg="lightgray")
+    add_entry_button.grid(row=2, columnspan=2, pady=10)
+
+    view_entries_button = tk.Button(window, text="항목 조회", command=lambda: view_entries(),bg="lightgray")
+    view_entries_button.grid(row=3, columnspan=2, pady=10)
+
+    generate_monthly_report_button = tk.Button(window, text="월별 보고서 생성", command=lambda: generate_monthly_report(),bg="lightgray")
+    generate_monthly_report_button.grid(row=4, columnspan=2, pady=10)
+
+    set_budget_button = tk.Button(window, text="예산 설정 및 초과 알림", command=lambda: set_budget(),bg="lightgray")
+    set_budget_button.grid(row=5, columnspan=2, pady=10)
+
+    analyze_categories_button = tk.Button(window, text="지출 카테고리 분석", command=lambda: analyze_categories(),bg="lightgray")
+    analyze_categories_button.grid(row=6, columnspan=2, pady=10)
+
+    #실행 종료 버튼
+    exit_button = tk.Button(window, text="EXIT", command=lambda: exit(0),bg="green")
+    exit_button.grid(row=7, columnspan=2, pady=10)
+
+    window.mainloop()
+
+#가계부 app 실행
+account_app()
