@@ -26,6 +26,8 @@ import re
 import csv
 from datetime import datetime
 import Add_function
+import time
+from datetime import datetime, timedelta
 
 
 
@@ -146,6 +148,67 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
+
+class AccountBook:
+    def __init__(self, auto_logout_time=5):
+        self.records = []
+        self.last_active_time = datetime.now()
+        self.auto_logout_time = auto_logout_time  # 시간(분) 단위
+        self.logged_in = True
+
+    def update_last_active_time(self):
+        self.last_active_time = datetime.now()
+
+    def check_auto_logout(self):
+        if datetime.now() - self.last_active_time > timedelta(minutes=self.auto_logout_time):
+            self.logged_in = False
+            print("Auto logged out due to inactivity.")
+        else:
+            print("You are still logged in.")
+
+    def add_record(self, amount, description, date):
+        if self.logged_in:
+            self.records.append({"amount": amount, "description": description, "date": date})
+            self.update_last_active_time()
+            print(f"Record added: {amount}, {description}, {date}")
+        else:
+            print("You are logged out. Please log in again to add records.")
+
+    def show_records(self):
+        if self.logged_in:
+            for record in self.records:
+                print(record)
+            self.update_last_active_time()
+        else:
+            print("You are logged out. Please log in again to view records.")
+
+    def login(self):
+        self.logged_in = True
+        self.update_last_active_time()
+        print("You are logged in.")
+
+    def logout(self):
+        self.logged_in = False
+        print("You have been logged out.")
+
+# 가계부 인스턴스 생성 (자동 로그아웃 시간: 1분)
+account_book = AccountBook(auto_logout_time=1)
+
+# 로그인
+account_book.login()
+
+# 사용자 활동 시뮬레이션
+account_book.add_record(200, "Rent", "2023-01-01")
+time.sleep(30)  # 30초 대기
+account_book.show_records()
+
+# 자동 로그아웃 체크
+time.sleep(35)  # 추가로 35초 대기하여 총 65초 대기
+account_book.check_auto_logout()
+
+# 로그아웃 후 기록 추가 시도
+account_book.add_record(100, "Utilities", "2023-01-20")
 
 class Debt:
     def __init__(self, lender, amount, due_date):
