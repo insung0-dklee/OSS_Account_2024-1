@@ -9,6 +9,8 @@ import webbrowser
 import re
 import Add_function
 from datetime import datetime
+import pandas as pd
+import matplotlib.pyplot as plt
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -541,8 +543,9 @@ def print_help():
     1: 수입/지출 항목 추가
     2: 항목 조회
     3: 월별 보고서 생성
-    4: 예산 설정 및 초과 알림
-    5: 지출 카테고리 분석
+    4: 지출 내역 시각화
+    5: 예산 설정 및 초과 알림
+    6: 지출 카테고리 분석
     ?: 도움말 출력
     exit: 종료
     """)
@@ -788,6 +791,87 @@ def generate_monthly_report():
         print(f"{month}월에는 평가된 점수가 없습니다.")
 
 budget = None #전역변수 budget의 기본값 설정
+
+def get_plot() :
+    while True :
+        print("-----------------------")
+        print("user:",user.name) # 현재 user가 누구인지 출력
+        print("""
+        1: 연도별 지출 내역
+        2: 월별 지출 내역
+        3: 카테고리별 지출 내역
+        x: 뒤로가기
+        """)
+        plot = input("기능 입력 : ")
+        if plot == "1" :
+            plot_yearly_expenses()
+            break
+        elif plot == "2" :
+            plot_monthly_expenses()
+            break
+        elif plot == "3" :
+            plot_category_expenses()
+            break
+        elif plot == "x" :
+            break
+        else :
+            print("잘못 입력하셨습니다.")
+
+
+# 연도별 지출 내역을 그래프로 그리는 함수
+def plot_yearly_expenses():
+    if not ledger:
+        print("지출 내역이 없습니다.")
+        return
+    
+    df = pd.DataFrame(ledger)
+    df['date'] = pd.to_datetime(df['date'])
+    df['year'] = df['date'].dt.year
+    yearly_expenses = df.groupby('year')['amount'].sum()
+    
+    plt.figure(figsize=(10, 5))
+    yearly_expenses.plot(kind='bar')
+    plt.title('Yearly Expenses')
+    plt.xlabel('Year')
+    plt.ylabel('Total Amount')
+    plt.grid(True)
+    plt.show()
+
+# 월별 지출 내역을 그래프로 그리는 함수
+def plot_monthly_expenses():
+    if not ledger:
+        print("지출 내역이 없습니다.")
+        return
+    
+    df = pd.DataFrame(ledger)
+    df['date'] = pd.to_datetime(df['date'])
+    df['year_month'] = df['date'].dt.to_period('M')
+    monthly_expenses = df.groupby('year_month')['amount'].sum()
+    
+    plt.figure(figsize=(15, 5))
+    monthly_expenses.plot(kind='bar')
+    plt.title('Monthly Expenses')
+    plt.xlabel('Month')
+    plt.ylabel('Total Amount')
+    plt.grid(True)
+    plt.show()
+
+# 카테고리별 지출 내역을 그래프로 그리는 함수
+def plot_category_expenses():
+    if not ledger:
+        print("지출 내역이 없습니다.")
+        return
+    
+    df = pd.DataFrame(ledger)
+    category_expenses = df.groupby('category')['amount'].sum()
+    
+    plt.figure(figsize=(10, 5))
+    category_expenses.plot(kind='bar')
+    plt.title('Category Expenses')
+    plt.xlabel('Category')
+    plt.ylabel('Total Amount')
+    plt.grid(True)
+    plt.show()
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
@@ -1551,9 +1635,11 @@ while not b_is_exit:
         view_entries()
     elif func == "3":
         generate_monthly_report()
-    elif func == "4":
-        set_budget()
+    elif func == "4" :
+        get_plot()
     elif func == "5":
+        set_budget()
+    elif func == "6":
         analyze_categories()
     elif func == "?":
         print_help()
@@ -1564,5 +1650,4 @@ while not b_is_exit:
         add_memo()
         memo()
     else:
-        
         print("올바른 기능을 입력해 주세요.")
