@@ -1493,8 +1493,19 @@ def dutchpay():
     if num_people == 0:
         return "인원은 0명일 수 없습니다."
     print("일인당 내야하는 금액은 .",total_amount/num_people,"원 입니다")
-   
-
+   # 소비한 값을 입력하면 평가 해주는 함수 
+def classify_spending():
+    amount_spent = int(input("지출한 금액을 입력하세요: "))
+    if amount_spent <= 10000:
+        print("A급 소비입니다.")
+    elif amount_spent <= 20000:
+        print("B급 소비입니다.")
+    elif amount_spent <= 30000:
+        print("C급 소비입니다.")
+    elif amount_spent <= 40000:
+        print("D급 소비입니다.")
+    else:
+        print("F급 소비입니다.")
 
 
 
