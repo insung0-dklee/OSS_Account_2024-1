@@ -374,119 +374,6 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
-"""
-add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
-@Parm
-    None
-@Return
-    None
-"""
-
-memo_directory = []
-def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
-    if not str_title.endswith(".txt"):
-        str_title += ".txt"
-    if '/' in str_title:
-        print("메모장 제목에 경로 정보가 포함되었습니다.")
-    try:
-        # 디렉토리 경로 추출
-        directory = os.path.dirname(str_title)
-
-        # 디렉토리가 존재하지 않으면 생성
-        if directory and not os.path.exists(directory):
-            os.makedirs(directory)
-
-        # 파일 열기
-        with open(str_title, "w", encoding="utf8") as new_f:
-            # 파일에 쓸 내용을 입력 받음
-            content = input("메모할 내용을 입력하세요: ")
-            new_f.write(content)
-            new_f.close()
-            print("메모가 성공적으로 저장되었습니다.")
-            if directory not in memo_directory :
-                memo_directory.append(directory)
-                print("새로운 메모 디렉토리가 추가되었습니다.")
-    except FileNotFoundError:
-        print(f"파일을 찾을 수 없습니다: '{str_title}'")
-    except PermissionError:
-        print(f"파일을 생성할 권한이 없습니다: '{str_title}'")
-    except Exception as e:
-        print(f"다른 오류가 발생했습니다: {e}")
-
-def list_memo():
-    """
-    현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
-    """
-    memo_files = []
-    for directory in memo_directory:
-        try:
-            # 지정된 디렉토리에서 파일 목록을 가져옴
-            for file in os.listdir(directory):
-                if file.endswith(".txt"):
-                    # 전체 파일 경로를 구성하여 리스트에 추가
-                    memo_files.append(os.path.join(directory, file))
-        except FileNotFoundError:
-            print(f"디렉토리를 찾을 수 없습니다: '{directory}'")
-        except PermissionError:
-            print(f"디렉토리에 대한 접근 권한이 없습니다: '{directory}'")
-        except Exception as e:
-            print(f"다른 오류가 발생했습니다: {e}")
-    if memo_files:
-        print("메모장 목록:")
-        for idx, memo_file in enumerate(memo_files, start=1):
-            print(f"{idx}. {memo_file}")
-    else:
-        print("메모장이 존재하지 않습니다.")
-
-def read_memo():
-    print("열고 싶은 메모장 제목: ")
-    str_title = input()
-    try:
-        with open(str_title, "r", encoding="utf8") as f:
-            content = f.read()
-            print("메모 내용:")
-            print(content)
-    except FileNotFoundError:
-        print("해당 제목의 메모장을 찾을 수 없습니다.")
-
-def delete_memo():
-    print("삭제할 메모장 제목: ")
-    str_title = input()
-    if os.path.exists(str_title):
-        os.remove(str_title)
-        print(f"{str_title} 메모가 삭제되었습니다.")
-    else:
-        print("해당 제목의 메모장을 찾을 수 없습니다.")
-
-def memo():
-    while True:
-        print("-----------------------")
-        print("user:",user.name) # 현재 user가 누구인지 출력
-        print("""
-        1: 메모 추가
-        2: 메모 리스트
-        3. 메모 읽기
-        4. 메모 삭제
-        5. 메모 닫기
-        """)
-        choice = input("선택: ")
-        if choice == "1":
-            add_memo()
-        elif choice == "2":
-            list_memo()
-        elif choice == "3":
-            read_memo()
-        elif choice == "4":
-            delete_memo()
-        elif choice == "5":
-            break
-        else:
-            print("잘못된 선택입니다.")
-
-
-
 def guide_link():
     webbrowser.open("https://help.3o3.co.kr/hc/ko/articles/15516331018521")
 
@@ -1537,9 +1424,6 @@ while not b_is_exit:
     elif func == "exit" or func == "x" or func =="종료":
         print("프로그램을 종료합니다.")
         b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
     else:
         
         print("올바른 기능을 입력해 주세요.")
