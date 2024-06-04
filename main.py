@@ -168,6 +168,45 @@ class Debt:
         상환 내역을 반환하는 함수.
         """
         return self.payment_history
+    
+def calculate_simple_interest():
+    """
+    단리로 예상 금액을 계산하는 함수.
+
+    param principal: 원금 (초기 금액)
+    param annual_rate: 연이율 (비율)
+    param time_years: 기간 (연 단위)
+    return: 예상 최종 금액
+    """
+    principal = float(input("원금을 입력하세요 (예: 1000000): "))
+    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
+    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
+
+    
+    final_amount = principal * (1 + annual_rate * time_years)
+    print(f"단리 예상 금액: {final_amount:.2f} 원")
+
+def calculate_compound_interest():
+    """
+    복리로 예상 금액을 계산하는 함수.
+
+    param principal: 원금 (초기 금액)
+    param annual_rate: 연이율 (비율)
+    param time_years: 기간 (연 단위)
+    param compounding_frequency: 연간 복리 횟수 (기본값: 1, 즉 연간 1회)
+    return: 예상 최종 금액
+    """
+    principal = float(input("원금을 입력하세요 (예: 1000000): "))
+    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
+    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
+    compounding_frequency = int(input("연간 복리 횟수를 입력하세요 (예: 4): "))
+
+    
+    final_amount = principal * (1 + annual_rate / compounding_frequency) ** (compounding_frequency * time_years)
+    print(f"복리 예상 금액 (연간 {compounding_frequency}회 복리): {final_amount:.2f} 원")
+
+
+
 
 debts = []
 
@@ -1485,66 +1524,6 @@ def financial_goal_loop(user):
         #재정 목표 관리 반복문에 없는 번호 입력시 사용자에게 다시 입력 받습니다.
         else:
             print("올바른 기능을 선택하세요.")
-
-def XtotheNthpower():
-    """
-    X의 n승을 구하는 기능
-
-    Nth power == 지수
-    X == 밑
-    """
-    X = float(input("밑을 입력해주세요 >> "))  # 입력값을 소수로 변환
-    Nth_power = int(input("지수를 입력해주세요 >> "))  # 지수는 여전히 정수로 유지
-    
-    result = 1
-    if Nth_power == 0:
-        print(f"{X} ^ 0 = 1")
-    else:
-        if Nth_power > 0:
-            for _ in range(Nth_power):  # 인덱스 변수를 사용하지 않을 경우 _ 사용
-                result *= X
-            print(f"{X} ^ {Nth_power} = {result}")
-        else:
-            for _ in range(-Nth_power):
-                result /= X
-            print(f"{X} ^ {Nth_power} = {result}")
-
-def calculate_simple_interest():
-    """
-    단리로 예상 금액을 계산하는 함수.
-
-    param principal: 원금 (초기 금액)
-    param annual_rate: 연이율 (비율)
-    param time_years: 기간 (연 단위)
-    return: 예상 최종 금액
-    """
-    principal = float(input("원금을 입력하세요 (예: 1000000): "))
-    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
-    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
-
-    
-    final_amount = principal * (1 + annual_rate * time_years)
-    print(f"단리 예상 금액: {final_amount:.2f} 원")
-
-def calculate_compound_interest():
-    """
-    복리로 예상 금액을 계산하는 함수.
-
-    param principal: 원금 (초기 금액)
-    param annual_rate: 연이율 (비율)
-    param time_years: 기간 (연 단위)
-    param compounding_frequency: 연간 복리 횟수 (기본값: 1, 즉 연간 1회)
-    return: 예상 최종 금액
-    """
-    principal = float(input("원금을 입력하세요 (예: 1000000): "))
-    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
-    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
-    compounding_frequency = int(input("연간 복리 횟수를 입력하세요 (예: 4): "))
-
-    
-    final_amount = principal * (1 + annual_rate / compounding_frequency) ** (compounding_frequency * time_years)
-    print(f"복리 예상 금액 (연간 {compounding_frequency}회 복리): {final_amount:.2f} 원")
-
 
 
 
