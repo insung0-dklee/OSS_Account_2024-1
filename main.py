@@ -289,6 +289,51 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+import datetime
+
+class Household:
+    def __init__(self):
+        self.expenses = []
+        self.unnecessary_expense_categories = []
+        self.unnecessary_expense_alerts = []
+
+    def add_expense(self, date, category, amount):
+        expense = {
+            'date': date,
+            'category': category,
+            'amount': amount
+        }
+        self.expenses.append(expense)
+        self.check_for_unnecessary_expense(expense)
+
+    def set_unnecessary_expense_categories(self, categories):
+        self.unnecessary_expense_categories = categories
+
+    def check_for_unnecessary_expense(self, expense):
+        if expense['category'] in self.unnecessary_expense_categories:
+            self.record_unnecessary_expense_alert(expense)
+
+    def record_unnecessary_expense_alert(self, expense):
+        alert = {
+            'date': expense['date'],
+            'category': expense['category'],
+            'amount': expense['amount']
+        }
+        self.unnecessary_expense_alerts.append(alert)
+        print(f"[ALERT] Unnecessary expense detected: {alert['category']} - {alert['amount']} on {alert['date']}")
+
+# Example usage
+household = Household()
+
+# Set up unnecessary expense categories
+household.set_unnecessary_expense_categories(['entertainment', 'dining out', 'shopping'])
+
+# Add expenses
+household.add_expense(datetime.date(2023, 6, 1), 'rent', 1000)
+household.add_expense(datetime.date(2023, 6, 2), 'entertainment', 50)
+household.add_expense(datetime.date(2023, 6, 3), 'groceries', 100)
+household.add_expense(datetime.date(2023, 6, 4), 'dining out', 30)
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
