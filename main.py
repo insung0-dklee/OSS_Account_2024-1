@@ -289,6 +289,47 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+class Expense:
+    def __init__(self, date, item, amount, card):
+        self.date = date
+        self.item = item
+        self.amount = amount
+        self.card = card
+
+class ExpenseTracker:
+    def __init__(self):
+        self.expenses = []
+        self.card_expenses = {}
+
+    def add_expense(self, expense):
+        self.expenses.append(expense)
+        if expense.card in self.card_expenses:
+            self.card_expenses[expense.card].append(expense)
+        else:
+            self.card_expenses[expense.card] = [expense]
+
+    def view_card_expenses(self, card):
+        if card in self.card_expenses:
+            for expense in self.card_expenses[card]:
+                print(f"Date: {expense.date}, Item: {expense.item}, Amount: {expense.amount}")
+        else:
+            print(f"No expenses found for card: {card}")
+
+# 사용 예시
+tracker = ExpenseTracker()
+tracker.add_expense(Expense('2023-06-01', '식료품', 50000, 'Card A'))
+tracker.add_expense(Expense('2023-06-02', '외식', 30000, 'Card B'))
+tracker.add_expense(Expense('2023-06-03', '교통', 10000, 'Card A'))
+
+tracker.view_card_expenses('Card A')
+# 출력 결과:
+# Date: 2023-06-01, Item: 식료품, Amount: 50000
+# Date: 2023-06-03, Item: 교통, Amount: 10000
+
+tracker.view_card_expenses('Card B')
+# 출력 결과:
+# Date: 2023-06-02, Item: 외식, Amount: 30000
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
