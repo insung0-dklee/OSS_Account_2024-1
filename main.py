@@ -39,6 +39,7 @@ def user_reg():  # 회원가입
 class User:    # 사용자 정보 저장 (이름)
     def __init__(self, name):
         self.name = name
+        self.account_book = Account_book.AccountBook()
 
 # 아이디, 비밀번호, 이름, 전화번호를 저장해둘 딕셔너리
 userdata2 = {}
@@ -46,6 +47,37 @@ userdata2 = {}
 usernames = {}
 # 전화번호와 아이디를 매핑하기 위한 딕셔너리
 userphones = {}
+
+# 챌린지 설정 함수
+def set_challenge(user, start_date, end_date, target_amount, reward):
+    # 챌린지 정보를 딕셔너리 형태로 저장
+    challenge = {
+        'start_date': start_date,  # 챌린지 시작 날짜
+        'end_date': end_date,  # 챌린지 종료 날짜
+        'target_amount': target_amount,  # 챌린지 목표 금액
+        'reward': reward  # 챌린지 달성 시 보상
+    }
+    # 챌린지 설정 정보를 출력
+    print(f"챌린지가 설정되었습니다: {start_date}부터 {end_date}까지, 목표 금액: {target_amount}, 보상: {reward}")
+    return challenge  # 설정된 챌린지 정보를 반환
+
+# 챌린지 평가 함수
+def evaluate_challenge(user, challenge):
+    # 챌린지 시작 날짜와 종료 날짜를 datetime 객체로 변환
+    start_date = datetime.strptime(challenge['start_date'], '%Y-%m-%d')
+    end_date = datetime.strptime(challenge['end_date'], '%Y-%m-%d')
+    target_amount = challenge['target_amount']  # 챌린지 목표 금액
+    reward = challenge['reward']  # 챌린지 보상
+    
+    # 지정된 기간 동안의 총 지출 금액을 계산
+    total_expenditure = user.account_book.get_total_expenditure(start_date, end_date)
+    
+    # 총 지출 금액이 목표 금액 이하인 경우
+    if total_expenditure <= target_amount:
+        print(f"축하합니다! 챌린지를 달성했습니다. 보상: {reward}")
+    # 총 지출 금액이 목표 금액을 초과한 경우
+    else:
+        print(f"챌린지 실패. 목표 금액: {target_amount}, 실제 지출: {total_expenditure}")
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
     id = input("id 입력: ")  # 회원가입 시의 id 입력
