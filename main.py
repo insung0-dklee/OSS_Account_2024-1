@@ -595,7 +595,7 @@ def add_entry():
 
     # 수입/지출 여부를 입력받음
     while True:
-        income_or_expense = input("1: 수입, 2: 지출 (1 또는 2 선택하세요.): ").strip()
+        income_or_expense = input("1: 수입, 2: 지출을 선택하세요 (1 또는 2): ").strip()
         if income_or_expense in ["1", "2"]:
             break
         else:
@@ -603,9 +603,11 @@ def add_entry():
 
     amount = get_valid_amount_input()
 
-    # 수입/지출에 따라 금액을 조정
-    if income_or_expense == "2":
-        amount = -amount
+    # 수입/지출 여부 저장
+    if income_or_expense == "1":
+        type_entry = "수입"
+    else:
+        type_entry = "지출"
 
     score = day_evaluation()
 
@@ -614,6 +616,7 @@ def add_entry():
         "category": category,
         "description": description,
         "amount": amount,
+        "type": type_entry,  # 수입/지출 여부 추가
         "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
@@ -621,9 +624,9 @@ def add_entry():
 
     category_count = sum(1 for e in ledger if e["category"] == category)
 
-    if category_count >= 3 and category not in favorites:  # 같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
+    if category_count >= 3 and category not in favorites: #같은 카테고리가 3번 이상 입력되면 즐겨찾기에 추가할 것인지 알람창을 출력.
         response = input(f"'{category}' 같은 카테고리가 3회 이상 입력되었습니다. 즐겨찾기에 추가하시겠습니까? ('y' or 'n'): ").strip().lower()
-        if response == 'y':  # 'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
+        if response == 'y': #'y'입력시, 카테고리를 즐겨찾기 항목에 추가.
             add_favorite_category(category)
         else:
             print("카테고리에 추가되지 않았습니다.")
@@ -649,9 +652,10 @@ def show_favorites():
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
-        print(entry)
-        if "score" in entry:
+        print(f"날짜: {entry['date']}, 카테고리: {entry['category']}, 설명: {entry['description']}, 금액: {entry['amount']}원, 유형: {entry['type']}")
+        if "score" in entry: #날짜와 수입/지출 유형도 출력함
             print(f"평가 점수: {entry['score']}")
+
 
 
 def day_evaluation():
