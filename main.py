@@ -1486,6 +1486,29 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+def XtotheNthpower():
+    """
+    X의 n승을 구하는 기능
+
+    Nth power == 지수
+    X == 밑
+    """
+    X = float(input("밑을 입력해주세요 >> "))  # 입력값을 소수로 변환
+    Nth_power = int(input("지수를 입력해주세요 >> "))  # 지수는 여전히 정수로 유지
+    
+    result = 1
+    if Nth_power == 0:
+        print(f"{X} ^ 0 = 1")
+    else:
+        if Nth_power > 0:
+            for _ in range(Nth_power):  # 인덱스 변수를 사용하지 않을 경우 _ 사용
+                result *= X
+            print(f"{X} ^ {Nth_power} = {result}")
+        else:
+            for _ in range(-Nth_power):
+                result /= X
+            print(f"{X} ^ {Nth_power} = {result}")
+
 
 
 
