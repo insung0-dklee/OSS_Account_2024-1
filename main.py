@@ -8,7 +8,7 @@ import random
 import webbrowser
 import re
 import Add_function
-from exchange_forecast import generate_exchange_rate_forecast, view_exchange_rate_forecast
+import AutoSave
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -555,8 +555,6 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 환율 변동 예측 생성  # 새로운 기능
-    7: 환율 변동 예측 보기  # 새로운 기능
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1535,13 +1533,6 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
-        # 며칠 후까지의 환율 변동을 예측할지 사용자에게 입력받고 예측 생성
-        days = int(input("며칠 후까지의 환율 변동을 예측하시겠습니까? (예: 30): "))
-        generate_exchange_rate_forecast(days)
-    elif func == "7":
-        # 환율 변동 예측 데이터를 조회
-        view_exchange_rate_forecast()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1550,6 +1541,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "autosave":
+        AutoSave.auto_save_menu() # 자동 절약 기능 추가
     else:
         
         print("올바른 기능을 입력해 주세요.")
