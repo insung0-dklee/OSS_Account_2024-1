@@ -9,6 +9,10 @@ import webbrowser
 import re
 import Add_function
 
+def todaytime(): #현재 시각 출력 함수
+    today = datetime.now() #현재 시간 저장
+    print(today.strftime("%Y-%m-%d %H:%M:%S")) #현재 시간 출력
+
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
 def user_reg():  # 회원가입
@@ -1242,6 +1246,7 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
+    todaytime() #초기 화면에 현재 시간 표시
 
 def print_Login_help(): #user interface 도움말
     print("""
@@ -1518,6 +1523,7 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
 
 # 메인 루프
 while not b_is_exit:
+    todaytime() #메인 루프에 현재 시간 표시
     print("-----------------------")
     print("user:",user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
