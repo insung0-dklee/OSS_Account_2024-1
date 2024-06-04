@@ -1514,6 +1514,31 @@ class User: # 친구의 가계부를 열람할 수 있는 기능
             print(f"{user.name}님의 가계부:")
             user.analyze_expenses()  # 공유된 사용자의 지출 분석
 
+def set_salary(self, salary_amount, salary_date):
+    # 월급날과 월급 금액을 설정하는 메서드
+    self.salary_manager = SalaryManager(salary_amount, salary_date)
+    print(f"{self.name}님의 월급날이 {salary_date}일로 설정되었으며, 월급은 {salary_amount}원입니다.")
+
+def check_salary(self):
+    # 월급날을 확인하고 월급을 추가하는 메서드
+    if self.salary_manager:  # SalaryManager가 설정되어 있는지 확인
+        self.salary_manager.check_and_add_salary(self)  # 월급날인지 확인하고 월급을 추가
+
+class SalaryManager:
+    def __init__(self, salary_amount, salary_date):
+        # SalaryManager의 생성자 메서드
+        # 월급 금액과 월급날을 초기화
+        self.salary_amount = salary_amount
+        self.salary_date = salary_date
+
+    def check_and_add_salary(self, user):
+        # 월급날인지 확인하고 월급을 추가하는 메서드
+        today = datetime.now().day  # 현재 날짜의 일(day)을 가져옴
+        if self.salary_date == today:  # 오늘이 월급날인지 확인
+            user.balance += self.salary_amount  # 사용자의 잔고에 월급 금액을 추가
+            print(f"오늘은 월급날입니다! {self.salary_amount}원이 {user.name}님의 계좌에 추가되었습니다. 현재 잔고: {user.balance}원")
+
+
 
 
 ###########################################################
