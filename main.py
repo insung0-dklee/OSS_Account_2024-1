@@ -17,6 +17,28 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+def armyfullsaving(): # 군적금 함수
+    save = int(input("한달에 넣는 군적금 금액(원): ")) #한달에 넣는 적금 액수 입력
+    if save > 400000: #최대 40만원까지 
+        print("최대 40만원까지 입력 가능합니다.")
+        return  #입력이 잘못된 경우 함수를 중단
+    
+    month = int(input("적금을 넣는 개월 수(개월):")) #적금 적립기간
+    if month < 1:
+        print("최소 1개월 이상 입력해 주세요")
+        return #입력이 잘못된 경우 함수를 중단
+    
+    rate = float(input("이율(%): ")) #이율 입력
+
+    #이자계산
+    ratesum = 0
+    savesum = 0
+    for i in range(1, month+1):
+        ratesum += save * (rate / 100 / 12) * i
+        savesum += save
+
+    print("매칭지원금:",savesum,"원, 원금:",savesum,"원, 총 이자:",ratesum,"원")
+    print("총 금액:",savesum*2 + ratesum)
 
 # 약속을 담을 리스트
 appointments = []
