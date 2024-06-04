@@ -8,7 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
-import AutoSave
+import daily_budget
+import financial_product_recommender
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1533,6 +1534,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":  # 일일 예산 설정 기능 추가
+        daily_budget.set_daily_budget()
+    elif func == "7":  # 일일 예산 확인 기능 추가
+        daily_budget.check_daily_budget()
+    elif func == "8":
+        financial_product_recommender.main()  # 금융 상품 추천 기능 추가
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
@@ -1541,8 +1548,7 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
-    elif func == "autosave":
-        AutoSave.auto_save_menu() # 자동 절약 기능 추가
     else:
         
         print("올바른 기능을 입력해 주세요.")
+  
