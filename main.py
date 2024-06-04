@@ -547,7 +547,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends': []}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
@@ -1433,6 +1433,12 @@ def generate_monthly_report():
     
     if average_score is not None:
         print(f"{month}월 평균 점수: {average_score:.2f} 점")
+        if average_score < 3:
+            print("최악입니다.")
+        elif 3 <= average_score <= 6:
+            print("그래도 순방했습니다.")
+        elif average_score >= 7:
+            print("부자가 되는 지름길!!")
     else:
         print(f"{month}월에는 평가된 점수가 없습니다.")
 
