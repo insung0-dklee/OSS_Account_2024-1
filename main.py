@@ -8,6 +8,9 @@ import random
 import webbrowser
 import re
 import Add_function
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import simpledialog
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -581,19 +584,26 @@ def get_valid_amount_input():
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
     while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
-        else:
-            print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+        try :
+            amount = simpledialog.askfloat("금액 입력", "금액을 입력하세요: ")
+            if amount is None:
+                    return 0  # 사용자가 취소 버튼을 누르면 None을 반환하여 함수 종료
+            # 입력값이 유효한지 검사
+            amount_float = float(amount)
+            if amount_float >= 0:
+                return amount_float
+            else:
+                messagebox.showwarning("잘못된 입력", "금액은 음수가 될 수 없습니다.")
+        except:
+            messagebox.showerror("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
+    date = simpledialog.askstring("날짜 입력", "날짜를 입력하세요 (YYYY-MM-DD): ")
+    category = simpledialog.askstring("카테고리 입력", "카테고리를 입력하세요: ")
+    description = simpledialog.askstring("설명 입력", "설명을 입력하세요: ")
     score = day_evaluation()
-    amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
+    amount = get_valid_amount_input()
     entry = {
         "date": date,
         "category": category,
@@ -642,16 +652,18 @@ def view_entries():
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
     while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
-        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        evaluation = simpledialog.askfloat("평가 입력", "오늘의 평가를 입력하세요 (0에서 10까지): ")
+        if evaluation is None:
+            return  # 사용자가 취소 버튼을 누르면 None을 반환하여 함수 종료
         try:
             evaluation = float(evaluation)
             if 0 <= evaluation <= 10:
-                print(f"오늘의 평가는 {evaluation}점입니다.")
+                messagebox.showinfo("평가 결과", f"오늘의 평가는 {evaluation}점입니다.")
                 return evaluation
             else:
-                print("평가는 0에서 10 사이의 숫자여야 합니다.")
+                messagebox.showwarning("잘못된 입력", "평가는 0에서 10 사이의 숫자여야 합니다.")
         except ValueError:
-            print("올바른 숫자를 입력하세요.")
+            messagebox.showerror("올바른 숫자를 입력하세요.")
 
 def calculate_average_score(scores):
     if scores:
@@ -745,10 +757,24 @@ def compare_financial_goal(user1, user2, goal):
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    month = simpledialog.askstring("보고서 생성", "보고서 생성할 월 (YYYY-MM): ")
+    if month is None:
+        return  # 사용자가 취소 버튼을 누르면 함수 종료
+    
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
+
+    report_window = tk.Toplevel()
+    report_window.title("월별 보고서")
+    report_window.geometry("600x400")
+
+    entry_listbox = tk.Listbox(report_window, width=80, height=10)
+    entry_listbox.pack(padx=10, pady=10)
+
+    report_text = tk.Text(report_window, width=80, height=10)
+    report_text.pack(padx=10, pady=10)
+
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += float(entry["amount"])
@@ -756,37 +782,47 @@ def generate_monthly_report():
             if category not in category_totals:
                 category_totals[category] = 0
             category_totals[category] += entry["amount"]
-            print(entry)
+            entry_listbox.insert(tk.END, entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
-    print(f"{month}월 총 지출: {monthly_total} 원")
-    print(f"{month}월 각 카테고리별 지출 내역:")
+    report = f"{month}월 총 지출: {monthly_total} 원\n"
+    report += f"{month}월 각 카테고리별 지출 내역:\n"
     for category, total in category_totals.items():
-        print(f"{category}: {total} 원")
+        report += f"{category}: {total} 원\n"
 
     average_score = calculate_average_score(scores)
     if category_totals:
         max_category = max(category_totals, key=category_totals.get)
-        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+        report += f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)\n"
     else:
-        print("해당 월에는 지출 내역이 없습니다.")
-    
+        report += "해당 월에는 지출 내역이 없습니다.\n"
+
     if average_score is not None:
-        print(f"{month}월 평균 점수: {average_score:.2f} 점")
+        report += f"{month}월 평균 점수: {average_score:.2f} 점"
     else:
-        print(f"{month}월에는 평가된 점수가 없습니다.")
+        report += f"{month}월에는 평가된 점수가 없습니다."
+
+    report_text.insert(tk.END, report)
+
+    def close_report():
+        report_window.destroy()
+
+    close_button = tk.Button(report_window, text="확인", command=close_report)
+    close_button.pack(pady=10)
 
 budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
+    budget = simpledialog.askfloat("예산 설정", "예산 설정 (원): ")
+    if budget is None:
+        return  # 사용자가 취소 버튼을 누르면 함수 종료
     current_total = sum(float(entry["amount"]) for entry in ledger)
     if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+        messagebox.showwarning("경고", f"예산 초과! 현재 지출: {current_total} 원")
     else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        messagebox.showinfo("예산 설정 완료", f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
 
 # 예산 확인 함수
 def check_budget():
@@ -1516,30 +1552,69 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         b_is_exit = 1
 
 
-# 메인 루프
-while not b_is_exit:
-    print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
-    func = input("기능 입력 (? 입력시 도움말) : ")
-
-    if func == "1":
-        add_entry()
-    elif func == "2":
-        view_entries()
-    elif func == "3":
-        generate_monthly_report()
-    elif func == "4":
-        set_budget()
-    elif func == "5":
-        analyze_categories()
-    elif func == "?":
-        print_help()
-    elif func == "exit" or func == "x" or func =="종료":
-        print("프로그램을 종료합니다.")
+# 두 번째 기능 루프 (Tkinter GUI)
+def start_gui():
+    def on_exit():
+        global b_is_exit
         b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
-    else:
-        
-        print("올바른 기능을 입력해 주세요.")
+        root.destroy()
+
+    def handle_function():
+        func = entry.get()
+        if func == "1":
+            add_entry()
+        elif func == "2":
+            view_entries()
+        elif func == "3":
+            generate_monthly_report()
+        elif func == "4":
+            set_budget()
+        elif func == "5":
+            analyze_categories()
+        elif func == "?":
+            messagebox.showinfo("도움말", "기능 도움말: \n1: 수입/지출 항목 추가 \n2: 항목 조회 \n3: 월별 보고서 생성 \n4: 예산 설정 및 초과 알림 \n5: 지출 카테고리 분석 \n?: 도움말 출력 \nmemo - 메모 추가 \nexit: 종료")
+        elif func == "exit" or func == "x" or func == "종료":
+            messagebox.showinfo("종료", "프로그램을 종료합니다.")
+            on_exit()
+            return
+        elif func == "memo":
+            entry.configure(state="disabled")
+            add_memo()
+            memo()
+            entry.configure(state="normal")
+        else:
+            messagebox.showwarning("오류", "올바른 기능을 입력해 주세요.")
+        entry.delete(0, tk.END)
+
+    root = tk.Tk()
+    root.title("가계부")
+    root.geometry("400x300")
+
+    label = tk.Label(root, text=f"user: {user.name}")  # 현재 user가 누구인지 출력
+    label.pack()
+
+    entry_label = tk.Label(root, text="기능 입력 (? 입력시 도움말) : ")
+    entry_label.pack()
+
+    entry = tk.Entry(root)
+    entry.pack()
+
+    add_entry_button = tk.Button(root, text="1) 수입/지출 항목 추가", command=add_entry)
+    add_entry_button.pack(padx=10, pady=10)
+
+    add_entry_button = tk.Button(root, text="3) 월별 보고서 생성", command=generate_monthly_report)
+    add_entry_button.pack(padx=10, pady=10)
+
+    add_entry_button = tk.Button(root, text="4) 예산 설정 및 초과 알림", command=set_budget)
+    add_entry_button.pack(padx=10, pady=10)
+
+    button = tk.Button(root, text="확인", command=handle_function)
+    button.pack()
+
+    exit_button = tk.Button(root, text="종료", command=on_exit)
+    exit_button.pack()
+
+
+    root.mainloop()
+
+start_gui()
