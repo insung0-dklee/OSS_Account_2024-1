@@ -4,6 +4,7 @@ import json
 from datetime import datetime, date
 import pickle
 import Account_book
+import calendar
 import random
 import webbrowser
 import re
@@ -374,6 +375,52 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
+def print_calendar_with_ledger(year, month, ledger):
+    """
+    특정 월의 달력을 출력하고, 달력의 일별 수입/지출 내역을 표시하는 기능
+
+    parameters - 
+    year, month : 출력하고자 하는 년, 월
+    ledger : 전역 변수 ledger(가계부 dictionary)
+    """
+    # 캘린더 생성
+    cal = calendar.TextCalendar(calendar.SUNDAY)
+    month_calendar = cal.monthdayscalendar(year, month)
+    
+    # 달력에서 출력하기 위한 ledger_dict 데이터 생성
+    # 해당 년, 월에 해당하는 소비를 모두 저장
+    ledger_dict = {}
+    for entry in ledger:
+        entry_date = datetime.strptime(entry["date"], '%Y-%m-%d')
+        if entry_date.year == year and entry_date.month == month:
+            if entry_date.day not in ledger_dict:
+                ledger_dict[entry_date.day] = []
+            ledger_dict[entry_date.day].append(f"{entry['description']} ({entry['amount']})")
+    
+    # 달력 헤더
+    print(f"{calendar.month_name[month]} {year}".center(20))
+    print("Su  Mo  Tu  We  Th  Fr  Sa")
+    
+    # 지정된 년, 월에 해당되는 소비를 출력
+    for week in month_calendar:
+        for day in week:
+            if day == 0:
+                print("   ", end=" ")
+            else:
+                entry = ledger_dict.get(day, "")
+                if entry:
+                    print(f"{day:2}*", end=" ")  # 수입/지출이 있었던 날은 *로 표시
+                else:
+                    print(f"{day:2} ", end=" ")
+        print()
+    
+    # *로 표시된 수입/지출의 상세 내역을 출력
+    print("\n상세 내역 : ")
+    for day in sorted(ledger_dict):
+        print(f"{day:2}:")
+        for entry in ledger_dict[day]:
+            print(f"  - {entry}")
+
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
 @Parm
@@ -554,6 +601,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 월별 수입/지출 출력 (달력)
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1580,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        year, month = map(int, input("보고싶은 달의 년,월을 입력 (예: 2024,6): ").split(','))
+        print_calendar_with_ledger(year, month, ledger)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
