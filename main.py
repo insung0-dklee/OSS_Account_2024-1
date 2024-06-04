@@ -1579,9 +1579,19 @@ def start_gui():
             return
         elif func == "memo":
             entry.configure(state="disabled")
+            add_entry_button1.configure(state="disabled")
+            add_entry_button2.configure(state="disabled")
+            add_entry_button3.configure(state="disabled")
+            button.configure(state="disabled")
+            exit_button.configure(state="disabled")
             add_memo()
             memo()
             entry.configure(state="normal")
+            add_entry_button1.configure(state="normal")
+            add_entry_button2.configure(state="normal")
+            add_entry_button3.configure(state="normal")
+            button.configure(state="normal")
+            exit_button.configure(state="normal")
         else:
             messagebox.showwarning("오류", "올바른 기능을 입력해 주세요.")
         entry.delete(0, tk.END)
@@ -1599,14 +1609,14 @@ def start_gui():
     entry = tk.Entry(root)
     entry.pack()
 
-    add_entry_button = tk.Button(root, text="1) 수입/지출 항목 추가", command=add_entry)
-    add_entry_button.pack(padx=10, pady=10)
+    add_entry_button1 = tk.Button(root, text="1) 수입/지출 항목 추가", command=add_entry)
+    add_entry_button1.pack(padx=10, pady=10)
 
-    add_entry_button = tk.Button(root, text="3) 월별 보고서 생성", command=generate_monthly_report)
-    add_entry_button.pack(padx=10, pady=10)
+    add_entry_button2 = tk.Button(root, text="3) 월별 보고서 생성", command=generate_monthly_report)
+    add_entry_button2.pack(padx=10, pady=10)
 
-    add_entry_button = tk.Button(root, text="4) 예산 설정 및 초과 알림", command=set_budget)
-    add_entry_button.pack(padx=10, pady=10)
+    add_entry_button3 = tk.Button(root, text="4) 예산 설정 및 초과 알림", command=set_budget)
+    add_entry_button3.pack(padx=10, pady=10)
 
     button = tk.Button(root, text="확인", command=handle_function)
     button.pack()
