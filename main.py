@@ -289,6 +289,31 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+import datetime
+
+# 가계부 데이터 예시
+accounts = [
+    {'card': '카드A', 'amount': 50000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 15)},
+    {'card': '카드B', 'amount': 30000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 20)},
+    {'card': '카드A', 'amount': 70000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 15)},
+    {'card': '카드C', 'amount': 40000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 25)}
+]
+
+def check_and_update_payment_status():
+    # 오늘 날짜
+    today = datetime.date.today()
+
+    # 카드별 정산일 확인 및 상태 변경
+    for account in accounts:
+        if account['due_date'] == today and account['status'] == '결제 대기':
+            account['status'] = '결제 완료'
+            print(f"{account['card']} 카드 {account['amount']}원 결제 완료")
+        else:
+            print(f"{account['card']} 카드 {account['amount']}원 결제 대기 중")
+
+# 실행
+check_and_update_payment_status()
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
