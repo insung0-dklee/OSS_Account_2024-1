@@ -554,6 +554,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 커뮤니티 메시지 게시
+    7: 커뮤니티 메시지 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1516,6 +1518,45 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         b_is_exit = 1
 
 
+community_file = 'community.json'
+
+# 커뮤니티 메시지를 파일에 저장하는 함수
+def save_message(message):
+    messages = load_community_messages()
+    messages.append(message)
+    with open(community_file, 'w', encoding='utf-8') as file:
+        json.dump(messages, file, ensure_ascii=False, indent=4)
+
+# 커뮤니티 메시지를 파일에서 불러오는 함수
+def load_community_messages():
+    try:
+        with open(community_file, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+# 커뮤니티 메시지 게시 함수
+def post_message():
+    user_name = input("사용자 이름: ")
+    message_content = input("게시할 메시지: ")
+    message = {
+        'user': user_name,
+        'content': message_content,
+        'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    save_message(message)
+    print("메시지가 게시되었습니다.")
+
+# 커뮤니티 메시지 조회 함수
+def view_messages():
+    messages = load_community_messages()
+    if messages:
+        for message in messages:
+            print(f"[{message['date']}] {message['user']}: {message['content']}")
+    else:
+        print("게시된 메시지가 없습니다.")
+
+
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
@@ -1532,6 +1573,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        post_message()  # 커뮤니티 메시지 게시
+    elif func == "7":
+        view_messages()  # 커뮤니티 메시지 조회
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
