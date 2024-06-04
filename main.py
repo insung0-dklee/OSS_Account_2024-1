@@ -16,8 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
-import reminder  # 리마인더 기능 추가
-
+import voice_recognition
 
 # 약속을 담을 리스트
 appointments = []
@@ -2331,12 +2330,23 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
-    elif func == "6":
-        reminder.add_reminder()
-    elif func == "7":
-        reminder.view_reminders()
-    elif func == "8":
-        reminder.delete_reminder()
+    elif func == "voice":
+        print("음성 인식 기능을 사용합니다.")
+        voice_command = voice_recognition.recognize_speech()
+        if voice_command:
+            # 음성 인식으로 받은 명령을 처리하는 로직 추가
+            if "추가" in voice_command:
+                add_entry()
+            elif "조회" in voice_command:
+                view_entries()
+            elif "보고서" in voice_command:
+                generate_monthly_report()
+            elif "예산" in voice_command:
+                set_budget()
+            elif "카테고리" in voice_command:
+                analyze_categories()
+            else:
+                print("알 수 없는 명령입니다. 다시 시도하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
