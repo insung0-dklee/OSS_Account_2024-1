@@ -260,6 +260,8 @@ def choose_Account(func):#가계부 선택 함수
     choose = input()
     return choose 
 
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 
@@ -287,3 +289,24 @@ while not b_is_exit:
         b_is_exit = not b_is_exit
 
         print("올바른 기능을 입력해 주세요.")
+
+import datetime
+
+# 가계부 데이터 예시
+accounts = [
+    {'card': '카드A', 'amount': 50000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 15)},
+    {'card': '카드B', 'amount': 30000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 20)},
+    {'card': '카드A', 'amount': 70000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 15)},
+    {'card': '카드C', 'amount': 40000, 'status': '결제 대기', 'due_date': datetime.date(2023, 6, 25)}
+]
+
+# 오늘 날짜
+today = datetime.date.today()
+
+# 카드별 정산일 확인 및 상태 변경
+for account in accounts:
+    if account['due_date'] == today:
+        account['status'] = '결제 완료'
+        print(f"{account['card']} 카드 {account['amount']}원 결제 완료")
+    else:
+        print(f"{account['card']} 카드 {account['amount']}원 결제 대기 중")
