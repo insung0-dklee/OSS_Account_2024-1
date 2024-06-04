@@ -1235,6 +1235,44 @@ starting_time = time.time()
 def print_program_running_time():
     print("프로그램 실행 시간: {:.2f} 초".format(program_running_time()))
 
+# 경제 퀴즈 질문과 답변
+quiz_options = [
+    {"question": "국내총생산(GDP)은 무엇을 측정하는 지표인가요?", "options": ["a) 국가의 교육 수준", "b) 국가의 총 인구수", "c) 한 국가에서 일정 기간 동안 생산된 모든 최종 재화와 서비스의 총 가치를 측정", "d) 한 국가의 무역 적자"], "answer": "A"},
+    {"question": "경기순환(business cycle)에서 '호황기(boom)'는 어떤 상태를 의미하나요?", "options": ["a) 경제가 하강 국면에 있는 상태", "b) 경제가 침체 국면에 있는 상태", "c) 경제가 회복 국면에 있는 상태", "d) 경제가 상승 국면에 있는 상태"], "answer": "B"},
+    {"question": "국제 무역에서 '무역 장벽(trade barrier)'은 무엇을 의미하나요?", "options": ["a) 수출국이 수입국에게 제공하는 보조금", "b) 수입국이 수출국에게 제공하는 보조금", "c) 국가 간의 무역을 제한하거나 방해하는 관세나 규제", "d) 국가 간의 무역을 촉진하는 협정"], "answer": "C"}
+]
+
+def one_minute_economic_quiz():
+    # 퀴즈 시작 안내
+    print("1분 경제 퀴즈에 오신 것을 환영합니다! 각 질문에 대해 올바른 답변을 선택하세요.")
+    print("퀴즈는 1분 동안 진행됩니다.\n")
+
+    # 퀴즈 시작 시간 기록
+    start_time = time.time()  # 현재 시간을 기록
+    score = 0  # 정답 개수
+    question_count = 0  # 질문 개수
+
+    while time.time() - start_time < 60:  # 1분 동안 반복
+        # 랜덤하게 질문 선택
+        question = random.choice(quiz_options)  # 퀴즈 질문 중 랜덤하게 선택
+        print(question["question"])  # 질문 출력
+        for option in question["options"]:
+            print(option)  # 선택지 출력
+
+        # 사용자의 답변 입력
+        answer = input("정답을 선택하세요 (A, B, C, D): ").strip().upper()  # 대문자로 변환하여 입력 받음
+        if answer == question["answer"]:  # 사용자의 답변과 정답 비교
+            print("정답입니다!\n")  # 정답인 경우 메시지 출력
+            score += 1  # 정답 개수 증가
+        else:
+            print(f"오답입니다. 정답은 {question['answer']}입니다.\n")  # 오답인 경우 정답과 함께 메시지 출력
+
+        question_count += 1  # 질문 개수 증가
+
+    # 퀴즈 종료 및 결과 출력
+    print(f"1분이 종료되었습니다! 총 {question_count}문제 중 {score}문제를 맞추셨습니다.")  # 총 문제 개수와 맞춘 개수 출력
+    print(f"정답률: {score / question_count * 100:.2f}%")  # 정답률 계산하여 출력
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1551,6 +1589,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "quiz":
+        one_minute_economic_quiz()
     else:
         
         print("올바른 기능을 입력해 주세요.")
