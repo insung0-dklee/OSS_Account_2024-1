@@ -543,6 +543,29 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#위시리스트
+class Wishlist:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, name, price):
+        self.items.append({"name": name, "price": price})
+        print(f"'{name}' 항목이 추가되었습니다. 금액: {price}원")
+
+    def remove_item(self, index):
+        if 0 <= index < len(self.items):
+            removed_item = self.items.pop(index)
+            print(f"'{removed_item['name']}' 항목이 삭제되었습니다.")
+        else:
+            print("잘못된 번호입니다.")
+
+    def view_list(self):
+        if not self.items:
+            print("위시리스트가 비어 있습니다.")
+        else:
+            for i, item in enumerate(self.items, start=1):
+                print(f"{i}. {item['name']} - {item['price']}원")
+                
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +577,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 위시리스트      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1556,32 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        wishlist = Wishlist()
+        while True:
+            print("-----------------------")
+            print("위시리스트")
+            print("1: 물품 추가")
+            print("2: 물품 삭제")
+            print("3: 리스트 확인")
+            print("4: 종료")
+            option = input("기능을 선택하세요: ")
+
+            if option == "1":
+                name = input("물품 이름을 입력하세요: ")
+                price = float(input("물품 금액을 입력하세요 : "))
+                wishlist.add_item(name, price)
+            elif option == "2":
+                wishlist.view_list()
+                index = int(input("삭제할 물품 번호를 입력하세요: ")) - 1
+                wishlist.remove_item(index)
+            elif option == "3":
+                wishlist.view_list()
+            elif option == "4":
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
