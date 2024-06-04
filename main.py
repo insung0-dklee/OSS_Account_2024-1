@@ -556,6 +556,7 @@ def print_help():
     5: 지출 카테고리 분석
     6: 즐겨찾는 카테고리 조회
     7: 추천 카테고리
+    8: 카드 추천
     ?: 도움말 출력
     exit: 종료
     """)
@@ -667,7 +668,32 @@ def reco_menu():
         recommend=random.choice(top_rank) #5위까지 중 랜덤으로 추천
         print(f"{select} 에서 추천하는 항목: {recommend[0]}")
 
-    
+def reco_card():
+    categories = { #소비처별 키워드를 미리 지정. 
+        "대중교통": ["교통", "택시", "버스", "지하철"],
+        "카페": ["커피", "카페"],
+        "음식점": ["식당", "외식", "국밥"],
+        "배달": ["배달의 민족", "요기요", "쿠팡이츠"]
+    }
+    count = {category: 0 for category in categories} #소비처별 횟수를 저장할 딕셔너리
+
+    for entry in ledger:
+        description = entry['description'] #키워드가 있으면 소비처별 카운트 횟수 증가
+        for category, keywords in categories.items():
+            if any(keyword in description for keyword in keywords):
+                count[category] += 1
+    max_category = max(count, key=count.get)
+
+    card_reco_list = { #실제 소비처 별 추천 카드 리스트 (출저:https://www.card-gorilla.com/search/condition )
+        "대중교통": "신한 Mr.Life 카드",
+        "카페": "삼성 MILEAGE PLATINUM 카드",
+        "음식점": "신한 Mr.Life 카드",
+        "배달": "KB My WE:SH 카드" 
+    }
+    reco_card = card_reco_list[max_category] #가장 많이 소비한 소비처에 따라 추천 카드 선택
+    print(f"내가 가장 많이 소비하는 분야: {max_category} ({count[max_category]}회)")
+    print(f"추천 카드: {reco_card}")
+
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
@@ -1581,6 +1607,8 @@ while not b_is_exit:
         show_favorites()
     elif func == "7":
         reco_menu()
+    elif func == "8":
+        reco_card()
     else:
         
         print("올바른 기능을 입력해 주세요.")
