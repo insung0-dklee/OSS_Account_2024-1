@@ -1486,6 +1486,88 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+userdata = {}
+user_points = {}
+
+# 사용자 데이터 파일 초기화
+if not os.path.exists('user_data.json'):
+    with open('user_data.json', 'w') as file:
+        json.dump({'users': userdata, 'points': user_points}, file)
+
+# 친환경 제품 목록
+eco_friendly_products = ["Reusable Bag", "Bamboo Toothbrush", "Eco-friendly Detergent"]
+
+def user_reg():
+    id = input("id 입력: ")
+    pw = input("password 입력: ")
+
+    h = hashlib.sha256()
+    h.update(pw.encode())
+    pw_data = h.hexdigest()
+
+    userdata[id] = pw_data
+    user_points[id] = 0
+
+    with open('user_data.json', 'w') as fw:
+        json.dump({'users': userdata, 'points': user_points}, fw, ensure_ascii=False, indent=4)
+    print(f"회원가입 완료 {id}님 환영합니다.")
+
+def load_user_data():
+    with open('user_data.json', 'r') as file:
+        data = json.load(file)
+    global userdata, user_points
+    userdata = data['users']
+    user_points = data['points']
+
+def save_user_data():
+    with open('user_data.json', 'w') as file:
+        json.dump({'users': userdata, 'points': user_points}, file, ensure_ascii=False, indent=4)
+
+def record_eco_friendly_purchase(user_id, product, amount):
+    if product in eco_friendly_products:
+        points = int(amount * 0.1)  # 지출 금액의 10%를 포인트로 적립
+        user_points[user_id] += points
+        print(f"{product} 구매로 {points} 포인트 적립되었습니다! 현재 포인트: {user_points[user_id]}")
+        save_user_data()
+    else:
+        print(f"{product}은(는) 친환경 제품 목록에 없습니다.")
+
+def input_expense():
+    user_id = input("사용자 ID: ")
+    if user_id not in userdata:
+        print("등록되지 않은 사용자입니다. 회원가입을 먼저 해주세요.")
+        return
+    date = input("지출 날짜 (예: 2024-05-30): ")
+    item = input("지출 항목: ")
+    amount = float(input("지출 금액: "))
+
+    # 친환경 제품 구매 시 포인트 적립
+    record_eco_friendly_purchase(user_id, item, amount)
+
+def show_eco_friendly_products():
+    print("친환경 제품 목록:")
+    for product in eco_friendly_products:
+        print(f"- {product}")
+
+# 프로그램 시작 시 사용자 데이터 로드
+load_user_data()
+
+# 예시 실행
+if __name__ == "__main__":
+    while True:
+        func = input("기능 입력 (회원가입, 지출입력, 친환경제품목록, 종료) : ")
+
+        if func == "회원가입":
+            user_reg()
+        elif func == "지출입력":
+            input_expense()
+        elif func == "친환경제품목록":
+            show_eco_friendly_products()
+        elif func == "종료":
+            break
+        else:
+            print("올바른 기능을 입력해 주세요.")
+
 
 
 
