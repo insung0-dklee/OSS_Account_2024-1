@@ -1276,52 +1276,6 @@ def read_user_information(): #login.txt에서 읽어온 후 dic에 저장
     f.close()
     return login_info #파일의 모든 정보가 저장된 리스트 반환 - 이후 로그인 인터페이스에서 사용을 위함
 
-def Login_interface(): #로그인 인터페이스
-    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
-    if len(login_info)==0 : 
-        print("로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
-        return 0
-    elif login_info is None : 
-        print("오류가 발생했습니다.")
-        return 0
-    print("로그인(ID와 PW를 입력해 주세요.)")
-    ID = input("ID: ")
-    PW = input("PW: ")
-
-    h = hashlib.sha256()
-
-    # 파일 읽기 관련 예외 처리
-    try:
-        with open("login.txt", "r", encoding="UTF-8") as f:
-            login_info = [line.strip().split(":") for line in f.readlines()]
-    except FileNotFoundError:
-        print("로그인 정보 파일을 찾을 수 없습니다.")
-        return 0
-    except Exception as e:
-        print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
-        return 0
-    
-    cnt = 0
-
-    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
-
-    for i in range(len(login_info)):
-        if(login_info[i][0] == ID):
-            h.update(PW.encode()) #문자열로 비밀번호 추가 가능
-            login_pw = h.hexdigest()#암호화 후 출력
-
-            if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
-                print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
-                return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
-            else:
-                print("비밀번호 오류입니다.")#아니면 끝
-                break
-        cnt += 1
-
-    if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
-        print("존재하지 않는 아이디입니다.")
-    return 0
-
 def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경 - find_id_by_phone()에서 이름 또한 포함되도록 변경
     check = 0
 
@@ -1352,6 +1306,61 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
             print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
     else:
         print("ID가 존재하지 않습니다.") #ID 존재 X
+
+def Login_interface(): #로그인 인터페이스
+    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
+    if len(login_info)==0 : 
+        print("로그인 정보가 없습니다.\n회원가입을 진행해주세요.")
+        return 0
+    elif login_info is None : 
+        print("오류가 발생했습니다.")
+        return 0
+
+    print("로그인(ID와 PW를 입력해 주세요.)")
+    ID = input("ID: ")
+    PW = input("PW: ")
+
+    h = hashlib.sha256()
+
+    # 파일 읽기 관련 예외 처리
+    try:
+        with open("login.txt", "r", encoding="UTF-8") as f:
+            login_info = [line.strip().split(":") for line in f.readlines()]
+    except FileNotFoundError:
+        print("로그인 정보 파일을 찾을 수 없습니다.")
+        return 0
+    except Exception as e:
+        print(f"로그인 정보를 읽는 도중 오류가 발생했습니다: {e}")
+        return 0
+    
+    attempt_count = 0
+    max_attempts = 5
+    cnt = 0
+
+    login_info = read_user_information() #주의 - read_user_information()이 항상 위에 있어야함(인터프리터 방식)
+
+    for i in range(len(login_info)):
+        if(login_info[i][0] == ID):
+            while attempt_count < max_attempts:
+                attepmt_count += 1 # 시도 횟수 추가
+                h.update(PW.encode()) #문자열로 비밀번호 추가 가능
+                login_pw = h.hexdigest()#암호화 후 출력
+    
+                if(login_info[i][1] == login_pw): #ID가 맞으면 PW 확인
+                    print(f"환영합니다. {login_info[i][2]} 고객님")#맞으면 이름 출력
+                    return User(login_info[i][2]) #user 객체 반환 - 이후 user정보에 입력 위함
+                else:
+                    if attempt_count >= max_attempts:
+                        print(f"비밀번호를 {max_attempts}회 이상 틀렸습니다. 비밀번호 변경 절차를 진행합니다.")
+                        change_pw_by_phone() #바로 비밀번호를 찾는 코드 실행
+                        return 0
+                    print(f"비밀번호를 {max_attempts}회 중 {attempt_count}회 틀렸습니다. 다시 입력하세요.") #최대 입력 가능 횟수와 시도 횟수 출력 
+                    PW = input("PW: ") #PW를 재입력
+            cnt += 1
+
+    if(cnt == len(login_info)): # cnt로 리스트의 끝인지 check
+        print("존재하지 않는 아이디입니다.")
+    return 0
 
 YU_Account() #프로그램 시작 화면
 
