@@ -69,8 +69,78 @@ class ACC_BOOK:
         pass
                 
     # 4. 내역 조회 기능
-    def log_statement(self):
-        pass
+    def log_statement(self, type):
+        if type == 1: 
+            title = "수입"
+        else: 
+            title = "지출"
+
+        while True:
+            print("\n======= 조회 항목 =======")
+            print(f"[1] {title} 전체 조회")
+            print(f"[2] {title} 년도 조회")
+            print(f"[3] {title} 월 조회")
+            print(f"[4] {title} 일 조회")
+            print(f"[0] {title} 조회 종료")
+            print("==========================")
+        
+            try:
+                sel_num = int(input("조회 항목 선택: "))
+            except Exception:
+                print("\n 숫자만 입력해주세요.\n")
+                continue
+            
+            if sel_num == 0:
+                break
+            elif sel_num == 1:
+                find = ""
+            elif sel_num == 2:
+                find = self.log_form(form = "년도", form_len = 4)
+            elif sel_num == 3:
+                find = self.log_form(form = "월", form_len = 2)
+            elif sel_num == 4:
+                find = self.log_form(form = "일", form_len = 2)
+
+            print()
+            find_cnt = 0
+            for date, value in self.dates.items():
+                if find == date[:len(find)]:
+                    print(f"날짜: {date} ({value[0]}) 금액: {value[1]} 카테고리: {value[2]}")
+                    find_cnt += 1
+            if find_cnt >= 1:
+                print(f"\n조회 개수: {find_cnt}")
+            else:
+                print(f"\n조회할 항목이 없습니다.")
+
+#   4-(1). 조회 형식
+# @주요기능
+#     [1]. 전체 조회: 가계부의 모든 내역 조회
+#     [2]. 년도 조회: 해당 년도의 모든 내역 조회
+#     [3].   월 조회: 해당 년도와 월의 모든 내역 조회
+#     [4].   일 조회: 해당 년도와 월과 일의 모든 내역 조회
+#
+# @매개변수
+#     form     : 조회할 형식(년도, 월, 일)을 문자열로 담고있는 변수 
+#     form_len : 조회할 형식(년도, 월, 일)의 길이를 담고있는 변수
+    def log_form(self, form, form_len):
+        if form == "년도":
+            string = ""
+        elif form == "월":
+            string = self.log_form(form = "년도", form_len = 4)
+        elif form == "일":
+            string = self.log_form(form = "월", form_len = 2)
+        while True:
+            try:
+                find = input(f"조회할 {form} 입력: ")
+                if len(find) != form_len:
+                    print(f"\n{form_len}자리로 입력해주세요.\n")
+                else:
+                    find = str(find).zfill(form_len)
+                    return string + find + "-"
+                continue
+            except Exception:
+                print(f"\n{form}를 다시 입력해주세요.\n")
+                continue
 
     # 5. 날짜 입력 기능
     def date_err_check(self):
@@ -200,7 +270,7 @@ def income_spending(type, statement):
             statement.del_statement()
         elif sel_num == 4:
             print(f"\n======= {title} 내역 조회 =======")
-            statement.log_statement()
+            statement.log_statement(type)
 
 
 def main():
