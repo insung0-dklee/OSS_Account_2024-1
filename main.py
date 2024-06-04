@@ -555,6 +555,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 즐겨찾는 카테고리 조회
+    7: 추천 카테고리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -650,9 +651,23 @@ def favorite_rank(category):
                 count_list[description] += 1
     rank = sorted(count_list.items(), key=lambda x: x[1], reverse=True) #횟수를 기준으로 내림차순 정렬 
     print(f"{category}의 인기 순위")  
-    for rank, (description, count) in enumerate(rank, 1):
-        print(f"{rank}. {description} ({count}회)")         
-        
+    for i, (description, count) in enumerate(rank, 1):
+        print(f"{i}. {description} ({count}회)")
+    return rank
+
+def reco_menu():
+    print("즐겨찾기 카테고리 목록")
+    for i, category in enumerate(favorites, start=1):
+        print(f"{i}- {category}")
+    choice = int(input("추천을 받을 카테고리를 선택해 주세요 (번호 입력): "))
+    select=favorites[choice-1]
+    rank=favorite_rank(select) #선택한 카테고리의 인기순위를 불러옴
+    top_rank = rank[:5] #인기순위 5위까지 불러옴
+    if top_rank:
+        recommend=random.choice(top_rank) #5위까지 중 랜덤으로 추천
+        print(f"{select} 에서 추천하는 항목: {recommend[0]}")
+
+    
 # 항목 조회 함수
 def view_entries():
     for entry in ledger:
@@ -1564,6 +1579,8 @@ while not b_is_exit:
         memo()
     elif func == "6":
         show_favorites()
+    elif func == "7":
+        reco_menu()
     else:
         
         print("올바른 기능을 입력해 주세요.")
