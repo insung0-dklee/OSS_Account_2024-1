@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 대중교통 비용 조회
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1149,6 +1150,12 @@ def analyze_and_advise():
     else:
         print("지출이 잘 관리되고 있습니다!") #조언이 없을 때
 
+#대중교통 비용 조회 기능
+def calculate_public_transport_expenses():
+    num_rides = int(input("대중교통을 몇 번 탔나요? "))
+    total_cost = num_rides * 1500
+    print(f"총 대중교통 비용은 {total_cost}원 입니다.")
+
 #디데이 기능
 d_day_file = 'd_day.json' 
 
@@ -1532,6 +1539,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        calculate_public_transport_expenses()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
