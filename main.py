@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 비상
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1190,6 +1191,62 @@ def view_d_day():
     else:
         print("저장된 디데이 정보가 없습니다.")
 
+# 비상금 초기화
+fund = 0.0
+
+def add_funds(amount):
+    global fund
+    if amount > 0:
+        fund += amount
+        print(f"비상금에 {amount}원이 추가되었습니다. 현재 비상금: {fund}원")
+    else:
+        print("추가할 금액은 0원보다 커야 합니다.")
+
+def use_funds(amount):
+    global fund
+    if 0 < amount <= fund:
+        fund -= amount
+        print(f"비상금에서 {amount}원을 사용했습니다. 남은 비상금: {fund}원")
+    elif amount > fund:
+        print(f"사용하려는 금액이 현재 비상금({fund}원)보다 많습니다.")
+    else:
+        print("사용할 금액은 0원보다 커야 합니다.")
+
+def check_funds():
+    global fund
+    print(f"현재 비상금 잔액: {fund}원")
+
+def main():
+    global fund
+
+    while True:
+        print("\n비상금 관리")
+        print("1. 비상금 추가")
+        print("2. 비상금 사용")
+        print("3. 비상금 잔액 확인")
+        print("4. 종료")
+        choice = input("원하는 작업을 선택하세요: ")
+
+        if choice == '1':
+            try:
+                amount = float(input("추가할 금액을 입력하세요: "))
+                add_funds(amount)
+            except ValueError:
+                print("유효한 금액을 입력하세요.")
+        elif choice == '2':
+            try:
+                amount = float(input("사용할 금액을 입력하세요: "))
+                use_funds(amount)
+            except ValueError:
+                print("유효한 금액을 입력하세요.")
+        elif choice == '3':
+            check_funds()
+        elif choice == '4':
+            print("비상금 관리를 종료합니다.")
+            break
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
+
 #가계부 초깃값 임의로 설정
 #Account_book.py의 Account book 모듈을 불러오므로 Account.
 a = Account_book.Account_book("가계부 1",1000000)
@@ -1532,6 +1589,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func =="6":
+        main()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
