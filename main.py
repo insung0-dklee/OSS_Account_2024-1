@@ -1273,6 +1273,11 @@ def one_minute_economic_quiz():
     print(f"1분이 종료되었습니다! 총 {question_count}문제 중 {score}문제를 맞추셨습니다.")  # 총 문제 개수와 맞춘 개수 출력
     print(f"정답률: {score / question_count * 100:.2f}%")  # 정답률 계산하여 출력
 
+# 시간과 날짜를 출력하는 함수
+def Time():
+    now = datetime.now()
+    print("현재 날짜 및 시간:", now.year, "년", now.month, "월", now.day, "일", now.hour, "시", now.minute, "분", now.second, "초\n")
+
 """
 YU_Account : 프로그램 시작 화면 출력
 @Parm
@@ -1291,6 +1296,7 @@ def YU_Account():
     """
     print(welcome_message)
     print_program_running_time()
+    Time()
 
 def print_Login_help(): #user interface 도움말
     print("""
