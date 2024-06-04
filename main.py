@@ -543,6 +543,95 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#원하는 리스트 입력받는 함수
+def list():
+    items = []
+
+    while True:
+        print("\n1: 물품 추가")
+        print("2: 물품 구매 후 제거")
+        print("3: 리스트 보기")
+        print("4: 종료")
+        choice = input("원하는 기능의 번호를 입력하세요: ")
+
+        if choice == '1':
+            while True:
+                name = input("물품 이름을 입력하세요: ")
+                if name.isdigit():
+                    print("잘못된 입력입니다. 문자를 입력하세요.")
+                    continue
+
+                try:
+                    price = int(input(f"{name}의 가격을 입력하세요 (원): "))
+                except ValueError:
+                    print("잘못된 입력입니다. 숫자를 입력하세요.")
+                    continue
+
+                category = input("카테고리를 입력하세요: ")
+                if category.isdigit():
+                    print("잘못된 입력입니다. 문자를 입력하세요.")
+                    continue
+
+                items.append({"name": name, "price": price, "category": category})
+                break
+
+        elif choice == '2':
+            while True:
+                name = input("구매한 물품의 이름을 입력하세요: ")
+                if name.isdigit():
+                    print("잘못된 입력입니다. 문자를 입력하세요.")
+                    continue
+
+                if any(item["name"] == name for item in items):
+                    items = [item for item in items if item["name"] != name]
+                    print(f"{name}이(가) 리스트에서 제거되었습니다.")
+                else:
+                    print(f"{name}은(는) 리스트에 존재하지 않습니다.")
+                break
+
+        elif choice == '3':
+            if items:
+                print("리스트 보기 옵션을 선택하세요:")
+                print("1: 가격대별 보기")
+                print("2: 카테고리별 보기")
+                view_choice = input("원하는 옵션의 번호를 입력하세요: ")
+
+                if view_choice == '1':
+                    items_sorted_by_price = sorted(items, key=lambda x: x["price"], reverse=True)
+                    print("가격대별 물품 리스트 (높은 가격순):")
+                    for item in items_sorted_by_price:
+                        print(f"- {item['name']}: {item['price']}원 (카테고리: {item['category']})")
+
+                elif view_choice == '2':
+                    categories = {}
+                    for item in items:
+                        if item["category"] not in categories:
+                            categories[item["category"]] = []
+                        categories[item["category"]].append(item)
+
+                    print("카테고리별 물품 리스트:")
+                    for category, items_in_category in categories.items():
+                        print(f"\n{category}:")
+                        items_sorted_by_price = sorted(items_in_category, key=lambda x: x["price"], reverse=True)
+                        for item in items_sorted_by_price:
+                            print(f"- {item['name']}: {item['price']}원")
+
+                else:
+                    print("잘못된 입력입니다. 다시 시도하세요.")
+            else:
+                print("물품 리스트가 비어 있습니다.")
+
+        elif choice == '4':
+            print("프로그램을 종료합니다.")
+            break
+
+        else:
+            print("잘못된 입력입니다. 다시 시도하세요.")
+
+if __name__ == "__list__":
+    list()
+
+
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +643,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 물품 리스트 작성 / 정리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1622,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        list()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
