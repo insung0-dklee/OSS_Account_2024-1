@@ -555,6 +555,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
+    app: 약속 기능 열람
     exit: 종료
     """)
 
@@ -808,6 +809,89 @@ def analyze_categories():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
+# 약속을 담을 리스트
+appointments = []
+
+def add_appointment():
+    """
+    약속을 추가하는 함수.
+    """
+
+    name = input("약속 이름: ")
+    start_date = datetime.strptime(input("시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    end_date = datetime.strptime(input("종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    budget = float(input("예산: "))
+    
+    appointment = {
+        "name": name,
+        "start_date": start_date,
+        "end_date": end_date,
+        "budget": budget,
+        "expenses": []  # 약속 내에 사용한 지출을 확인하기 위한 리스트
+    }
+    appointments.append(appointment)
+    print(f"약속 '{name}'이(가) 추가되었습니다.")
+
+def add_expense():
+    """
+    약속 중 지출을 설정하기 위한 함수
+    """
+
+    name = input("약속 이름: ")
+    for appointment in appointments:
+        if appointment["name"] == name:
+            date = datetime.strptime(input("지출 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+            description = input("지출 설명: ")
+            amount = float(input("지출 금액: "))
+            
+            if appointment["start_date"] <= date <= appointment["end_date"]:
+                appointment["expenses"].append({"date": date, "description": description, "amount": amount})
+                total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
+                if total_expenses > appointment["budget"]:
+                    print(f"경고: 예산 초과! 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
+                else:
+                    print(f"지출이 추가되었습니다. 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
+            else:
+                print("지출 일자가 약속 기간 내에 있지 않습니다.")
+            return
+    print("해당 이름의 약속이 존재하지 않습니다.")
+
+def show_appointments():
+    """
+    설정되어있는 약속들을 보여주는 함수
+    """
+    for appointment in appointments:
+        print(f"\n약속 이름: {appointment['name']}")
+        print(f"시작 일자: {appointment['start_date'].strftime('%Y-%m-%d')}")
+        print(f"종료 일자: {appointment['end_date'].strftime('%Y-%m-%d')}")
+        print(f"예산: {appointment['budget']}")
+        print("지출 내역:")
+        total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
+        print(f"  * 약속 내 총 지출 : {total_expenses}")
+        for expense in appointment["expenses"]:
+            print(f"  - 일자: {expense['date'].strftime('%Y-%m-%d')}, 설명: {expense['description']}, 금액: {expense['amount']}")
+
+def appointment_management():
+    while True:
+        print("\n---- 약속 관리 메뉴----")
+        choice = input("약속 기능 입력 (? 입력시 도움말) : ")
+
+        if choice == '1':
+            add_appointment()
+        elif choice == '2':
+            add_expense()
+        elif choice == '3':
+            show_appointments()
+        elif choice == '0':
+            print("메인 메뉴로 돌아갑니다. \n")
+            break
+        elif choice == '?':
+            print("1. 약속 추가")
+            print("2. 지출 추가")
+            print("3. 약속 보기")
+            print("0. 메인 메뉴로 돌아가기")
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
 
 
 def calculate_monthly_savings(target_amount, target_date):
@@ -1540,6 +1624,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "app":
+        appointment_management()
     else:
         
         print("올바른 기능을 입력해 주세요.")
