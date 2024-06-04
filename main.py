@@ -8,6 +8,8 @@ import random
 import webbrowser
 import re
 import Add_function
+import requests
+from bs4 import BeautifulSoup #HTML 파싱을 위한 라이브러리
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1538,7 +1540,33 @@ class SalaryManager:
             user.balance += self.salary_amount  # 사용자의 잔고에 월급 금액을 추가
             print(f"오늘은 월급날입니다! {self.salary_amount}원이 {user.name}님의 계좌에 추가되었습니다. 현재 잔고: {user.balance}원")
 
+def get_kospi_kosdaq():
+    # URL 설정 
+    url = "https://finance.naver.com/sise/"
 
+    try:
+        # 웹 페이지 요청
+        response = requests.get(url)
+        response.raise_for_status()  # 요청이 성공했는지 확인
+
+        # BeautifulSoup을 사용하여 HTML 파싱
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # 코스피 지수 가져오기
+        kospi_index = soup.select_one("#KOSPI_now").text
+        # 코스닥 지수 가져오기
+        kosdaq_index = soup.select_one("#KOSDAQ_now").text
+
+        # 결과 출력
+        print(f"코스피 지수: {kospi_index}")
+        print(f"코스닥 지수: {kosdaq_index}")
+
+    except requests.RequestException as e:
+        print(f"웹 페이지 요청 중 오류가 발생했습니다: {e}")
+    except AttributeError as e:
+        print("HTML 파싱 중 오류가 발생했습니다. 페이지 구조가 변경되었을 수 있습니다.")
+    except Exception as e:
+        print(f"예상치 못한 오류가 발생했습니다: {e}")
 
 
 ###########################################################
@@ -1591,6 +1619,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == " 코스피 , 코스닥 지수":
+        get_kospi_kosdaq()
     else:
         
         print("올바른 기능을 입력해 주세요.")
