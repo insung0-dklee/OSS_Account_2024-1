@@ -1349,6 +1349,53 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
+import os
+import sqlite3
+import datetime
+
+# 데이터베이스 파일 경로 설정
+DB_FILE = 'transactions.db'
+
+# 거래 내역 테이블 생성
+conn = sqlite3.connect(DB_FILE)
+c = conn.cursor()
+# 테이블이 없으면 새로 생성
+c.execute('''CREATE TABLE IF NOT EXISTS transactions
+             (id INTEGER PRIMARY KEY, date TEXT, merchant TEXT, amount REAL, location TEXT)''')
+conn.commit()
+
+# 새로운 거래 내역 추가 함수
+def add_transaction_by_location():
+    # 사용자로부터 거래 정보 입력받기
+    date = input("거래 날짜(YYYY-MM-DD): ")
+    merchant = input("거래처: ")
+    amount = float(input("거래 금액: "))
+    location = input("거래 장소: ")
+
+    # 거래 내역 데이터베이스에 추가
+    c.execute("INSERT INTO transactions (date, merchant, amount, location) VALUES (?, ?, ?, ?)", 
+              (date, merchant, amount, location))
+    conn.commit()
+    print(f"새로운 거래 내역이 추가되었습니다: {date}, {merchant}, {amount}, {location}")
+
+# 거래 내역 조회 (위치 기반) 함수 
+def get_transactions_by_location():
+    # 사용자로부터 조회할 장소 입력받기
+    location = input("조회할 장소: ")
+
+    # 데이터베이스에서 해당 장소의 거래 내역 조회
+    c.execute("SELECT * FROM transactions WHERE location = ?", (location,))
+    transactions = c.fetchall()
+
+    # 조회된 거래 내역 출력
+    if transactions:
+        print(f"{location}에서의 거래 내역:")
+        for transaction in transactions:
+            print(f"Date: {transaction[1]}, Merchant: {transaction[2]}, Amount: {transaction[3]}, Location: {transaction[4]}")
+    else:
+        print(f"{location}에서의 거래 내역이 없습니다.")
+
+
 
 # 메인 루프
 while not b_is_exit:
@@ -1366,6 +1413,10 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+	add_transaction_by_location()
+    elif func == "7":
+	get_transactions_by_location()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x":
