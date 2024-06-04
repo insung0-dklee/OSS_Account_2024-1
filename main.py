@@ -1,83 +1,50 @@
-class Expense:
-    def __init__(self, name, amount, completed=False):
-        self.name = name
-        self.amount = amount
-        self.completed = completed
+from datetime import datetime, timedelta
 
-    def __repr__(self):
-        status = "완료" if self.completed else "미완료"
-        return f"{self.name}: {self.amount}원 ({status})"
-
-class Event:
-    def __init__(self, name, date):
-        self.name = name
-        self.date = date
-        self.expenses = []
-
-    def add_expense(self, expense):
-        self.expenses.append(expense)
-
-    def complete_expense(self, expense_name):
-        for expense in self.expenses:
-            if expense.name == expense_name:
-                expense.completed = True
-                break
+class Rental:
+    def __init__(self, item, daily_rate, start_date, duration_days):
+        self.item = item
+        self.daily_rate = daily_rate
+        self.start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        self.duration_days = duration_days
+        self.end_date = self.start_date + timedelta(days=duration_days)
 
     def total_cost(self):
-        return sum(expense.amount for expense in self.expenses)
+        return self.daily_rate * self.duration_days
 
     def __repr__(self):
-        return f"이벤트: {self.name} ({self.date})\n지출 목록:\n" + "\n".join(str(expense) for expense in self.expenses)
+        return f"{self.item}: {self.daily_rate}원/일, {self.duration_days}일 대여, 반납일: {self.end_date.strftime('%Y-%m-%d')}"
 
 def main():
-    events = []
+    rentals = []
 
     while True:
-        print("\n1. 이벤트 추가")
-        print("2. 이벤트 조회")
-        print("3. 지출 항목 추가")
-        print("4. 지출 항목 완료 처리")
-        print("5. 총 지출 금액 조회")
-        print("6. 종료")
-        
+        print("\n1. 장기 대여 추가")
+        print("2. 장기 대여 목록 조회")
+        print("3. 총 대여 비용 조회")
+        print("4. 종료")
+
         choice = input("원하는 작업의 번호를 선택하세요: ")
 
         if choice == '1':
-            name = input("이벤트 이름: ")
-            date = input("이벤트 날짜 (YYYY-MM-DD): ")
-            events.append(Event(name, date))
-            print(f"이벤트 '{name}'가 추가되었습니다.")
-        
+            item = input("대여 항목 이름: ")
+            daily_rate = int(input("일일 대여 요금: "))
+            start_date = input("대여 시작일 (YYYY-MM-DD): ")
+            duration_days = int(input("대여 기간 (일): "))
+            rentals.append(Rental(item, daily_rate, start_date, duration_days))
+            print(f"장기 대여 항목 '{item}'가 추가되었습니다.")
+
         elif choice == '2':
-            for idx, event in enumerate(events):
-                print(f"{idx + 1}. {event.name} ({event.date})")
-            event_idx = int(input("조회할 이벤트 번호를 선택하세요: ")) - 1
-            print(events[event_idx])
+            if not rentals:
+                print("장기 대여 항목이 없습니다.")
+            else:
+                for rental in rentals:
+                    print(rental)
 
         elif choice == '3':
-            for idx, event in enumerate(events):
-                print(f"{idx + 1}. {event.name} ({event.date})")
-            event_idx = int(input("지출 항목을 추가할 이벤트 번호를 선택하세요: ")) - 1
-            expense_name = input("지출 항목 이름: ")
-            expense_amount = int(input("지출 금액: "))
-            events[event_idx].add_expense(Expense(expense_name, expense_amount))
-            print(f"지출 항목 '{expense_name}'가 이벤트 '{events[event_idx].name}'에 추가되었습니다.")
-        
+            total_cost = sum(rental.total_cost() for rental in rentals)
+            print(f"총 대여 비용: {total_cost}원")
+
         elif choice == '4':
-            for idx, event in enumerate(events):
-                print(f"{idx + 1}. {event.name} ({event.date})")
-            event_idx = int(input("지출 항목 완료 처리를 할 이벤트 번호를 선택하세요: ")) - 1
-            expense_name = input("완료 처리할 지출 항목 이름: ")
-            events[event_idx].complete_expense(expense_name)
-            print(f"지출 항목 '{expense_name}'가 완료 처리되었습니다.")
-        
-        elif choice == '5':
-            for idx, event in enumerate(events):
-                print(f"{idx + 1}. {event.name} ({event.date})")
-            event_idx = int(input("총 지출 금액을 조회할 이벤트 번호를 선택하세요: ")) - 1
-            print(f"총 지출 금액: {events[event_idx].total_cost()}원")
-        
-        elif choice == '6':
             print("프로그램을 종료합니다.")
             break
 
