@@ -16,8 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
-import insurance_management
-
+import reminder  # 리마인더 기능 추가
 
 
 # 약속을 담을 리스트
@@ -1216,31 +1215,9 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 보험 관리
     ?: 도움말 출력
     exit: 종료
     """)
-
-def insurance_management_menu():
-    while True:
-        print("\n--- 보험 관리 메뉴 ---")
-        print("1: 보험 계약 추가")
-        print("2: 보험 계약 조회")
-        print("3: 보험 계약 삭제")
-        print("0: 메인 메뉴로 돌아가기")
-        choice = input("기능을 선택하세요: ")
-
-        if choice == "1":
-            insurance_management.add_insurance()
-        elif choice == "2":
-            insurance_management.view_insurance()
-        elif choice == "3":
-            insurance_management.delete_insurance()
-        elif choice == "0":
-            print("메인 메뉴로 돌아갑니다.")
-            break
-        else:
-            print("올바른 기능을 선택하세요.")
 
 """
 가계부 데이터 및 사용자 데이터를 초기화하는 함수.
@@ -2355,7 +2332,11 @@ while not b_is_exit:
     elif func == "5":
         analyze_categories()
     elif func == "6":
-        insurance_management_menu()
+        reminder.add_reminder()
+    elif func == "7":
+        reminder.view_reminders()
+    elif func == "8":
+        reminder.delete_reminder()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
