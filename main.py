@@ -554,6 +554,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 환급액 계산
     ?: 도움말 출력
     exit: 종료
     """)
@@ -612,6 +613,20 @@ def add_entry():
             add_favorite_category(category)
         else:
             print("카테고리에 추가되지 않았습니다.")
+
+# 환급 계산 함수
+def calculate_refund(ledger):
+    refund_rates = {
+        '의료': 0.15,
+        '교육': 0.20
+    }
+    total_refund = 0
+    for entry in ledger:
+        if entry['category'] in refund_rates:
+            refund_rate = refund_rates[entry['category']]
+            refund = entry['amount'] * refund_rate
+            total_refund += refund
+    return total_refund
 
 
 favorites = []
@@ -1532,6 +1547,9 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        refund = calculate_refund(ledger)
+        print(f"예상 환급 금액: {refund}원")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
