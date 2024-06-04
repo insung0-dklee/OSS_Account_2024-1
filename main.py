@@ -1486,7 +1486,41 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+# 비상금 관리 기능 추가
+emergency_fund = 0
 
+def set_emergency_fund():
+    global emergency_fund
+    emergency_fund = float(input("비상금 설정 (원): "))
+    print(f"비상금이 {emergency_fund} 원으로 설정되었습니다.")
+
+def add_emergency_expense():
+    global emergency_fund
+    amount = float(input("비상금 지출 금액 (원): "))
+    description = input("비상금 지출 설명: ")
+    if amount <= emergency_fund:
+        emergency_fund -= amount
+        print(f"비상금에서 {amount} 원이 지출되었습니다. 남은 비상금: {emergency_fund} 원")
+    else:
+        print("비상금이 부족합니다.")
+
+def view_emergency_fund():
+    print(f"현재 비상금: {emergency_fund} 원")
+
+# 비상금 관리 메뉴 추가
+def emergency_fund_management():
+    while True:
+        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, exit: 종료): ")
+        if choice == "1":
+            set_emergency_fund()
+        elif choice == "2":
+            add_emergency_expense()
+        elif choice == "3":
+            view_emergency_fund()
+        elif choice == "exit":
+            break
+        else:
+            print("올바른 기능을 입력해 주세요.")
 
 
 
