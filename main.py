@@ -9,6 +9,7 @@ import webbrowser
 import re
 import Add_function
 from collections import defaultdict
+import time
 
 userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
 
@@ -1515,6 +1516,52 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
+        
+# 경제 퀴즈 질문과 답변
+quiz_questions = [
+    {"question": "GDP는 무엇의 약자입니까?", "options": ["A. Gross Domestic Product", "B. Global Development Plan", "C. General Domestic Policy", "D. Gross Domestic Price"], "answer": "A"},
+    {"question": "인플레이션은 무엇을 의미합니까?", "options": ["A. 물가 하락", "B. 물가 상승", "C. 고용 증가", "D. 경제 침체"], "answer": "B"},
+    {"question": "주식 시장에서 '불 마켓(Bull Market)'은 무엇을 의미합니까?", "options": ["A. 시장이 하락세", "B. 시장이 횡보", "C. 시장이 상승세", "D. 시장이 정체"], "answer": "C"},
+    {"question": "리스크를 분산하기 위해 다양한 자산에 투자하는 것을 무엇이라고 합니까?", "options": ["A. 통화 분산", "B. 위험 회피", "C. 투자 분산", "D. 자산 배분"], "answer": "D"},
+    {"question": "중앙은행이 통화량을 조절하여 경제를 안정시키는 정책은?", "options": ["A. 재정 정책", "B. 금리 정책", "C. 통화 정책", "D. 세금 정책"], "answer": "C"}
+]
+
+"""
+    메인 루프에 경제 quiz 기능을 추가하는 함수 
+    while time.time() - start_time < 60: 1분 동안 반복
+    .strip() : 문자열 양 끝에 있는 공백을 제거
+    .upper() : 문자열을 대문자로 변환
+"""
+        
+def one_minute_economic_quiz():
+    # 퀴즈 시작 안내
+    print("1분 경제 퀴즈에 오신 것을 환영합니다! 각 질문에 대해 올바른 답변을 선택하세요.")
+    print("퀴즈는 1분 동안 진행됩니다.\n")
+
+    # 퀴즈 시작 시간 기록
+    start_time = time.time() 
+    score = 0  
+    question_count = 0 
+
+    while time.time() - start_time < 60: 
+        question = random.choice(quiz_questions) 
+        print(question["question"])  
+        for option in question["options"]:
+            print(option)  
+
+        # 사용자의 답변 입력
+        answer = input("정답을 선택하세요 (A, B, C, D): ").strip().upper()  
+        if answer == question["answer"]:  
+            print("정답입니다!\n")  
+            score += 1  
+        else:
+            print(f"오답입니다. 정답은 {question['answer']}입니다.\n")  # 오답인 경우 정답과 함께 메시지 출력
+
+        question_count += 1  # 질문 개수 증가
+
+    # 퀴즈 종료 및 결과 출력
+    print(f"1분이 종료되었습니다! 총 {question_count}문제 중 {score}문제를 맞추셨습니다.")  
+    print(f"정답률: {score / question_count * 100:.2f}%")  
 
 
 # 메인 루프
@@ -1541,8 +1588,9 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "quiz":
+        one_minute_economic_quiz() #기존 메인루프에 quiz 기능 추가
     else:
-        
         print("올바른 기능을 입력해 주세요.")
 
 """
@@ -1603,3 +1651,9 @@ def find_highest_expense_day():
         f"경고: {highest_expense_day}에 {highest_expense_amount:.2f}원의 소비가 있었습니다."
     )
     return warning_message
+
+
+    
+
+
+
