@@ -543,6 +543,25 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#로또 번호 출력기
+class Lotto:
+    def __init__(self):
+        self.tickets = 0
+        self.ticket_price = 1000  # 로또 한 장 가격
+
+    def generate_numbers(self):
+        numbers = random.sample(range(1, 46), 6)
+        numbers.sort()
+        print(f"생성된 로또 번호: {numbers}")
+
+    def purchase_tickets(self, num_tickets):
+        self.tickets += num_tickets
+        total_cost = self.tickets * self.ticket_price
+        winning_probability = 1 / (45 * 44 * 43 * 42 * 41 * 40 / (6 * 5 * 4 * 3 * 2 * 1))
+        print(f"로또 {self.tickets}장 구매했습니다.")
+        print(f"총 비용: {total_cost}원")
+        print(f"당첨 확률: {winning_probability:.15f}")
+        
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -554,6 +573,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 로또 찾기      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1532,6 +1552,26 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        lotto = Lotto()
+        while True:
+            print("-----------------------")
+            print("로또 프로그램")
+            print("1: 로또 번호 추천")
+            print("2: 로또 구매 및 정보 확인")
+            print("3: 종료")
+            option = input("기능을 선택하세요: ")
+
+            if option == "1":
+                lotto.generate_numbers()
+            elif option == "2":
+                num_tickets = int(input("구매할 로또 장수를 입력하세요: "))
+                lotto.purchase_tickets(num_tickets)
+            elif option == "3":
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
