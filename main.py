@@ -2173,8 +2173,16 @@ def change_pw_by_phone():  # ID와 전화번호 또는 ID와 이름으로 pw변�
         phone = input("전화번호 입력: ")
 
         if phone in userphones:
-            while (True):  # 비밀번호를 바꿀때 까지 무한루프
+            while True:  # 비밀번호를 바꿀때 까지 무한루프
                 P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                """
+                비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+                만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+                """
+                if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", P):
+                    print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+                    continue
+
                 check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
 
                 if (check == "1"):  # 주의 - check는 input으로 받으므로 char 형임
@@ -2187,14 +2195,14 @@ def change_pw_by_phone():  # ID와 전화번호 또는 ID와 이름으로 pw변�
                     with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
                         for user_id, user_info in userdata2.items():
                             fw.write(
-                                f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                            f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
                     break
 
-        else:
-            print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오")  # 전화번호 존재 X
+            else:
+                print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오")  # 전화번호 존재 X
+
     else:
         print("ID가 존재하지 않습니다.")  # ID 존재 X
-
 
 YU_Account()  # 프로그램 시작 화면
 
