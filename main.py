@@ -16,6 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import random
 
 
 # 약속을 담을 리스트
@@ -2287,6 +2288,17 @@ def check_progress_with_inflation(goal, inflation_rate):
     else:
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
+def paying_selector():
+    names = input("내기 대상 이름을 입력하세요 (쉼표로 구분): ").split(",")
+    names = [name.strip() for name in names]  # 이름 앞뒤의 공백 제거
+
+    if not names:
+        print("입력된 이름이 없습니다.")
+        return None
+
+    selected = random.choice(names)
+    print(f"오늘의 계산 당첨자는 {selected}입니다!")
+    return selected
 
 ###########################################################
 
