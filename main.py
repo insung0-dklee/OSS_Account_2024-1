@@ -552,11 +552,12 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+            for user_id, user_info in userdata2.items(): # 딕셔너리 내에 있는 값을 모두 for문
+                if "friends" not in user_info:
+                    print(f"{user_id} 사용자 데이터에 'friends' 키가 없습니다.")
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
-    
     user = User(name)  # User 객체 생성
 
      # 친구 추가
@@ -1203,6 +1204,18 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#관세 계산기(미국)
+class CustomsDutyCalculator:
+    def __init__(self):
+        self.exchange_rate = 1100  # 예시 환율, 1달러 = 1372원(6/5)
+
+    def calculate_duty(self, price_usd, us_shipping_usd, us_tax_usd, intl_shipping_krw):
+        # 미국 내 세금과 물품 가격의 총합
+        total_usd = price_usd + us_tax_usd
+        total_krw = total_usd * self.exchange_rate
+        total_krw += intl_shipping_krw
+        duty = total_krw * 0.2  # 20% 관세
+        return duty        
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -1214,6 +1227,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 관세 계산기(미국)      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2344,29 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        calculator = CustomsDutyCalculator()
+        while True:
+            print("-----------------------")
+            print("통관 관세 계산기")
+            print("1: 관세 계산")
+            print("2: 종료")
+            option = input("기능을 선택하세요: ")
+
+            if option == "1":
+                price_usd = float(input("가격(달러)을 입력하세요: "))
+                us_shipping_usd = float(input("미국 내 배송비(달러)를 입력하세요: "))
+                us_tax_usd = float(input("미국 세금(달러)을 입력하세요: "))
+                intl_shipping_krw = float(input("국제 운송료(원)를 입력하세요: "))
+
+                duty = calculator.calculate_duty(price_usd, us_shipping_usd, us_tax_usd, intl_shipping_krw)
+                print(f"계산된 관세: {duty:.2f}원")
+            elif option == "2":
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 선택하세요.")
+
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
