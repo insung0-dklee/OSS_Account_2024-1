@@ -1265,3 +1265,44 @@ if __name__ == "__main__":
     
     # 입력받은 월별 지출액 데이터로 그래프 그리기
     plot_monthly_expenses(monthly_expenses)
+
+
+# 다음 달 지출액 예측 기능
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+def get_monthly_expenses():
+    monthly_expenses = {}
+    for i in range(1, 13):
+        month = input(f"{i}월의 지출액을 입력하세요 (원): ")
+        monthly_expenses[f"{i}월"] = int(month)
+    return monthly_expenses
+
+def train_model(monthly_expenses):
+    # 입력 데이터 준비
+    months = np.array(list(range(1, 13))).reshape(-1, 1)
+    expenses = np.array(list(monthly_expenses.values()))
+
+    # 선형 회귀 모델 학습
+    model = LinearRegression()
+    model.fit(months, expenses)
+
+    return model
+
+def predict_next_month_expense(model):
+    # 다음 달 예상 지출 예측
+    next_month = np.array([[13]])  # 다음 달을 나타내는 값으로 13을 사용
+    predicted_expense = model.predict(next_month)
+
+    return predicted_expense[0]
+
+if __name__ == "__main__":
+    # 월별 지출액 입력받기
+    monthly_expenses = get_monthly_expenses()
+
+    # 모델 학습
+    model = train_model(monthly_expenses)
+
+    # 다음 달 지출 예측
+    predicted_expense = predict_next_month_expense(model)
+    print("다음 달 예상 지출:", predicted_expense)
