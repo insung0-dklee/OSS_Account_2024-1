@@ -552,8 +552,10 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+            for user_id, user_info in userdata2.items(): # 딕셔너리 내에 있는 값을 모두 for문
+                if "friends" not in user_info:
+                    print(f"{user_id} 사용자 데이터에 'friends' 키가 없습니다.")
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
@@ -1203,6 +1205,33 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+#체크리스트
+class Checklist:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, date_str, task):
+        date = datetime.strptime(date_str, "%Y-%m-%d")
+        self.tasks.append({"date": date, "task": task})
+        self.tasks.sort(key=lambda x: x["date"])
+        print(f"할일 '{task}'가 추가되었습니다. 날짜: {date_str}")
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("체크리스트가 비어 있습니다.")
+        else:
+            for i, task in enumerate(self.tasks, start=1):
+                date_str = task["date"].strftime("%Y-%m-%d")
+                print(f"{i}. {date_str} - {task['task']}")
+
+    def complete_task(self, index):
+        if 0 <= index < len(self.tasks):
+            completed_task = self.tasks.pop(index)
+            date_str = completed_task["date"].strftime("%Y-%m-%d")
+            print(f"할일 '{completed_task['task']}'가 완료되었습니다. 날짜: {date_str}")
+        else:
+            print("잘못된 번호입니다.")
+            
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -1214,6 +1243,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 체크리스트      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2360,32 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        checklist = Checklist()
+        while True:
+            print("-----------------------")
+            print("할일 체크리스트")
+            print("1: 할일 추가")
+            print("2: 할일 목록 확인")
+            print("3: 할일 완료")
+            print("4: 종료")
+            option = input("기능을 선택하세요: ")
+
+            if option == "1":
+                date_str = input("날짜를 입력하세요 (YYYY-MM-DD): ")
+                task = input("할일을 입력하세요: ")
+                checklist.add_task(date_str, task)
+            elif option == "2":
+                checklist.view_tasks()
+            elif option == "3":
+                checklist.view_tasks()
+                index = int(input("완료할 할일 번호를 입력하세요: ")) - 1
+                checklist.complete_task(index)
+            elif option == "4":
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
