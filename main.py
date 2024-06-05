@@ -2366,6 +2366,80 @@ def get_criteria_from_user():
 
     return criteria
 
+class SavingsChallenge:
+    def __init__(self, daily_amount, days):
+        self.daily_amount = daily_amount  # 매일 저축할 금액
+        self.days = days  # 챌린지 기간 (일 수)
+        self.start_date = datetime.date.today()  # 챌린지를 시작하는 날짜
+        self.total_saved = 0  # 현재까지 저축된 총 금액
+
+    # 매일 저축하는 메서드
+    def save_daily(self):
+        for day in range(1, self.days + 1):
+            self.total_saved += self.daily_amount  # 매일 저축할 금액을 총 저축 금액에 더함
+            current_date = self.start_date + datetime.timedelta(days=day - 1)  # 현재 날짜 계산
+            print(f"Day {day}: Saved {self.daily_amount} units. Total saved: {self.total_saved} units. Date: {current_date}")
+            self.save_to_file()  # 파일에 저장
+
+    # 총 저축 금액을 반환하는 메서드
+    def get_total_savings(self):
+        return self.total_saved
+
+    # 챌린지 완료 여부를 확인하는 메서드
+    def check_completion(self):
+        return self.total_saved >= self.daily_amount * self.days
+
+    # 현재 저축 진행 상황을 출력하는 메서드
+    def display_progress(self):
+        print(f"Total saved: {self.total_saved} units. Days left: {self.days - (datetime.date.today() - self.start_date).days}")
+
+    # 저축 금액을 파일에 저장하는 메서드
+    def save_to_file(self):
+        with open('savings.json', 'w', encoding='utf-8') as file:
+            data = {
+                'daily_amount': self.daily_amount,
+                'days': self.days,
+                'start_date': self.start_date.isoformat(),
+                'total_saved': self.total_saved
+            }
+            json.dump(data, file)
+
+    # 파일에서 저축 금액을 불러오는 메서드
+    @classmethod
+    def load_from_file(cls):
+        try:
+            with open('savings.json', 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                obj = cls(data['daily_amount'], data['days'])
+                obj.start_date = datetime.date.fromisoformat(data['start_date'])
+                obj.total_saved = data['total_saved']
+                return obj
+        except FileNotFoundError:
+            print("저장된 파일이 없습니다. 새로 시작합니다.")
+            return None
+
+if __name__ == "__main__":
+    # 저장된 챌린지가 있는지 확인하고 불러오기
+    challenge = SavingsChallenge.load_from_file()
+
+    if not challenge:
+        # 사용자로부터 매일 저축할 금액과 챌린지 기간을 입력받음
+        daily_amount = int(input("저축금액을 입력하세요: "))
+        days = int(input("챌린지 기간을 입력하세요: "))
+
+        # SavingsChallenge 객체 생성
+        challenge = SavingsChallenge(daily_amount, days)
+
+    # 저축 챌린지 시작
+    challenge.save_daily()
+
+    # 챌린지 완료 여부 확인
+    if challenge.check_completion():
+        print(f"저축 챌린지 성공! 총 저축 금액: {challenge.get_total_savings()} units.")
+    else:
+        print("Challenge not yet completed.")
+        challenge.display_progress()
+
 
 ###########################################################
 
