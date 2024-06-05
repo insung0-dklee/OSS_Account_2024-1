@@ -546,8 +546,8 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
-
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        # 'friends'가 없어서 오류가 발생, 임의로 'friends':friends 생성함
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends':friends}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
