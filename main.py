@@ -516,74 +516,6 @@ friends = {}
 # 사용자 지출 내역 저장
 expenses = {}  
 
-def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
-    userdata2 = {}
-    id = input("id 입력: ")  # 회원가입 시의 id 입력
-    while True:
-        name = input("이름 입력(문자로만 입력): ")  # 회원가입 시의 이름 입력
-        if not name.isalpha():
-            print("문자를 입력해 주세요.") #문자만 입력
-        else:
-            break
-    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
-
-    # 전화번호 중복 체크
-    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
-    while phone in userphones:
-        print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
-        print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
-        phone = input("전화번호 입력: ")
-        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
-            find_id_by_phone()
-            print("로그인 기능으로 다시 돌아갑니다.")
-            return #로그인 기능으로 다시 돌려줌
-
-    while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
-
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
-            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
-            continue
-
-        h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
-        h.update(pw.encode())  # sha256으로 암호화
-        pw_data = h.hexdigest()  # 16진수로 변환
-
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
-        usernames[name] = id  # 이름과 아이디 매핑
-        userphones[phone] = id  # 전화번호와 아이디 매핑
-        """
-        현재 코드 실행시 friends 값이 존재하지 않아 오류를 일으킴 + join 함수에서 문제를 일으킴
-        """
-        with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성 - 이어쓰기 모드
-            friends_list = []
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                #join 함수는 list를 문자열로 변경해 주는 함수임, 따라서 딕셔너리 값을 넣으면 제대로 작동하지 않음
-                for name in friends.keys():
-                    friends_list.append(friends[name].name)
-                friends_str = ", ".join(friends_list)
-                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
-                save_user_acc(user_info["name"]) #user_id file을 생성 - user : user의 가계부 저장하는 파일 
-        break   
-    
-    user = User(name)  # User 객체 생성
-    
-     # 친구 추가 
-    while True:
-        add_friend = input("친구를 추가하시겠습니까? (y/n): ")
-        if add_friend.lower() == 'y':
-            friend_name = input("친구 이름을 입력하세요: ")
-            user.add_friend(friend_name)
-            friends[friend_name] = Friend(friend_name)
-        elif add_friend.lower() == 'n':
-            break
-        else:
-            print("잘못된 입력입니다. 다시 입력해주세요.")
-    
 def budget_simulation():
     """가상 예산 시뮬레이션 기능"""
     goal_name = input("목표 이름을 입력하세요: ")
@@ -959,41 +891,6 @@ class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 �
 
     def get_joint_tran(self):    # 거래 내역 반환
         return self.joint_tran
-
-def export_account(account):
-    """
-    가계부 데이터를 JSON 파일로 내보내기.
-    parameters -
-    account : 내보낼 가계부 객체
-    """
-    filename = f"{account.name}_export.json"
-    account_data = {
-        'name': account.name,
-        'balance': account.bal,
-        'history': [account.income_total,account.income_list,account.spend_total,account.spend_list]
-        }
-    with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(account_data, file, ensure_ascii=False, indent=4)
-    #print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.") - 인터페이스 과정에서 보여지면 안됨
-
-def import_account(filename): # filename 변수 추가
-    """
-    JSON 파일로부터 가계부 데이터를 가져와 가계부 리스트에 추가하기.
-    """
-    #filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ") - 삭제: 파일명 따로 전달
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            account_data = json.load(file)
-        new_account = Account_book.Account_book(account_data['name'], account_data['balance'])
-        new_account.income_total = account_data['history'][0] #단순 history에서 Account_book 안의 멤버 변수들로 교체 ->  new_account 객체의 멤버 변수들에 저장
-        new_account.income_list = account_data['history'][1]
-        new_account.spend_total = account_data['history'][2]
-        new_account.spend_list = account_data['history'][3]
-        Account_list.append(new_account)
-        #print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.") - 인터페이스 과정에서 보여지면 안됨
-    except Exception as e:
-        return 0
-        #print(f"파일을 가져오는 중 오류가 발생했습니다: {e}") - 인터페이스 과정에서 보여지면 안됨
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
@@ -1906,27 +1803,6 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(Account_list): #가계부 선택 함수 - func 자리에 Account_list(계좌 저장 리스트) 추가
-                                  #임의의 리스트 값이 존재하지 않으면 오류 발생
-    choose = 0
-    
-    while(choose == 0):
-        if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
-            break
-        else:
-            print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
-            for i in range(0,len(Account_list)):#가계부 리스트 출력
-                print(f"가계부 {i+1}번 : ",Account_list[i].name)
-            choose = input()
-            if (choose.isdigit() and int(choose) <= len(Account_list) and choose != "0"): #정수값을 반환하도록 수정
-                choose = int(choose)
-                break
-            else:
-                print("잘못 입력하셨습니다. 다시 입력해 주십시오.")
-                choose = 0
-                
-    return choose #choose(선택한 번호 리턴)
-
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
     if(num < 0):#오류 검출
       print("잘못 입력하셨습니다.(0이하수 입력)")
@@ -2243,7 +2119,92 @@ def financial_goal_loop(user):
             print("올바른 기능을 선택하세요.")
 
 user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
-user = "Kim"# 임의의 user 값 추가 - 이후 삭제
+
+def calculate_present_value(future_value, inflation_rate, years):
+    """
+    목표 저축액의 현재 가치를 계산하는 함수
+    :param future_value: 목표 저축액 (미래 가치)
+    :param inflation_rate: 연평균 인플레이션율 (백분율)
+    :param years: 목표 달성까지 남은 기간 (년 단위)
+    :return: 현재 가치
+    """
+    present_value = future_value / ((1 + inflation_rate / 100) ** years)
+    return present_value
+
+def check_progress_with_inflation(goal, inflation_rate):
+    """
+    인플레이션율을 고려한 목표 진행 상황 확인 함수
+    :param goal: FinancialGoal 객체
+    :param inflation_rate: 연평균 인플레이션율 (백분율)
+    """
+    years_left = (goal.due_date - datetime.now()).days / 365
+    present_value_target = calculate_present_value(goal.target_amount, inflation_rate, years_left)
+    remaining_amount = present_value_target - goal.saved_amount
+    days_left = (goal.due_date - datetime.now()).days
+    if remaining_amount <= 0:
+        print(f"축하합니다! '{goal.name}' 목표를 달성했습니다! \n 목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n")
+    else:
+        print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
+
+"""
+여기서 부터 수정 및 추가한 함수들 입니다(커밋 3개)
+"""
+
+def export_account(account):
+    """
+    가계부 데이터를 JSON 파일로 내보내기.
+    parameters -
+    account : 내보낼 가계부 객체
+    """
+    filename = f"{account.name}_export.json"
+    account_data = {
+        'name': account.name,
+        'balance': account.bal,
+        'history': [account.income_total,account.income_list,account.spend_total,account.spend_list]
+        }
+    with open(filename, 'w', encoding='utf-8') as file:
+        json.dump(account_data, file, ensure_ascii=False, indent=4)
+    #print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.") - 인터페이스 과정에서 보여지면 안됨
+
+def import_account(filename): # filename 변수 추가
+    """
+    JSON 파일로부터 가계부 데이터를 가져와 가계부 리스트에 추가하기.
+    """
+    #filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ") - 삭제: 파일명 따로 전달
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            account_data = json.load(file)
+        new_account = Account_book.Account_book(account_data['name'], account_data['balance'])
+        new_account.income_total = account_data['history'][0] #단순 history에서 Account_book 안의 멤버 변수들로 교체 ->  new_account 객체의 멤버 변수들에 저장
+        new_account.income_list = account_data['history'][1]
+        new_account.spend_total = account_data['history'][2]
+        new_account.spend_list = account_data['history'][3]
+        Account_list.append(new_account)
+        #print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.") - 인터페이스 과정에서 보여지면 안됨
+    except Exception as e:
+        return 0
+        #print(f"파일을 가져오는 중 오류가 발생했습니다: {e}") - 인터페이스 과정에서 보여지면 안됨
+
+def choose_Account(Account_list): #가계부 선택 함수 - func 자리에 Account_list(계좌 저장 리스트) 추가
+                                  #임의의 리스트 값이 존재하지 않으면 오류 발생
+    choose = 0
+    
+    while(choose == 0):
+        if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
+            break
+        else:
+            print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
+            for i in range(0,len(Account_list)):#가계부 리스트 출력
+                print(f"가계부 {i+1}번 : ",Account_list[i].name)
+            choose = input()
+            if (choose.isdigit() and int(choose) <= len(Account_list) and choose != "0"): #정수값을 반환하도록 수정
+                choose = int(choose)
+                break
+            else:
+                print("잘못 입력하셨습니다. 다시 입력해 주십시오.")
+                choose = 0
+                
+    return choose #choose(선택한 번호 리턴)
 
 def save_user_acc(user):
     x = []
@@ -2287,32 +2248,6 @@ def read_user_acc(user):
 
     return user_accinfo #이후 유저 어카운트 호출을 위한 return
 
-def calculate_present_value(future_value, inflation_rate, years):
-    """
-    목표 저축액의 현재 가치를 계산하는 함수
-    :param future_value: 목표 저축액 (미래 가치)
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    :param years: 목표 달성까지 남은 기간 (년 단위)
-    :return: 현재 가치
-    """
-    present_value = future_value / ((1 + inflation_rate / 100) ** years)
-    return present_value
-
-def check_progress_with_inflation(goal, inflation_rate):
-    """
-    인플레이션율을 고려한 목표 진행 상황 확인 함수
-    :param goal: FinancialGoal 객체
-    :param inflation_rate: 연평균 인플레이션율 (백분율)
-    """
-    years_left = (goal.due_date - datetime.now()).days / 365
-    present_value_target = calculate_present_value(goal.target_amount, inflation_rate, years_left)
-    remaining_amount = present_value_target - goal.saved_amount
-    days_left = (goal.due_date - datetime.now()).days
-    if remaining_amount <= 0:
-        print(f"축하합니다! '{goal.name}' 목표를 달성했습니다! \n 목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n")
-    else:
-        print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
-
 def account_save(user):
     for i in range(0,len(Account_list)):
         export_account(Account_list[i]) #리스트 내부의 객체들을 하나씩 파일로 만들어줌
@@ -2330,12 +2265,127 @@ def account_save_interface(user):#export_account() 함수와 save_user_acc() 함
     
     account_save(user)
 
+Account_list = []
+
+def account_choose_interface(user): #가계부 선택 인터페이스(반드시 저장된 파일이 있는 user 값을 매개변수로 넣어주어야 함 - 그렇지 않으면 무한루프)
+    choose = 0
+    
+    user_acc = {}
+    user_acc = read_user_acc(user)
+
+    user_acc = user_acc[user] #반드시 key값으로 가져와야함 - values 사용하면 2중 리스트가 됨
+    
+    if (user_acc == []): #user_acc에 값이 없을경우(처음 회원가입 했을 경우) 빈칸 출력
+        print("")
+    else:
+        for i in range(0,len(user_acc)):
+            filename = f"{user_acc[i]}_export.json"#유저 이름으로 파일 생성
+            import_account(filename)
+    
+    choose = choose_Account(Account_list)
+
+    if (choose == 0): #가계부가 존재하지 않을 경우
+        print("가계부가 존재하지 않습니다.")
+        print("가계부를 생성해 주세요")
+    
+        name = input("이름을 입력해 주세요: ") #가계부 생성시 필요한 값을 사용자에게 받아옴
+        while True:
+            bal = input("잔액을 입력해 주세요: ")
+            if (bal.isdigit()):#숫자이면 저장
+                bal = int(bal)
+                break
+            else:
+                print("다시 입력해주세요")
+            
+        Account_list.append(Account_book.Account_book(name,bal)) #가계부 리스트에 추가
+        print(f"{Account_list[0].name} 가계부가 생성되었습니다.")
+        now_acc = Account_list[0]#가계부를 자동으로 선택
+        print(f"선택한 가계부: {now_acc.name}")
+    
+    else:
+        print(f"{Account_list[choose-1].name} 가계부가 선택되었습니다.")
+        now_acc = Account_list[choose-1]
+        print(f"선택한 가계부: {now_acc.name}")
+    
+    return now_acc #현재 가계부 반환
+
+def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+    userdata2 = {}
+    id = input("id 입력: ")  # 회원가입 시의 id 입력
+    while True:
+        name = input("이름 입력(문자로만 입력): ")  # 회원가입 시의 이름 입력
+        if not name.isalpha():
+            print("문자를 입력해 주세요.") #문자만 입력
+        else:
+            break
+    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+
+    # 전화번호 중복 체크
+    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
+    while phone in userphones:
+        print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
+        print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
+        phone = input("전화번호 입력: ")
+        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
+            find_id_by_phone()
+            print("로그인 기능으로 다시 돌아갑니다.")
+            return #로그인 기능으로 다시 돌려줌
+
+    while True:
+        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+
+        """
+        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
+        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
+        """
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
+            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            continue
+
+        h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
+        h.update(pw.encode())  # sha256으로 암호화
+        pw_data = h.hexdigest()  # 16진수로 변환
+
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        usernames[name] = id  # 이름과 아이디 매핑
+        userphones[phone] = id  # 전화번호와 아이디 매핑
+        """
+        현재 코드 실행시 friends 값이 존재하지 않아 오류를 일으킴 + join 함수에서 문제를 일으킴 등 여러가지 문제 발생
+        """
+        with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성 - 이어쓰기 모드
+            friends_list = []
+            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+                #join 함수는 list를 문자열로 변경해 주는 함수임, 따라서 딕셔너리 값을 넣으면 제대로 작동하지 않음
+                for name in friends.keys():
+                    friends_list.append(friends[name].name)
+                friends_str = ", ".join(friends_list)
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                save_user_acc(user_info["name"]) #user_id file을 생성 - user : user의 가계부 저장하는 파일 
+        break   
+    
+    user = User(name)  # User 객체 생성
+    
+     # 친구 추가 
+    while True:
+        add_friend = input("친구를 추가하시겠습니까? (y/n): ")
+        if add_friend.lower() == 'y':
+            friend_name = input("친구 이름을 입력하세요: ")
+            user.add_friend(friend_name)
+            friends[friend_name] = Friend(friend_name)
+        elif add_friend.lower() == 'n':
+            break
+        else:
+            print("잘못된 입력입니다. 다시 입력해주세요.")
+    
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 interface = 0 #인터페이스 만들기
 user = 0 #user 이름 저장 변수
+friends = {}
+Account_list = []
+now_acc = 0 #선택 계좌 저장 변수
 
 while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스 구현(탈출을 원할 시 0)
     interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
@@ -2361,12 +2411,17 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.(비정상적인 동작 감지)")
         user = interface
         now_acc = 1
-
-
+        b_is_exit = 1
+#가계부 선택 루프 - 탈출 불가 - 주의 user이름 시작부분이 겹쳐서는 안됨(오류 startswith 함수가 작동됨)
+while now_acc == 0:
+    print("-----------------------")
+    print("user:",user.name) # 현재 user가 누구인지 출력
+    now_acc = account_choose_interface(user.name)
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
     print("user:",user.name) # 현재 user가 누구인지 출력
+    print(f"현재 가계부: {now_acc.name}")
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
@@ -2392,3 +2447,7 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
+"""
+여기까지 입니다.
+"""
