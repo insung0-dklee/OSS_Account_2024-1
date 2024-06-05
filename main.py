@@ -1136,3 +1136,95 @@ if isinstance(monthly_ratio, str):
     print(monthly_ratio)
 else:
     print(f"매 달 소비 비율: {monthly_ratio:.2f}%")
+
+
+# 메모(소비 절약 팁) 추가 기능
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import sqlite3
+
+# 데이터베이스 초기화 함수
+def initialize_database():
+    try:
+        conn = sqlite3.connect('expense_manager.db')
+        c = conn.cursor()
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS tips (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        messagebox.showerror("Error", f"데이터베이스 초기화 중 오류 발생: {e}")
+
+class ExpenseManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("가계부 및 소비 절약 팁")
+
+        self.frame = tk.Frame(root)
+        self.frame.pack(pady=20)
+
+        self.add_tip_button = tk.Button(self.frame, text="절약 팁 추가", command=self.add_tip)
+        self.add_tip_button.pack(side=tk.LEFT, padx=5)
+
+        self.view_tips_button = tk.Button(self.frame, text="절약 팁 보기", command=self.view_tips)
+        self.view_tips_button.pack(side=tk.LEFT, padx=5)
+
+    def add_tip(self):
+        self.add_tip_window = tk.Toplevel(self.root)
+        self.add_tip_window.title("절약 팁 추가")
+
+        tk.Label(self.add_tip_window, text="제목:").grid(row=0, column=0, padx=10, pady=10)
+        self.title_entry = tk.Entry(self.add_tip_window)
+        self.title_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        tk.Label(self.add_tip_window, text="내용:").grid(row=1, column=0, padx=10, pady=10)
+        self.content_text = tk.Text(self.add_tip_window, width=40, height=10)
+        self.content_text.grid(row=1, column=1, padx=10, pady=10)
+
+        tk.Button(self.add_tip_window, text="저장", command=self.save_tip).grid(row=2, column=0, columnspan=2, pady=10)
+
+    def save_tip(self):
+        title = self.title_entry.get()
+        content = self.content_text.get("1.0", tk.END).strip()
+
+        if title and content:
+            try:
+                conn = sqlite3.connect('expense_manager.db')
+                c = conn.cursor()
+                c.execute('INSERT INTO tips (title, content) VALUES (?, ?)', (title, content))
+                conn.commit()
+                conn.close()
+                self.add_tip_window.destroy()
+                messagebox.showinfo("성공", "절약 팁이 저장되었습니다.")
+            except Exception as e:
+                messagebox.showerror("Error", f"절약 팁 저장 중 오류 발생: {e}")
+        else:
+            messagebox.showwarning("경고", "모든 필드를 채워주세요.")
+
+    def view_tips(self):
+        self.view_tips_window = tk.Toplevel(self.root)
+        self.view_tips_window.title("절약 팁 보기")
+
+        try:
+            conn = sqlite3.connect('expense_manager.db')
+            c = conn.cursor()
+            c.execute('SELECT title, content FROM tips')
+            tips = c.fetchall()
+            conn.close()
+
+            for idx, tip in enumerate(tips):
+                tk.Label(self.view_tips_window, text=f"제목: {tip[0]}", font=('Arial', 14, 'bold')).pack(anchor=tk.W, padx=10, pady=5)
+                tk.Label(self.view_tips_window, text=tip[1], wraplength=400).pack(anchor=tk.W, padx=10, pady=5)
+        except Exception as e:
+            messagebox.showerror("Error", f"절약 팁 불러오기 중 오류 발생: {e}")
+
+if __name__ == "__main__":
+    initialize_database()  # 데이터베이스 초기화
+    root = tk.Tk()
+    app = ExpenseManagerApp(root)
+    root.mainloop()
