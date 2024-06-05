@@ -2288,6 +2288,24 @@ def check_progress_with_inflation(goal, inflation_rate):
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
 
+def split_monthly_budget(monthly_budget):
+    """
+    월 예산을 주 예산으로 분할하는 함수
+    :param monthly_budget: 월 예산
+    :return: 주 예산
+    """
+    # 한 달을 4주로 가정
+    num_weeks = 4
+
+    # 주단위 예산 계산
+    weekly_budget = monthly_budget / num_weeks
+
+    # 결과 출력
+    print(f"월 예산: {monthly_budget:,}원")
+    print(f"주 예산: {weekly_budget:,.0f}원")
+
+    return weekly_budget
+
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
