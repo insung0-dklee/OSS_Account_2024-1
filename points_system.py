@@ -2,6 +2,7 @@
 
 import json
 import os
+import random
 
 points_file = 'points.json'
 
@@ -54,3 +55,31 @@ if __name__ == "__main__":
     check_points(test_user)
     use_points(test_user, 5)
     check_points(test_user)
+
+# 복권 구매 함수
+def buy_lottery(user_id):
+    ticket_cost = 5     # 복권 한 장의 비용을 5 포인트로 고정
+    prize = 100         # 당첨 시 획득 포인트를 100으로 고정
+    probability = 0.01  # 당첨 확률을 1%로 고정
+    num_digits = 5      # 복권 번호를 5자리로 고정
+    
+    try:
+        user_points = load_points(user_id)
+        if user_points >= ticket_cost:
+            user_points -= ticket_cost
+            save_points(user_id, user_points)
+            print(f"복권을 구매했습니다. 티켓 비용: {ticket_cost} 포인트, 남은 포인트: {user_points}")
+
+            # 복권 번호 생성
+            winning_number = random.randint(0, 10**num_digits - 1)
+            user_number = random.randint(0, 10**num_digits - 1)
+            print(f"당첨 번호: {winning_number:0{num_digits}d}, 사용자 번호: {user_number:0{num_digits}d}")
+
+            if user_number == winning_number and random.random() < probability:
+                user_points += prize
+                save_points(user_id, user_points)
+                print(f"축하합니다! 복권에 당첨되어 {prize} 포인트를 획득했습니다. 현재 포인트: {user_points}")
+            else:
+                print("아쉽게도 복권에 당첨되지 않았습니다.")
+        else:
+            print("포인트가 부족하여 복권을 구매할 수 없습니다.")
