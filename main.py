@@ -452,7 +452,8 @@ def inquire_manager() :
     elif (ask == 'n') : 
         return
 
- # 비상금 관리 기능 추가
+# 비상금 관리 기능 추가
+emergency_result=[]
 emergency_fund = 0
 
 def set_emergency_fund():
@@ -462,27 +463,36 @@ def set_emergency_fund():
 
 def add_emergency_expense():
     global emergency_fund
+    global emergency_result
     amount = float(input("비상금 지출 금액 (원): "))
-    description = input("비상금 지출 설명: ")
     if amount <= emergency_fund:
+        description = input("비상금 지출 설명: ")
         emergency_fund -= amount
         print(f"비상금에서 {amount} 원이 지출되었습니다. 남은 비상금: {emergency_fund} 원")
+        emergency_result.append({"지출 금액":amount , "지출 내역":description, "현재 비상금":emergency_fund}) # 거래 내역 emergency_result에 추가
     else:
         print("비상금이 부족합니다.")
 
 def view_emergency_fund():
     print(f"현재 비상금: {emergency_fund} 원")
 
+# 현재까지 비상금 사용 내역 출력
+def view_result():
+    for result in emergency_result:
+        print(result)
+
 # 비상금 관리 메뉴 추가
 def emergency_fund_management():
     while True:
-        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, exit: 종료): ")
+        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, 4: 사용 내역, exit: 종료): ")
         if choice == "1":
             set_emergency_fund()
         elif choice == "2":
             add_emergency_expense()
         elif choice == "3":
             view_emergency_fund()
+        elif choice == "4":
+            view_result()
         elif choice == "exit":
             break
         else:
@@ -547,7 +557,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends':[]}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
@@ -1214,6 +1224,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 비상금 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2341,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        emergency_fund_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
