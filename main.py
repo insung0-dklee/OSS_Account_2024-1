@@ -17,6 +17,66 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+import turtle
+
+def visualize_progress():
+    """
+    사용자의 목표 저축 달성률을 turtle graphic을 이용해 표현해주는 기능
+    @Param
+        None
+    @Return
+        None
+    """
+    goal = float(input("목표 금액을 입력하세요 : "))
+    if goal <= 0:
+        print("목표 금액은 양수여야 합니다.")
+        return
+    save_money = float(input ("저축한 금액을 입력하세요 : "))
+    # 사용자의 목표 달성률을 계산
+    progress = ( save_money/ goal) * 100
+
+    # 거북이 그래픽 창을 설정
+    window = turtle.Screen()
+    window.title("목표 달성률 시각화")
+    window.setup(width=600, height=300)  # 창의 크기를 조정
+
+    # 첫 번째 사용자의 거북이를 설정
+    turtle1 = turtle.Turtle()
+    turtle1.color("blue")
+    turtle1.shape("turtle")
+    turtle1.pensize(3)  # 펜의 굵기를 조정
+    turtle1.penup()
+    turtle1.goto(-200, 50)
+    turtle1.pendown()  # 선을 그리기 시작
+
+    # 두 번째 사용자의 거북이를 설정
+    turtle2 = turtle.Turtle()
+    turtle2.color("red")
+    turtle2.shape("turtle")
+    turtle2.pensize(3)  # 펜의 굵기를 조정
+    turtle2.penup()
+    turtle2.goto(-200, -50)
+    turtle2.pendown()  # 선을 그리기 시작
+
+    # 각 사용자의 거북이가 목표 달성률에 따라 이동
+    turtle1.forward(100)  # 목표는 항상 100%
+    turtle2.forward(progress)  # 현재 저축액은 목표 달성률에 따라 이동
+
+    # 거북이 위에 사용자의 이름을 표시
+    turtle1.penup()
+    turtle1.goto(-200 + 100, 70)  # 이름이 거북이와 겹치지 않도록 위치를 조정
+    turtle1.write("목표 저축액: " + str(goal), align="center", font=("Arial", 12, "normal"))
+    turtle1.goto(-200 + 100, 50)  # 이름 출력 후 거북이의 마지막 위치로 돌아감
+    turtle1.pendown()
+
+    turtle2.penup()
+    turtle2.goto(-200 + progress, -30)  # 이름이 거북이와 겹치지 않도록 위치를 조정
+    turtle2.write("현재 저축액: " + str(save_money), align="center", font=("Arial", 12, "normal"))
+    turtle2.goto(-200 + progress, -50)  # 이름 출력 후 거북이의 마지막 위치로 돌아감
+    turtle2.pendown()
+
+    # 사용자가 창을 닫을 때까지 기다림
+    window.mainloop()
 
 # 약속을 담을 리스트
 appointments = []
@@ -1402,6 +1462,9 @@ def compare_financial_goal(user1, user2, goal):
         print(f"{user2.name}의 목표 달성률이 더 높습니다.")
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
+
+
+
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
