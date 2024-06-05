@@ -8,6 +8,9 @@ import random
 import webbrowser
 import re
 import Add_function
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import simpledialog
 import calendar
 import csv
 import challenge
@@ -1043,17 +1046,28 @@ add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 �
 """
 
 memo_directory = []
+
+# 메모 추가 함수
 def add_memo():
-    print("메모장 제목: ")
-    str_title = input()
+    title = simpledialog.askstring("메모 추가", "메모 제목:")
+    if title in memo_directory:
+        messagebox.showerror("오류", "동일한 제목의 메모가 이미 있습니다.")
+        return
+    content = simpledialog.askstring("메모 추가", "메모 내용:")
+    memo_directory[title] = content
+    messagebox.showinfo("성공", "메모가 추가되었습니다.")
+
+def add_memo():
+    str_title = simpledialog.askstring("메모장 제목", "메모장 제목:")
     if not str_title.endswith(".txt"):
         str_title += ".txt"
     if '/' in str_title:
-        print("메모장 제목에 경로 정보가 포함되었습니다.")
+        messagebox.showinfo("알림","메모장 제목에 경로 정보가 포함되었습니다.")
     try:
         # 디렉토리 경로 추출
         directory = os.path.dirname(str_title)
-
+        if directory == "" :
+            directory = "."
         # 디렉토리가 존재하지 않으면 생성
         if directory and not os.path.exists(directory):
             os.makedirs(directory)
@@ -1061,23 +1075,23 @@ def add_memo():
         # 파일 열기
         with open(str_title, "w", encoding="utf8") as new_f:
             # 파일에 쓸 내용을 입력 받음
-            content = input("메모할 내용을 입력하세요: ")
+            content = simpledialog.askstring("메모할 내용", "메모할 내용을 입력하세요:")
             new_f.write(content)
             new_f.close()
-            print("메모가 성공적으로 저장되었습니다.")
+            messagebox.showinfo("성공", "메모가 성공적으로 저장되었습니다.")
             if directory not in memo_directory :
                 memo_directory.append(directory)
-                print("새로운 메모 디렉토리가 추가되었습니다.")
+                messagebox.showinfo("성공", "새로운 메모 디렉토리가 추가되었습니다.")
     except FileNotFoundError:
-        print(f"파일을 찾을 수 없습니다: '{str_title}'")
+        messagebox.showerror("오류", f"파일을 찾을 수 없습니다: '{str_title}'")
     except PermissionError:
-        print(f"파일을 생성할 권한이 없습니다: '{str_title}'")
+        messagebox.showerror("오류", f"파일을 생성할 권한이 없습니다: '{str_title}'")
     except Exception as e:
-        print(f"다른 오류가 발생했습니다: {e}")
+        messagebox.showerror("오류", f"다른 오류가 발생했습니다: {e}")
 
 def list_memo():
     """
-    현재 디렉토리에 있는 메모장 파일 리스트를 출력하는 함수
+    현재 디렉토리에 있는 메모장 파일 리스트를 새 창으로 출력하는 함수
     """
     memo_files = []
     for directory in memo_directory:
@@ -1088,62 +1102,78 @@ def list_memo():
                     # 전체 파일 경로를 구성하여 리스트에 추가
                     memo_files.append(os.path.join(directory, file))
         except FileNotFoundError:
-            print(f"디렉토리를 찾을 수 없습니다: '{directory}'")
+            messagebox.showerror("오류", f"디렉토리를 찾을 수 없습니다: '{directory}'")
         except PermissionError:
-            print(f"디렉토리에 대한 접근 권한이 없습니다: '{directory}'")
+            messagebox.showerror("오류", f"디렉토리에 대한 접근 권한이 없습니다: '{directory}'")
         except Exception as e:
-            print(f"다른 오류가 발생했습니다: {e}")
+            messagebox.showerror("오류", f"다른 오류가 발생했습니다: {e}")
     if memo_files:
-        print("메모장 목록:")
-        for idx, memo_file in enumerate(memo_files, start=1):
-            print(f"{idx}. {memo_file}")
+        # 메모 파일 목록을 문자열로 변환
+        memo_list = "\n".join([f"{idx+1}. {memo_file}" for idx, memo_file in enumerate(memo_files)])
+        
+        # 새 창 생성 및 표시
+        memo_window = tk.Toplevel()
+        memo_window.title("메모장 목록")
+        
+        # 텍스트 위젯 생성
+        text = tk.Text(memo_window, wrap='word')
+        text.pack(expand=True, fill='both')
+        text.insert(tk.END, memo_list)
+        text.config(state=tk.DISABLED)  # 텍스트 수정 불가능하도록 설정
     else:
-        print("메모장이 존재하지 않습니다.")
+        messagebox.showinfo("메모장 목록", "메모장이 존재하지 않습니다.")
 
+
+# 메모 내용을 읽어오는 함수 (GUI)
 def read_memo():
-    print("열고 싶은 메모장 제목: ")
-    str_title = input()
+    str_title = simpledialog.askstring("열고 싶은 메모장 제목", "열고 싶은 메모장 제목:")
     try:
         with open(str_title, "r", encoding="utf8") as f:
             content = f.read()
-            print("메모 내용:")
-            print(content)
+            # 새 창 생성 및 표시
+            memo_window = tk.Toplevel()
+            memo_window.title("메모 내용")
+            
+            # 텍스트 위젯 생성
+            text = tk.Text(memo_window, wrap='word')
+            text.pack(expand=True, fill='both')
+            text.insert(tk.END, content)
+            text.config(state=tk.DISABLED)  # 텍스트 수정 불가능하도록 설정
     except FileNotFoundError:
-        print("해당 제목의 메모장을 찾을 수 없습니다.")
+        messagebox.showerror("오류", "해당 제목의 메모장을 찾을 수 없습니다.")
 
+# 메모를 삭제하는 함수 (GUI)
 def delete_memo():
-    print("삭제할 메모장 제목: ")
-    str_title = input()
+    str_title = simpledialog.askstring("삭제할 메모장 제목", "삭제할 메모장 제목:")
     if os.path.exists(str_title):
         os.remove(str_title)
-        print(f"{str_title} 메모가 삭제되었습니다.")
+        messagebox.showinfo("성공", f"{str_title} 메모가 삭제되었습니다.")
     else:
-        print("해당 제목의 메모장을 찾을 수 없습니다.")
+        messagebox.showerror("오류", "해당 제목의 메모장을 찾을 수 없습니다.")
 
+# 메모 관리 함수 (GUI)
 def memo():
-    while True:
-        print("-----------------------")
-        print("user:",user.name) # 현재 user가 누구인지 출력
-        print("""
-        1: 메모 추가
-        2: 메모 리스트
-        3. 메모 읽기
-        4. 메모 삭제
-        5. 메모 닫기
-        """)
-        choice = input("선택: ")
-        if choice == "1":
-            add_memo()
-        elif choice == "2":
-            list_memo()
-        elif choice == "3":
-            read_memo()
-        elif choice == "4":
-            delete_memo()
-        elif choice == "5":
-            break
-        else:
-            print("잘못된 선택입니다.")
+    memo_window = tk.Toplevel()
+    memo_window.title("메모장")
+    memo_window.geometry("300x300")
+    
+    user_label = tk.Label(memo_window, text=f"user: {user.name}")
+    user_label.pack(pady=10)
+    
+    add_button = tk.Button(memo_window, text="메모 추가", command=add_memo)
+    add_button.pack(pady=5)
+    
+    list_button = tk.Button(memo_window, text="메모 리스트", command=list_memo) 
+    list_button.pack(pady=5)
+    
+    read_button = tk.Button(memo_window, text="메모 읽기", command=read_memo)
+    read_button.pack(pady=5)
+    
+    delete_button = tk.Button(memo_window, text="메모 삭제", command=delete_memo)
+    delete_button.pack(pady=5)
+    
+    close_button = tk.Button(memo_window, text="메모 닫기", command=memo_window.destroy)
+    close_button.pack(pady=5)
 
 
 
@@ -1241,17 +1271,24 @@ def get_valid_amount_input():
     입력이 올바르지 않을 경우, 사용자로부터 반복하여 입력을 받음.
     """
     while True:
-        amount = input("금액: ") # 사용자로부터 금액 입력 요청
-        if amount.isdigit(): # 입력이 숫자로만 이루어져 있는지 확인
-            return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
-        else:
-            print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+        try :
+            amount = simpledialog.askfloat("금액 입력", "금액을 입력하세요: ")
+            if amount is None:
+                    return 0  # 사용자가 취소 버튼을 누르면 None을 반환하여 함수 종료
+            # 입력값이 유효한지 검사
+            amount_float = float(amount)
+            if amount_float >= 0:
+                return amount_float
+            else:
+                messagebox.showwarning("잘못된 입력", "금액은 음수가 될 수 없습니다.")
+        except:
+            messagebox.showerror("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
-    category = input("카테고리: ")
-    description = input("설명: ")
+    date = simpledialog.askstring("날짜 입력", "날짜를 입력하세요 (YYYY-MM-DD): ")
+    category = simpledialog.askstring("카테고리 입력", "카테고리를 입력하세요: ")
+    description = simpledialog.askstring("설명 입력", "설명을 입력하세요: ")
     score = day_evaluation()
     amount = get_valid_amount_input()  # 수정된 부분! 금액 입력 요청 및 유효성 검사.
     entry = {
@@ -1262,7 +1299,7 @@ def add_entry():
         "score": score  # 평가 점수 추가
     }
     ledger.append(entry)
-    print("항목이 추가되었습니다.")
+    messagebox.showinfo("항목 추가","항목이 추가되었습니다.")
 
     category_count = sum(1 for e in ledger if e["category"] == category)
 
@@ -1291,27 +1328,44 @@ def show_favorites():
         for category in favorites:
             print(f"- {category}")
 
-# 항목 조회 함수
+# 항목 조회 함수 (GUI)
 def view_entries():
+    entries_window = tk.Toplevel()
+    entries_window.title("지출 내역 조회")
+    entries_window.geometry("600x400")
+    
+    text = tk.Text(entries_window, wrap='word')
+    text.pack(expand=True, fill='both')
+    
     for entry in ledger:
-        print(entry)
+        text.insert(tk.END, f"{entry}\n")
         if "score" in entry:
-            print(f"평가 점수: {entry['score']}")
+            text.insert(tk.END, f"평가 점수: {entry['score']}\n")
+    
+    text.config(state=tk.DISABLED)
 
+    def close_view() :
+        entries_window.destroy()
+
+    closebutton = tk.Button(entries_window, text = "확인", command=close_view)
+    closebutton.pack(pady=10)
 
 def day_evaluation():
     # 사용자로부터 그날의 평가를 입력 받음
     while True:     #잘못된 값 입력 시 다시 입력 받을 수 있도록 수정 
-        evaluation = input("오늘의 평가를 입력하세요 (0에서 10까지): ")
+        evaluation = simpledialog.askfloat("평가 입력", "오늘의 평가를 입력하세요 (0에서 10까지): ")
+        if evaluation is None:
+            return  # 사용자가 취소 버튼을 누르면 None을 반환하여 함수 종료
+
         try:
             evaluation = float(evaluation)
             if 0 <= evaluation <= 10:
-                print(f"오늘의 평가는 {evaluation}점입니다.")
+                messagebox.showinfo("평가 결과", f"오늘의 평가는 {evaluation}점입니다.")
                 return evaluation
             else:
-                print("평가는 0에서 10 사이의 숫자여야 합니다.")
+                messagebox.showwarning("잘못된 입력", "평가는 0에서 10 사이의 숫자여야 합니다.")
         except ValueError:
-            print("올바른 숫자를 입력하세요.")
+            messagebox.showerror("올바른 숫자를 입력하세요.")
 
 def calculate_average_score(scores):
     if scores:
@@ -1405,10 +1459,24 @@ def compare_financial_goal(user1, user2, goal):
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
-    month = input("보고서 생성할 월 (YYYY-MM): ")
+    month = simpledialog.askstring("보고서 생성", "보고서 생성할 월 (YYYY-MM): ")
+    if month is None:
+        return  # 사용자가 취소 버튼을 누르면 함수 종료
+
     monthly_total = 0
     scores = []  # 평가 점수를 저장할 리스트
     category_totals = {}
+
+    report_window = tk.Toplevel()
+    report_window.title("월별 보고서")
+    report_window.geometry("600x400")
+
+    entry_listbox = tk.Listbox(report_window, width=80, height=10)
+    entry_listbox.pack(padx=10, pady=10)
+
+    report_text = tk.Text(report_window, width=80, height=10)
+    report_text.pack(padx=10, pady=10)
+
     for entry in ledger:
         if entry["date"].startswith(month):
             monthly_total += float(entry["amount"])
@@ -1416,46 +1484,49 @@ def generate_monthly_report():
             if category not in category_totals:
                 category_totals[category] = 0
             category_totals[category] += entry["amount"]
-            print(entry)
+            entry_listbox.insert(tk.END, entry)
             if "score" in entry:
                 scores.append(entry["score"])  # 평가 점수를 리스트에 추가
-    print(f"{month}월 총 지출: {monthly_total} 원")
-    print(f"{month}월 각 카테고리별 지출 내역:")
+    report = f"{month}월 총 지출: {monthly_total} 원\n"
+    report += f"{month}월 각 카테고리별 지출 내역:\n"
     for category, total in category_totals.items():
-        print(f"{category}: {total} 원")
+        report += f"{category}: {total} 원\n"
 
     average_score = calculate_average_score(scores)
     if category_totals:
         max_category = max(category_totals, key=category_totals.get)
-        print(f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)")
+        report += f"\n가장 지출이 많은 카테고리: {max_category} ({category_totals[max_category]} 원)\n"
     else:
-        print("해당 월에는 지출 내역이 없습니다.")
+        report += "해당 월에는 지출 내역이 없습니다.\n"
+
     
     if average_score is not None:
-        print(f"{month}월 평균 점수: {average_score:.2f} 점")
+        report += f"{month}월 평균 점수: {average_score:.2f} 점"
     else:
-        print(f"{month}월에는 평가된 점수가 없습니다.")
+        report += f"{month}월에는 평가된 점수가 없습니다."
+
+    report_text.insert(tk.END, report)
+
+    def close_report():
+        report_window.destroy()
+
+    close_button = tk.Button(report_window, text="확인", command=close_report)
+    close_button.pack(pady=10)
 
 budget = None #전역변수 budget의 기본값 설정
 
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     global budget 
-    """
-    만약 예산을 음수로 입력한 경우 다시 입력하도록 기능 구현
-    """
-    while True:
-        budget = float(input("예산 설정 (원): ")) #예산을 받아옴
-        if budget < 0: #만약 입력한 예산이 음수인 경우
-            print("예산은 음수가 될 수 없습니다. 다시 입력해주세요.") #다시 입력받도록 함
-        else: #아닌 경우
-            break #설정됨
+    budget = simpledialog.askfloat("예산 설정", "예산 설정 (원): ")
+    if budget is None:
+        return  # 사용자가 취소 버튼을 누르면 함수 종료
     
     current_total = sum(float(entry["amount"]) for entry in ledger)
     if current_total > budget:
-        print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
+        messagebox.showwarning("경고", f"예산 초과! 현재 지출: {current_total} 원")
     else:
-        print(f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
+        messagebox.showinfo("예산 설정 완료", f"예산 설정 완료. 현재 지출: {current_total} 원, 남은 예산: {budget - current_total} 원")
 
 # 예산 확인 함수
 def check_budget():
@@ -1474,10 +1545,20 @@ def analyze_categories():
         if category not in category_totals:
             category_totals[category] = 0
         category_totals[category] += entry["amount"]
+
+    analysis_window = tk.Toplevel()
+    analysis_window.title("지출 카테고리 분석")
+    
+    text = tk.Text(analysis_window, wrap='word')
+    text.pack(expand=True, fill='both')
+    
     for category, total in category_totals.items():
-        print(f"{category}: {total} 원")
-
-
+        text.insert(tk.END, f"{category}: {total} 원\n")
+    
+    text.config(state=tk.DISABLED)
+    
+    button = tk.Button(analysis_window, text="확인", command=analysis_window.destroy)
+    button.pack(pady=10)
 
 def calculate_monthly_savings(target_amount, target_date):
     """
@@ -2313,31 +2394,45 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         user = interface
         b_is_exit = 1
 
-
-# 메인 루프
-while not b_is_exit:
-    print("-----------------------")
-    print("user:",user.name) # 현재 user가 누구인지 출력
-    func = input("기능 입력 (? 입력시 도움말) : ")
-
-    if func == "1":
-        add_entry()
-    elif func == "2":
-        view_entries()
-    elif func == "3":
-        generate_monthly_report()
-    elif func == "4":
-        set_budget()
-    elif func == "5":
-        analyze_categories()
-    elif func == "?":
-        print_help()
-    elif func == "exit" or func == "x" or func =="종료":
-        print("프로그램을 종료합니다.")
+# 두 번째 기능 루프 (Tkinter GUI)
+def start_gui():
+    def on_exit():
+        global b_is_exit
         b_is_exit = True
-    elif func == "memo":
-        add_memo()
-        memo()
-    else:
-        
-        print("올바른 기능을 입력해 주세요.")
+        messagebox.showinfo("프로그램 종료", "프로그램을 종료합니다.")
+        root.destroy()
+
+    root = tk.Tk()
+    root.title("가계부")
+    root.geometry("400x450")
+
+    label = tk.Label(root, text=f"user: {user.name}")  # 현재 user가 누구인지 출력
+    label.pack()
+
+    entry_label = tk.Label(root, text="기능 선택")
+    entry_label.pack()
+
+    add_entry_button1 = tk.Button(root, text="1) 수입/지출 항목 추가", command=add_entry)
+    add_entry_button1.pack(padx=10, pady=10)
+
+    add_entry_button2 = tk.Button(root, text="2) 항목 조회", command=view_entries)
+    add_entry_button2.pack(padx=10, pady=10)
+
+    add_entry_button3 = tk.Button(root, text="3) 월별 보고서 생성", command=generate_monthly_report)
+    add_entry_button3.pack(padx=10, pady=10)
+
+    add_entry_button4 = tk.Button(root, text="4) 예산 설정 및 초과 알림", command=set_budget)
+    add_entry_button4.pack(padx=10, pady=10)
+
+    add_entry_button5 = tk.Button(root, text="5) 지출 카테고리 분석", command=analyze_categories)
+    add_entry_button5.pack(padx=10, pady=10)
+
+    add_entry_button6 = tk.Button(root, text="6) 메모장", command=memo)
+    add_entry_button6.pack(padx=10, pady=10)
+
+    exit_button = tk.Button(root, text="종료", command=on_exit)
+    exit_button.pack(padx=10, pady=10)
+
+    root.mainloop()
+
+start_gui()
