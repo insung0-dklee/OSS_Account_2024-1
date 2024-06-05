@@ -28,8 +28,9 @@ def main():
         print("2. 근무 시간 추가")
         print("3. 월급 계산")
         print("4. 알바생 정보 삭제")
-        print("5. 알바생 목록 출력")
-        print("6. 종료")
+        print("5. 근무 시간 조회")
+        print("6. 알바생 목록 출력")
+        print("7. 종료")
 
         choice = input("원하는 작업을 선택하세요: ")
 
@@ -63,14 +64,35 @@ def main():
                 print(f"{name}님의 정보가 삭제되었습니다.")
             else:
                 print("등록된 알바생이 아닙니다.")
+
         elif choice == '5':
+            name = input("알바생 이름을 입력하세요: ")
+            if name in employees:
+                try:
+                    start_date_input = input("조회 시작 날짜를 입력하세요 (예: 2000-10-10): ")
+                    start_date = datetime.datetime.strptime(start_date_input, '%Y-%m-%d').date()
+                    end_date_input = input("조회 종료 날짜를 입력하세요 (예: 2000-10-20): ")
+                    end_date = datetime.datetime.strptime(end_date_input, '%Y-%m-%d').date()
+                    if start_date > end_date:
+                        print("시작 날짜가 종료 날짜보다 클 수 없습니다.")
+                    else:
+                        print(f"\n{name}님의 근무 시간 조회 ({start_date} ~ {end_date}):")
+                        for date, hours in employees[name].daily_hours.items():
+                            if start_date <= date <= end_date:
+                                print(f"{date}: {hours}시간")
+                except ValueError:
+                    print("날짜 형식이 올바르지 않습니다.")
+            else:
+                print("등록된 알바생이 아닙니다.")
+                
+        elif choice == '6':
             if employees:
                 print("\n현재 등록된 알바생 목록:")
                 for name in employees:
                     print(f"- {name}")
             else:
                 print("등록된 알바생이 없습니다.")
-        elif choice == '6':
+        elif choice == '7':
             print("프로그램을 종료합니다.")
             break
         else:
