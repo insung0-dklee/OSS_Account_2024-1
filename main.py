@@ -607,7 +607,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
                 friends_str = ", ".join(user.friends)
                 fw.write(
-                    f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} \n : {user.friends}')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                    f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {user.friends}')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
 
 
