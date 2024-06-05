@@ -924,6 +924,100 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+def set_recurring_expenses():
+    recurring_expenses = {}
+    while True:
+        expense = input("반복 지출 항목을 입력하세요 (종료하려면 'q'를 입력): ")
+        if expense.lower() == 'q':
+            break
+        amount = float(input(f"{expense}의 금액을 입력하세요: "))
+        period = input(f"{expense}의 지출 주기를 입력하세요 (일, 주, 월 등): ")
+        recurring_expenses[expense] = {"amount": amount, "period": period}
+    return recurring_expenses
+
+def record_expenses(recurring_expenses):
+    expenses = defaultdict(list)
+    last_recorded = defaultdict(lambda: datetime.now() - timedelta(days=365))
+    while True:
+        expense_item = input("지출 내역을 입력하세요 (종료하려면 'q'를 입력): ")
+        if expense_item.lower() == 'q':
+            break
+        expense_amount = float(input("지출 금액을 입력하세요: "))
+        expense_date = datetime.strptime(input("지출 날짜를 입력하세요 (YYYY-MM-DD): "), "%Y-%m-%d")
+        expense_category = input("지출 항목을 입력하세요: ")
+        expenses[expense_category].append({"amount": expense_amount, "date": expense_date})
+        
+        if expense_category in recurring_expenses:
+            period = recurring_expenses[expense_category]["period"]
+            if expense_date >= last_recorded[expense_category] + timedelta(days=get_days(period)):
+                last_recorded[expense_category] = expense_date
+                recurring_amount = recurring_expenses[expense_category]["amount"]
+                if abs(expense_amount - recurring_amount) < 0.01:
+                    print(f"[자동 기록] {expense_category} 반복 지출 내역이 기록되었습니다.")
+    return expenses
+
+def get_days(period):
+    if period.lower() == "일":
+        return 1
+    elif period.lower() == "주":
+        return 7
+    elif period.lower() == "월":
+        return 30
+    else:
+        raise ValueError("지출 주기는 '일', '주', '월'만 허용됩니다.")
+
+def manage_recurring_expenses(recurring_expenses):
+    while True:
+        print("반복 지출 내역 관리 메뉴:")
+        print("1. 반복 지출 내역 조회")
+        print("2. 반복 지출 내역 추가")
+        print("3. 반복 지출 내역 수정")
+        print("4. 반복 지출 내역 삭제")
+        print("5. 종료")
+        
+        choice = input("메뉴를 선택하세요: ")
+        
+        if choice == "1":
+            for expense, details in recurring_expenses.items():
+                print(f"{expense}: {details['amount']} ({details['period']})")
+        elif choice == "2":
+            new_expense = input("새로운 반복 지출 항목을 입력하세요: ")
+            new_amount = float(input(f"{new_expense}의 금액을 입력하세요: "))
+            new_period = input(f"{new_expense}의 지출 주기를 입력하세요 (일, 주, 월 등): ")
+            recurring_expenses[new_expense] = {"amount": new_amount, "period": new_period}
+            print(f"{new_expense} 반복 지출 내역이 추가되었습니다.")
+        elif choice == "3":
+            expense_to_modify = input("수정할 반복 지출 항목을 입력하세요: ")
+            if expense_to_modify in recurring_expenses:
+                new_amount = float(input(f"{expense_to_modify}의 새 금액을 입력하세요: "))
+                new_period = input(f"{expense_to_modify}의 새 지출 주기를 입력하세요 (일, 주, 월 등): ")
+                recurring_expenses[expense_to_modify] = {"amount": new_amount, "period": new_period}
+                print(f"{expense_to_modify} 반복 지출 내역이 수정되었습니다.")
+            else:
+                print(f"{expense_to_modify}은(는) 존재하지 않는 반복 지출 항목입니다.")
+        elif choice == "4":
+            expense_to_delete = input("삭제할 반복 지출 항목을 입력하세요: ")
+            if expense_to_delete in recurring_expenses:
+                del recurring_expenses[expense_to_delete]
+                print(f"{expense_to_delete} 반복 지출 내역이 삭제되었습니다.")
+            else:
+                print(f"{expense_to_delete}은(는) 존재하지 않는 반복 지출 항목입니다.")
+        elif choice == "5":
+            break
+        else:
+            print("잘못된 선택입니다. 다시 시도해주세요.")
+
+def main():
+    recurring_expenses = set_recurring_expenses()
+    expenses = record_expenses(recurring_expenses)
+    manage_recurring_expenses(recurring_expenses)
+
+if __name__ == "__main__":
+    main()
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
