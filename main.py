@@ -520,17 +520,18 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
     id = input("id 입력: ")  # 회원가입 시의 id 입력
     name = input("이름 입력: ")  # 회원가입 시의 이름 입력
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+    while not phone.isdigit() or phone in userphones:  # 숫자가 아닌 경우와 중복된 전화번호인 경우 체크
+        if not phone.isdigit():
+            print("전화번호는 숫자만 입력 가능합니다. 다시 입력해주세요.")
+        else:
+            print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
+            print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
 
-    # 전화번호 중복 체크
-    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
-    while phone in userphones:
-        print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
-        print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
         phone = input("전화번호 입력: ")
-        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
+        if phone == '?':  # 전화번호로 등록된 id를 찾고 싶은 경우
             find_id_by_phone()
             print("로그인 기능으로 다시 돌아갑니다.")
-            return #로그인 기능으로 다시 돌려줌
+            return  # 로그인 기능으로 다시 돌려줌
 
     while True:
         pw = input("password 입력: ")  # 회원가입 시의 pw 입력
