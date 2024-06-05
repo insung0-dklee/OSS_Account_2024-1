@@ -2246,6 +2246,54 @@ def manage_deposits():
         interest = deposit.calculate_interest()
         print(f"상품명: {deposit.name}, 만기까지의 이자액: {interest:.2f}원")
 
+def calculate_compound_savings_interest(monthly_deposit, annual_rate, months):
+    """
+    매달 넣는 금액과 연 이자율, 적금 기간(개월)을 입력받아 복리 적금의 총 이자액과 최종 금액을 계산합니다.
+    """
+    if monthly_deposit <= 0:
+        raise ValueError("매달 넣는 금액은 0보다 커야 합니다.")
+    if annual_rate <= 0:
+        raise ValueError("연 이자율은 0보다 커야 합니다.")
+    if months <= 0:
+        raise ValueError("적금 기간은 0보다 커야 합니다.")
+
+    monthly_rate = annual_rate / 12 / 100
+    total_amount = 0.0
+    total_interest = 0.0
+
+    for month in range(1, months + 1):
+        # 매달 넣는 금액이 각 기간 동안 복리로 계산된 금액을 더함
+        current_amount = monthly_deposit * ((1 + monthly_rate) ** (months - month + 1))
+        total_amount += current_amount
+
+    # 원금의 총 합계는 매달 넣는 금액 * 적금 기간
+    total_principal = monthly_deposit * months
+    # 총 이자액은 최종 금액에서 원금을 뺀 것
+    total_interest = total_amount - total_principal
+
+    return total_interest, total_amount
+
+def input_compound_savings_info():
+    """사용자로부터 복리 적금 정보를 입력받아 총 이자액과 최종 금액을 계산하고 출력합니다."""
+    monthly_deposit = float(input("매달 넣는 금액을 입력하세요 (원): "))
+    annual_rate = float(input("연 이자율을 입력하세요 (%): "))
+    months = int(input("적금 기간을 입력하세요 (개월): "))
+
+    # 총 이자액과 최종 금액을 계산합니다.
+    try:
+        total_interest, final_amount = calculate_compound_savings_interest(monthly_deposit, annual_rate, months)
+    except ValueError as e:
+        print(f"오류: {e}")
+        return
+
+    # 결과를 출력합니다.
+    print("\n복리 적금 정보:")
+    print(f"매달 넣는 금액: {monthly_deposit:.2f} 원")
+    print(f"연 이자율: {annual_rate:.2f} %")
+    print(f"적금 기간: {months} 개월")
+    print(f"총 이자액: {total_interest:.2f} 원")
+    print(f"최종 금액: {final_amount:.2f} 원")
+
 # 재정 목표를 관리하는 루프 함수입니다.
 def financial_goal_loop(user):
     while True:
