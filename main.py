@@ -40,6 +40,56 @@ def sub_menu():
             print("잘못된 선택입니다. 다시 시도하세요.")
 
 
+import travel
+
+def main_menu():
+    while True:
+        print("\n---- 메인 메뉴 ----")
+        choice = input("기능 입력 (? 입력시 도움말) : ")
+
+        if choice == '1':
+            travel.set_trip_details()
+        elif choice == '2':
+            travel.set_trip_budget()
+        elif choice == '3':
+            travel.add_trip_expense()
+        elif choice == '4':
+            travel.view_trip_summary()
+        elif choice == '5':
+            filename = input("저장할 파일 이름: ")
+            travel.save_trip_data(filename)
+        elif choice == '6':
+            filename = input("불러올 파일 이름: ")
+            travel.load_trip_data(filename)
+        elif choice == '7':
+            travel.add_checklist_item()
+        elif choice == '8':
+            travel.view_checklist()
+        elif choice == '9':
+            travel.check_payments_due()
+        elif choice == '10':
+            travel.generate_expense_report()
+        elif choice == '11':
+            travel.recommend_travel_destination()
+        elif choice == '0':
+            print("프로그램을 종료합니다.")
+            break
+        elif choice == '?':
+            print("1. 여행 정보 설정")
+            print("2. 예산 설정")
+            print("3. 지출 추가")
+            print("4. 요약 보기")
+            print("5. 데이터 저장")
+            print("6. 데이터 불러오기")
+            print("7. 체크리스트 추가")
+            print("8. 체크리스트 보기")
+            print("9. 예산 초과 알림")
+            print("10. 경비 분석 리포트")
+            print("11. 여행지 추천")
+            print("0. 프로그램 종료")
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
+
 
 # 약속을 담을 리스트
 appointments = []
