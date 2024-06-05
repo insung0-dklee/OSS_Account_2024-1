@@ -16,6 +16,85 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+from datetime import datetime, timedelta
+
+# 구독 정보를 저장할 리스트
+subscriptions = []
+
+# 구독 정보를 저장하는 클래스
+class Subscription:
+    def __init__(self, name, monthly_cost, start_date, duration_months):
+        self.name = name
+        self.monthly_cost = monthly_cost
+        self.start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        self.duration_months = duration_months
+        self.end_date = self.start_date + timedelta(days=30 * duration_months)
+    
+    def __str__(self):
+        return (f"구독 서비스: {self.name}, 월 비용: {self.monthly_cost}원, "
+                f"시작 날짜: {self.start_date.strftime('%Y-%m-%d')}, "
+                f"만료 날짜: {self.end_date.strftime('%Y-%m-%d')}")
+
+# 구독 추가 함수
+def add_subscription():
+    name = input("구독 서비스 이름: ")
+    monthly_cost = float(input("월 비용 (원): "))
+    start_date = input("시작 날짜 (YYYY-MM-DD): ")
+    duration_months = int(input("구독 기간 (개월): "))
+    subscription = Subscription(name, monthly_cost, start_date, duration_months)
+    subscriptions.append(subscription)
+    print(f"{name} 구독이 추가되었습니다.")
+
+# 구독 삭제 함수
+def delete_subscription():
+    name = input("삭제할 구독 서비스 이름: ")
+    for subscription in subscriptions:
+        if subscription.name == name:
+            subscriptions.remove(subscription)
+            print(f"{name} 구독이 삭제되었습니다.")
+            return
+    print("해당 이름의 구독 서비스가 존재하지 않습니다.")
+
+# 구독 조회 함수
+def view_subscriptions():
+    if not subscriptions:
+        print("등록된 구독 서비스가 없습니다.")
+        return
+    for subscription in subscriptions:
+        print(subscription)
+
+# 구독 만료일 알림 함수
+def notify_expiring_subscriptions():
+    today = datetime.today()
+    for subscription in subscriptions:
+        days_left = (subscription.end_date - today).days
+        if days_left <= 30:
+            print(f"{subscription.name} 구독이 {days_left}일 후 만료됩니다.")
+
+# 구독 관리 메뉴 함수
+def subscription_management():
+    while True:
+        print("\n--- 구독 관리 ---")
+        print("1: 구독 추가")
+        print("2: 구독 삭제")
+        print("3: 구독 조회")
+        print("4: 만료 알림 확인")
+        print("0: 메인 메뉴로 돌아가기")
+
+        choice = input("기능을 선택하세요: ")
+
+        if choice == "1":
+            add_subscription()
+        elif choice == "2":
+            delete_subscription()
+        elif choice == "3":
+            view_subscriptions()
+        elif choice == "4":
+            notify_expiring_subscriptions()
+        elif choice == "0":
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
 
 
 # 약속을 담을 리스트
@@ -1214,6 +1293,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 구독 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2410,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        subscription_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
