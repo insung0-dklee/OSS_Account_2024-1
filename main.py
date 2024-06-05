@@ -1236,6 +1236,96 @@ def taxi_fare_interface():
         print(f"총 택시비는 {fare}원 입니다.")
     except ValueError:
         print("올바른 숫자를 입력하세요.")
+
+def create_ladder(num_players, height=5):
+    """사다리를 생성하는 함수
+    Args:
+        num_players (int): 플레이어 수
+        height (int): 사다리의 높이
+    Returns:
+        list: 사다리 구조를 나타내는 리스트
+    """
+    ladder = []
+    for _ in range(height):
+        row = [False] * (num_players - 1)
+        for i in range(num_players - 1):
+            if random.choice([True, False]):
+                row[i] = True
+        ladder.append(row)
+    return ladder
+
+def print_ladder(ladder):
+    """사다리 구조를 출력하는 함수
+    Args:
+        ladder (list): 사다리 구조
+    """
+    num_players = len(ladder[0]) + 1
+    for row in ladder:
+        line = ""
+        for i in range(num_players - 1):
+            line += "P" + ("-" if row[i] else "|")
+        line += "P"
+        print(line)
+    print(" ".join([f"{i+1}" for i in range(num_players)]))
+
+def play_ladder(ladder):
+    """사다리 게임을 플레이하는 함수
+    Args:
+        ladder (list): 사다리 구조
+    Returns:
+        list: 각 플레이어의 결과 위치
+    """
+    num_players = len(ladder[0]) + 1
+    results = list(range(num_players))
+
+    for i in range(num_players):
+        position = i
+        for row in ladder:
+            if position > 0 and row[position - 1]:
+                position -= 1
+            elif position < num_players - 1 and row[position]:
+                position += 1
+        results[i] = position
+    return results
+
+def distribute_money(players, money):
+    """돈을 분배하는 함수
+    Args:
+        players (list): 플레이어 리스트
+        money (float): 분배할 총 금액
+    Returns:
+        dict: 각 플레이어에게 분배된 금액
+    """
+    num_players = len(players)
+    ladder = create_ladder(num_players)
+    print("사다리 구조:")
+    print_ladder(ladder)
+    results = play_ladder(ladder)
+
+    prize_distribution = {player: 0 for player in players}
+    prize_per_position = money / num_players
+
+    for i, player in enumerate(players):
+        prize_distribution[players[results[i]]] += prize_per_position
+
+    return prize_distribution
+
+# 사용자 인터페이스 함수
+
+def ladder_game_interface():
+    """사다리 게임을 위한 사용자 인터페이스 함수"""
+    try:
+        num_players = int(input("플레이어 수를 입력하세요: "))
+        players = [input(f"플레이어 {i + 1} 이름: ") for i in range(num_players)]
+        money = float(input("분배할 총 금액을 입력하세요: "))
+
+        distribution = distribute_money(players, money)
+        print("사다리 게임 결과:")
+        for player, prize in distribution.items():
+            print(f"{player}: {prize}원")
+    except ValueError:
+        print("올바른 값을 입력하세요.")
+
     
 def filter_expenses_by_date(start_date, end_date):
     """
@@ -1274,7 +1364,8 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     6: 오늘의 금전운
-    7: 택시비 계산      
+    7: 택시비 계산 
+    8: 사다리 게임     
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2395,6 +2486,8 @@ while not b_is_exit:
         todays_fortune()
     elif func == "7":
         taxi_fare_interface()
+    elif func == "8":
+        ladder_game_interface()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
