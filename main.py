@@ -26,6 +26,7 @@ import re
 import csv
 from datetime import datetime
 import Add_function
+import random
 
 
 
@@ -1032,6 +1033,58 @@ def show_all_goals():
     else:
         for month, amount in monthly_goals.items():
             print(f"{month}: {amount}원")
+
+
+# 사용자의 지출 내역을 가정한 리스트
+user_expenses = ["식비", "교통비", "의류", "쇼핑", "문화생활"]
+
+# 사용자의 소비 성향을 분석하여 재미 요소 추가
+def add_fun_element(expenses):
+    # 사용자의 소비 성향을 분석하는 가상의 알고리즘
+    # 여기서는 단순히 사용자의 가장 많이 지출한 항목을 기준으로 설정합니다.
+    most_spent_category = max(set(expenses), key=expenses.count)
+
+    # 사용자의 소비 성향에 따라 랜덤하게 재미 요소를 제공합니다.
+    if most_spent_category == "식비":
+        return "오늘은 음식점에서 10% 할인 이벤트가 진행 중입니다!"
+    elif most_spent_category == "쇼핑":
+        return "오늘은 쇼핑몰에서 30% 할인 쿠폰을 제공합니다!"
+    else:
+        return "지금은 특별한 혜택이 없습니다. 다음에 다시 확인해주세요!"
+
+# 사용자의 소비 성향에 따라 재미 요소 추가
+fun_element = add_fun_element(user_expenses)
+
+# 재미 요소 출력
+print(fun_element)
+
+# 사용자의 투자 성향을 가정한 리스트
+user_investments = ["주식", "채권", "부동산", "현금"]
+
+# 투자 추천을 위한 랜덤 데이터 생성 (실제 데이터 대신에 사용)
+investment_recommendations = {
+    "주식": ["기업 A", "기업 B", "기업 C"],
+    "채권": ["회사 X", "회사 Y", "회사 Z"],
+    "부동산": ["아파트", "상가", "오피스텔"],
+    "현금": ["예금", "적금", "무이자 적금"]
+}
+
+# 투자 추천을 제공하는 함수
+def provide_investment_recommendation(investments):
+    recommended_investments = {}
+    for investment in investments:
+        if investment in investment_recommendations:
+            recommended_investment = random.choice(investment_recommendations[investment])
+            recommended_investments[investment] = recommended_investment
+    return recommended_investments
+
+# 사용자에게 투자 추천을 제공
+recommendations = provide_investment_recommendation(user_investments)
+
+# 투자 추천 출력
+print("투자 추천:")
+for investment, recommended_investment in recommendations.items():
+    print(f"- {investment}: {recommended_investment}")
 
 #저금 동기 부여 기능 (월별 목표 저금액을 입력받고 매달 칭찬 or 격려의 말 출력)
 class HouseholdLedger:
