@@ -229,8 +229,9 @@ def budget_challenge():
 """
 atm 현금 인출 프로그램
 atm의 현금 인출 가능 시간과 원하는 만원권의 장수, 보유 금액에 따른 현금 인출 프로그램
-input_day() : 요일 입력 받는 함수
-is_valid_day(day) :  유효한 요일인지 확인하는 함수
+day_of_week에 요일을 입력 받음
+월요일과 금요일일 경우에 시간을 입력받아 인출 가능/불가능 문구 출력
++ 5만원 이하 금액이 입력될시 5만원권 장수를 묻는 옵션이 나오지 않고 바로 만원권으로 인출됨
 """
 
 
@@ -277,23 +278,30 @@ def atm_withdrawal():
         print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
         return
 
-    while True:
-        try:
-            omanun_count = int(input("5만원권 몇 장을 인출하시겠습니까? "))
-            if omanun_count * 50000 > amount or omanun_count < 0:
-                print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
-            else:
-                break
-        except ValueError:
-            print("숫자를 입력해야 합니다. 다시 입력하세요.")
+    if amount <= 40000:
+        manun_count = amount // 10000
+        print(f"1만원권: {manun_count}장")
+    else:
+        while True:
+            try:
+                omanun_count = int(input("5만원권 몇 장을 인출하시겠습니까? "))
+                if omanun_count * 50000 > amount or omanun_count < 0:
+                    print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
+                else:
+                    break
+            except ValueError:
+                print("숫자를 입력해야 합니다. 다시 입력하세요.")
 
-    omanun_amount = omanun_count * 50000
-    manun_amount = amount - omanun_amount
-    manun_count = manun_amount // 10000
+        omanun_amount = omanun_count * 50000
+        manun_amount = amount - omanun_amount
+        manun_count = manun_amount // 10000
 
-    print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
+        print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
+
     print(f"총 인출 금액: {amount}원")
     print("이용해주셔서 감사합니다.")
+
+
 
 community_file = 'community.json'
 
