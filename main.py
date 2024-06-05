@@ -18,7 +18,7 @@ import points_system  # 포인트 시스템 추가
 import portfolio_management
 
 # 현재 예산을 고려하여 맞춤형 조언을 제시하는 함수.
-def check_budget(budget_bb):
+def asd_budget(budget_bb):
     if budget_bb < 1000000:
         message = "소비를 줄이고 저축을 더 할 필요가 있습니다!"
     elif budget_bb >= 1000000 and budget_bb < 5000000:
@@ -2426,7 +2426,7 @@ while not b_is_exit:
         print_donations()
     elif func == "8":
         budget_bb = int(input("예산을 입력하세요 (원): "))
-        result = check_budget(budget_bb)
+        result = asd_budget(budget_bb)
         print(result)
     elif func == "?":
         print_help()
