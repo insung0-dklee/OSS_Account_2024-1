@@ -27,8 +27,8 @@ def saving(): #적금 함수
         print("1개월 이상 입력")
         return
     interest = float(input("연이율(%): ")) #연이율
-    if interest < 0: #0미만 제외
-        print("0% 이상 입력")
+    if interest <= 0: #0이하 제외
+        print("0% 초과 입력")
         return
     
     #이자와 원금 계산
@@ -49,11 +49,14 @@ def armyfullsaving(): # 군적금 함수
         return  #입력이 잘못된 경우 함수를 중단
     
     month = int(input("적금을 넣는 개월 수(개월):")) #적금 적립기간
-    if month < 1:
+    if month < 1: #1개월 미만 입력 시
         print("최소 1개월 이상 입력해 주세요")
         return #입력이 잘못된 경우 함수를 중단
     
     rate = float(input("이율(%): ")) #이율 입력
+    if rate <= 0: #0이하 입력 시
+        print("최소 0% 초과 입력해 주세요")
+        return #입력이 잘못된 경우 함수를 중단
 
     #이자계산
     ratesum = 0
@@ -64,6 +67,21 @@ def armyfullsaving(): # 군적금 함수
 
     print("매칭지원금:",savesum,"원, 원금:",savesum,"원, 총 이자:",ratesum,"원")
     print("총 금액:",savesum*2 + ratesum)
+
+def savingmanage(): #적금 관리 함수
+    while(1):
+        savingmenu = input("적금 메뉴: 1.적금, 2.군적금, 3.종료") #메뉴 선택
+
+        if savingmenu == 1: #일반 적금
+            saving()
+        elif savingmenu == 2: #군적금
+            armyfullsaving()
+        elif savingmenu == 3: #종료
+            break
+        else:
+            print("다시 입력")
+
+
 
 # 약속을 담을 리스트
 appointments = []
@@ -1262,6 +1280,7 @@ def print_help():
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
     ?: 도움말 출력
+    saving: 적금 메뉴
     exit: 종료
     """)
 
@@ -2385,6 +2404,8 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "saving":
+        savingmanage()
     else:
         
         print("올바른 기능을 입력해 주세요.")
