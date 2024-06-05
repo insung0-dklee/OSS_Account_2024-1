@@ -746,6 +746,7 @@ def add_expense(date, category, item, amount):
         "item": item,
         "amount": amount
     })
+    check_high_expense_ratio(date, category)  # 항목 추가 시 지출 비율 체크
 
 # 가계부 데이터 필터링 함수
 def filter_expenses(category=None, item=None):
@@ -762,6 +763,31 @@ def print_expenses(expenses):
     print("-" * 50)
     for expense in expenses:
         print(f"{expense['date']}\t{expense['category']}\t{expense['item']}\t{expense['amount']}")
+
+
+# 카테고리별 지출 비율 계산 함수
+def calculate_expense_ratios(month):
+    total_expense = sum(expense['amount'] for expense in expense_data if expense['date'].startswith(month))
+    category_totals = {}
+
+    for expense in expense_data:
+        if expense['date'].startswith(month):
+            if expense['category'] in category_totals:
+                category_totals[expense['category']] += expense['amount']
+            else:
+                category_totals[expense['category']] = expense['amount']
+
+    category_ratios = {category: (amount / total_expense) * 100 for category, amount in category_totals.items()}
+    return category_ratios
+
+
+# 지출 비율 체크 및 경고 메시지 출력 함수
+def check_high_expense_ratio(date, category):
+    month = date[:7]  # 'YYYY-MM' 형식으로 월을 추출
+    ratios = calculate_expense_ratios(month)
+
+    if ratios.get(category, 0) > 80:
+        print(f"경고: {category} 카테고리의 지출 비중이 매우 높습니다. 각별히 신경 쓰시면 좋을 것 같습니다.")
 
 # 사용 예시
 add_expense("2023-05-01", "식비", "식당 식사", 30000)
