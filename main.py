@@ -1214,6 +1214,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 총 저축 금액 확인
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1527,6 +1528,52 @@ def track_savings(savings, target_amount, months_left):
 
 # 지출 내역을 저장할 파일 이름
 expenses_file = 'expenses.json'
+# 저축 내역을 저장할 파일 이름
+savings_file = 'savings.json'
+
+# 자동 저축 비율
+auto_save_ratio = 0.1  # 10%
+
+# 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
+if not os.path.exists(expenses_file):
+    with open(expenses_file, 'w') as file:
+        json.dump([], file)
+
+if not os.path.exists(savings_file):
+    with open(savings_file, 'w') as file:
+        json.dump([], file)
+
+def save_expense(expense):
+    # 파일을 열어 기존 데이터를 불러옴
+    with open(expenses_file, 'r') as file:
+        data = json.load(file)
+    # 새 지출 내역을 리스트에 추가
+    data.append(expense)
+    # 데이터를 파일에 저장
+    with open(expenses_file, 'w') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+def auto_save(amount):
+    save_amount = amount * auto_save_ratio
+    # 파일을 열어 기존 저축 데이터를 불러옴
+    with open(savings_file, 'r') as file:
+        savings = json.load(file)
+    # 새로운 저축 내역을 추가
+    savings.append({"amount": save_amount, "date": datetime.now().isoformat()})
+    # 저축 데이터를 파일에 저장
+    with open(savings_file, 'w') as file:
+        json.dump(savings, file, ensure_ascii=False, indent=4)
+
+savings_file = 'savings.json'
+
+def check_savings():
+    try:
+        with open(savings_file, 'r') as file:
+            savings = json.load(file)
+            total_savings = sum(entry["amount"] for entry in savings)
+            print(f"총 저축 금액: {total_savings} 원")
+    except FileNotFoundError:
+        print("저축 내역 파일이 존재하지 않습니다.")
 
 # 프로그램 시작 시 파일이 존재하지 않는 경우 초기화
 if not os.path.exists(expenses_file):
@@ -2330,6 +2377,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6": 
+        check_savings()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
