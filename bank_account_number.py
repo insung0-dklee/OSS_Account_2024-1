@@ -1,3 +1,5 @@
+import os
+
 class Account:
     def __init__(self, name, account_number):
         self.name = name
@@ -46,8 +48,28 @@ class AccountRegistry:
             for name, account in self.accounts.items():
                 print(f"이름: {name}, 계좌번호: {account.account_number}")
 
+    def save_to_file(self, filename):
+        with open(filename, 'w') as file:
+            for account in self.accounts.values():
+                file.write(f"{account.name},{account.account_number}\n")
+        print("계좌 정보가 파일에 저장되었습니다.")
+
+    def load_from_file(self, filename):
+        if not os.path.exists(filename):
+            print("파일을 찾을 수 없습니다. 새 파일을 생성합니다.")
+            with open(filename, 'w') as file:
+                pass  # 파일 생성
+            return
+
+        with open(filename, 'r') as file:
+            for line in file:
+                name, account_number = line.strip().split(',')
+                self.accounts[name] = Account(name, account_number)
+        print("계좌 정보가 파일에서 로드되었습니다.")
+
 def main():
     registry = AccountRegistry()
+    registry.load_from_file('accounts.txt')
 
     while True:
         print("\n계좌 관리 프로그램")
@@ -79,6 +101,7 @@ def main():
         elif choice == '5':
             registry.view_all_accounts()
         elif choice == '6':
+            registry.save_to_file('accounts.txt')
             print("프로그램을 종료합니다.")
             break
         else:
