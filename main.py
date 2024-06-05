@@ -22,48 +22,45 @@ import portfolio_management
 appointments = []
 
 def add_appointment():
-    """
-    약속을 추가하는 함수.
-    """
+        """
+        약속을 추가하는 함수.
+        """
+        name = input("약속 이름: ")
+        start_date = datetime.strptime(input("시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+        end_date = datetime.strptime(input("종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+        budget = float(input("예산: "))
 
-    name = input("약속 이름: ")
-    start_date = datetime.strptime(input("시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
-    end_date = datetime.strptime(input("종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
-    budget = float(input("예산: "))
+        # 새 약속이 기존 약속들과 시간 충돌하는지 체크
+        if not is_time_conflict(start_date, end_date):
+            appointment = {
+                "name": name,
+                "start_date": start_date,
+                "end_date": end_date,
+                "budget": budget,
+                "expenses": []  # 약속 내에 사용한 지출을 확인하기 위한 리스트
+            }
+            appointments.append(appointment)
+            print(f"약속 '{name}'이(가) 추가되었습니다.")
+        else:
+            print("약속 간에 시간이 겹칩니다.")
 
-    appointment = {
-        "name": name,
-        "start_date": start_date,
-        "end_date": end_date,
-        "budget": budget,
-        "expenses": []  # 약속 내에 사용한 지출을 확인하기 위한 리스트
-    }
-    appointments.append(appointment)
-    print(f"약속 '{name}'이(가) 추가되었습니다.")
+def is_time_conflict(new_start, new_end):
+        """
+        새로운 약속의 시작 시간과 종료 시간이 기존 약속들과 충돌하는지 검사합니다.
 
-def add_expense():
-    """
-    약속 중 지출을 설정하기 위한 함수
-    """
+        :param new_start: 새로운 약속의 시작 시간
+        :param new_end: 새로운 약속의 종료 시간
+        :return: 시간 충돌이 있으면 True, 없으면 False
+        """
+        for appointment in appointments:
+            # 새로운 약속의 시작 시간이 기존 약속의 기간 안에 있거나,
+            # 새로운 약속의 종료 시간이 기존 약속의 기간 안에 있는 경우 충돌로 간주합니다.
+            if (appointment["start_date"] <= new_start <= appointment["end_date"]) or \
+               (appointment["start_date"] <= new_end <= appointment["end_date"]) or \
+               (new_start <= appointment["start_date"] and new_end >= appointment["end_date"]):
+                return True
+        return False
 
-    name = input("약속 이름: ")
-    for appointment in appointments:
-        if appointment["name"] == name:
-            date = datetime.strptime(input("지출 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
-            description = input("지출 설명: ")
-            amount = float(input("지출 금액: "))
-
-            if appointment["start_date"] <= date <= appointment["end_date"]:
-                appointment["expenses"].append({"date": date, "description": description, "amount": amount})
-                total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
-                if total_expenses > appointment["budget"]:
-                    print(f"경고: 예산 초과! 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
-                else:
-                    print(f"지출이 추가되었습니다. 현재 지출: {total_expenses}, 예산: {appointment['budget']}")
-            else:
-                print("지출 일자가 약속 기간 내에 있지 않습니다.")
-            return
-    print("해당 이름의 약속이 존재하지 않습니다.")
 
 def show_appointments():
     """
@@ -74,11 +71,7 @@ def show_appointments():
         print(f"시작 일자: {appointment['start_date'].strftime('%Y-%m-%d')}")
         print(f"종료 일자: {appointment['end_date'].strftime('%Y-%m-%d')}")
         print(f"예산: {appointment['budget']}")
-        print("지출 내역:")
-        total_expenses = sum(expense["amount"] for expense in appointment["expenses"])
-        print(f"  * 약속 내 총 지출 : {total_expenses}")
-        for expense in appointment["expenses"]:
-            print(f"  - 일자: {expense['date'].strftime('%Y-%m-%d')}, 설명: {expense['description']}, 금액: {expense['amount']}")
+        
 
 def appointment_management():
     while True:
@@ -88,16 +81,13 @@ def appointment_management():
         if choice == '1':
             add_appointment()
         elif choice == '2':
-            add_expense()
-        elif choice == '3':
             show_appointments()
         elif choice == '0':
             print("메인 메뉴로 돌아갑니다. \n")
             break
         elif choice == '?':
             print("1. 약속 추가")
-            print("2. 지출 추가")
-            print("3. 약속 보기")
+            print("2. 약속 보기")
             print("0. 메인 메뉴로 돌아가기")
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
@@ -1214,6 +1204,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 약속 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2321,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        appointment_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
