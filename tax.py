@@ -272,9 +272,28 @@ def calculate_property_tax():
     print(f"재산세율: {property_tax_rate * 100}%")
     print(f"재산세: {property_tax:.2f} 원")
 
+def calculate_car_tax():
+    print("자동차세 계산 기능입니다.")
+    car_value = float(input("자동차 가치를 입력하세요 (원): "))
+    engine_displacement = int(input("배기량(cc)을 입력하세요: "))
+
+    if engine_displacement <= 1000:
+        tax_rate = 0.08  # 1,000cc 이하 세율 0.08%
+    elif engine_displacement <= 1600:
+        tax_rate = 0.12  # 1,600cc 이하 세율 0.12%
+    else:
+        tax_rate = 0.2  # 1,600cc 초과 세율 0.2%
+
+    car_tax = car_value * tax_rate
+
+    print(f"자동차 가치: {car_value} 원")
+    print(f"배기량: {engine_displacement} cc")
+    print(f"자동차세율: {tax_rate * 100}%")
+    print(f"자동차세: {car_tax:.2f} 원")
+
 def tax_menu():
     while True:
-        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n9: 지방소득세 계산\n10: 퇴직소득세 계산\n11: 재산세 계산\n0: 돌아가기\n선택: ")
+        tax_func = input("세금 및 보험 계산 항목을 선택하세요:\n1: 종합소득세 계산\n2: 근로소득세 계산\n3: 부가가치세 계산\n4: 4대 보험 계산\n5: 연말정산 시뮬레이션\n6: 상속세 계산\n7: 증여세 계산\n8: 부동산 양도소득세 계산\n9: 지방소득세 계산\n10: 퇴직소득세 계산\n11: 재산세 계산\n12: 자동차세 계산\n0: 돌아가기\n선택: ")
         if tax_func == "1":
             calculate_comprehensive_income_tax()
         elif tax_func == "2":
@@ -297,6 +316,8 @@ def tax_menu():
             calculate_retirement_income_tax()
         elif tax_func == "11":
             calculate_property_tax()
+        elif tax_func == "12":
+            calculate_car_tax()
         elif tax_func == "0":
             break
         else:
