@@ -17,6 +17,48 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+# 기부 내역을 저장할 리스트
+donations = []
+
+# 기부 내역 등록 함수
+def register_donation(name, amount, date_str):
+    # 날짜 문자열을 datetime 객체로 변환
+    date = datetime.strptime(date_str, '%Y-%m-%d')
+    
+    # 기부 내역 딕셔너리 생성
+    donation = {
+        'name': name,
+        'amount': amount,
+        'date': date
+    }
+    
+    # 기부 내역 리스트에 추가
+    donations.append(donation)
+    print(f"Donation registered: {name} donated ${amount} on {date_str}")
+
+# 기부 내역 출력 함수
+def print_donations():
+    # 기부 내역이 비어 있는지 확인
+    if not donations:
+        print("No donations registered.")
+        return
+    
+    # 기부 내역 헤더 출력
+    print(f"{'Name':<20} {'Amount':<10} {'Date'}")
+    print("-" * 40)
+    
+    # 기부 내역 출력
+    for donation in donations:
+        name = donation['name']
+        amount = donation['amount']
+        date = donation['date'].strftime('%Y-%m-%d')
+        print(f"{name:<20} ${amount:<10} {date}")
+
+register_donation("Alice", 100, "2024-06-01")
+register_donation("Bob", 200, "2024-06-02")
+register_donation("Charlie", 300, "2024-06-03")
+
+
 # 일주일 소득 예산 차트 사용예시
 income_aa = [500, 600, 550, 700, 650, 800, 750]
 budget_aa = [400, 500, 450, 600, 550, 700, 650]
@@ -1248,7 +1290,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 일주일간의 예산과 소득 차트      
+    6: 일주일간의 예산과 소득 차트
+    7: 기부 내역 등록과 차트 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2367,6 +2410,9 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         print_income_and_budget_chart(income_aa, budget_aa)
+    elif func == "7":    
+        print("\nDonation List:")
+        print_donations()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
