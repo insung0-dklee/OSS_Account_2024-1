@@ -1214,6 +1214,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 커스터마이징 지출 보고서 생성
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1925,6 +1926,27 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
+def customize_report():
+    print("커스터마이징 보고서 생성")
+    print("포함할 항목을 선택하세요 (예: 날짜, 카테고리, 설명, 금액)")
+    include_date = input("날짜 포함? (y/n): ").lower() == 'y'
+    include_category = input("카테고리 포함? (y/n): ").lower() == 'y'
+    include_description = input("설명 포함? (y/n): ").lower() == 'y'
+    include_amount = input("금액 포함? (y/n): ").lower() == 'y'
+
+    print("커스터마이징 보고서")
+    for entry in ledger:
+        report_entry = {}
+        if include_date:
+            report_entry['date'] = entry['date']
+        if include_category:
+            report_entry['category'] = entry['category']
+        if include_description:
+            report_entry['description'] = entry['description']
+        if include_amount:
+            report_entry['amount'] = entry['amount']
+        print(report_entry)
+
 
 
 """
@@ -2330,6 +2352,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        customize_report()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
