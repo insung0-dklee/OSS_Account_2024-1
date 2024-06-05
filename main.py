@@ -455,12 +455,24 @@ def inquire_manager() :
  # 비상금 관리 기능 추가
 emergency_fund = 0
 
-def set_emergency_fund():
+def set_emergency_fund(): #비상금 설정하는 함수
     global emergency_fund
     emergency_fund = float(input("비상금 설정 (원): "))
     print(f"비상금이 {emergency_fund} 원으로 설정되었습니다.")
+"""
+add_emergency_fund() : 비상금 추가하는 함수
+@Parm
+    None
+@return
+    None
+"""
+def add_emergency_fund():
+    global emergency_fund
+    amount = float(input("비상금 추가 금액 (원): ")) #추가할 금액 받아옴
+    emergency_fund += amount #비상금에 추가해 줌
+    print(f"비상금에 {amount} 원이 추가되었습니다. 현재 비상금: {emergency_fund} 원") #추가했다는 문구 출력
 
-def add_emergency_expense():
+def add_emergency_expense(): #비상금 지출 입력함수
     global emergency_fund
     amount = float(input("비상금 지출 금액 (원): "))
     description = input("비상금 지출 설명: ")
@@ -470,24 +482,26 @@ def add_emergency_expense():
     else:
         print("비상금이 부족합니다.")
 
-def view_emergency_fund():
+def view_emergency_fund(): #비상금 확인하는 함수
     print(f"현재 비상금: {emergency_fund} 원")
 
 # 비상금 관리 메뉴 추가
 def emergency_fund_management():
     while True:
-        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, exit: 종료): ")
+        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, 4: 추가, exit: 종료): ")
         if choice == "1":
             set_emergency_fund()
         elif choice == "2":
             add_emergency_expense()
         elif choice == "3":
             view_emergency_fund()
+        elif choice == "4":
+            add_emergency_fund()
         elif choice == "exit":
             break
         else:
             print("올바른 기능을 입력해 주세요.")
-
+emergency_fund_management()
 def get_program_running_time():
     return time.time() - start_time
 
