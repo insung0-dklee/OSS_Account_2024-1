@@ -16,7 +16,8 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
-
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
 # 약속을 담을 리스트
 appointments = []
@@ -1014,6 +1015,52 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
+def visualize_ledger(ledger):
+    plt.figure(figsize=(8, 10))
+    
+    # 배경 색상 및 테두리 설정
+    plt.gca().set_facecolor('#f8f8f8')
+    plt.gca().spines['top'].set_color('none')
+    plt.gca().spines['bottom'].set_color('none')
+    plt.gca().spines['left'].set_color('none')
+    plt.gca().spines['right'].set_color('none')
+    
+    # 폰트 설정
+    plt.rcParams['font.family'] = 'Courier New'  # 시스템 기본 한글 폰트
+    plt.rcParams['font.size'] = 12
+
+    # ledger를 금액을 기준으로 내림차순으로 정렬
+    ledger.sort(key=lambda x: x['amount'], reverse=True)
+    # 가장 소비 금액이 큰 4개 항목 선택
+    top_items = ledger[:4]
+    
+    # 날짜, 카테고리, 금액, 점수 출력
+    line_height = 0.03  # 한 줄의 높이 조절
+    for i, entry in enumerate(top_items):
+        # 각 항목의 시작 위치 설정
+        start_height = 0.93 - i * line_height
+        
+        plt.text(0.05, start_height, f"{entry['date']}", fontsize=12, ha='left', va='center')
+        plt.text(0.33, start_height, f"{entry['category']}", fontsize=12, ha='left', va='center')
+        plt.text(0.6, start_height, f"{int(entry['amount'])}won", fontsize=12, ha='left', va='center')
+        plt.text(0.86, start_height, f"{int(entry['score'])}", fontsize=12, ha='left', va='center')
+
+    # 날짜 출력
+    plt.text(0.5, 1, f"RECEIPT", fontsize=16, ha='center', va='center')
+    plt.text(0.5, 0.99, f"{datetime.now().strftime('%Y-%m-%d')}", fontsize=12, ha='center', va='center')
+
+    plt.plot([0.05, 0.95], [0.98, 0.98], color='gray', linewidth=0.5)
+    plt.text(0.05, 0.97, "DAY", fontsize=12, ha='left', va='center')
+    plt.text(0.33, 0.97, "CATEGORY", fontsize=12, ha='left', va='center')
+    plt.text(0.6, 0.97, "AMOUNT", fontsize=12, ha='left', va='center')
+    plt.text(0.86, 0.97, "SCORE", fontsize=12, ha='left', va='center')
+    
+    
+    
+    plt.axis('off')  # 축 숨김
+    plt.tight_layout()
+    plt.savefig('receipt_visualization.png')  # 이미지로 저장
+    plt.show()
 
 def backup_ledger():
     backup_data = {
@@ -2330,6 +2377,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        visualize_ledger(ledger)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
