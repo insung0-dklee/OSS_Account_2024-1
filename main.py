@@ -17,6 +17,26 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+import coupon
+
+def coupon_menu():
+    while True:
+        print("\n---- 메인 메뉴 ----")
+        choice = input("기능 입력 (? 입력시 도움말) : ")
+
+        if choice == '1':
+            coupon.add_expense()
+        elif choice == '2':
+            coupon.coupon_management()
+        elif choice == '0':
+            print("프로그램을 종료합니다.")
+            break
+        elif choice == '?':
+            print("1. 지출 내역 추가")
+            print("2. 쿠폰 관리")
+            print("0. 프로그램 종료")
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
 
 # 약속을 담을 리스트
 appointments = []
