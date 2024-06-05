@@ -1246,10 +1246,42 @@ def get_valid_amount_input():
             return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
-
+#날짜 형식(YYYY-MM-DD) 확인 함수
+def check_date():
+    while True:
+        date = input("날짜 (YYYY-MM-DD): ")
+        if date.count("-") !=2:
+            print("YYYY-MM-DD 형식으로 입력해주세요.")
+            continue
+        date_hyphen = date.replace("-","")
+        if can_convert_to_int(date_hyphen) == False: #int형 변환이 가능한지 확인
+            print("YYYY-MM-DD 형식으로 입력해주세요.")
+            continue
+        try:
+            year, month, day = int(date_hyphen[:4]), int(date_hyphen[4:6]), int(date_hyphen[6:])
+        except:
+            print("YYYY-MM-DD 형식으로 입력해주세요.")
+            continue
+        if year < 1970 or year > 2024:
+            print("YYYY는 1970~2024 사이 숫자로 입력해주세요.")
+            continue
+        if month < 1 or month > 12:
+            print("MM은 01~12 사이 숫자로 입력해주세요.")
+            continue
+        if day < 1 or day > 31:
+            print("DD는 01~31 사이 숫자로 입력해주세요.")
+            continue
+        return date
+#int형 변환 가능한지 확인하는 함수
+def can_convert_to_int(value):
+    try:
+        int(value)
+        return True
+    except (ValueError, TypeError):
+        return False
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
+    date = check_date() #날짜를 입력받고 형식을 확인하는 함수
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
