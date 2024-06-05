@@ -1228,3 +1228,40 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ExpenseManagerApp(root)
     root.mainloop()
+
+
+# 그래프를 이용한 월별 지출액 시각화 기능
+import matplotlib.pyplot as plt
+
+def get_monthly_expenses():
+    # 사용자로부터 월별 지출액 데이터 입력받기
+    monthly_expenses = {}
+    for i in range(1, 13):
+        month = input(f"{i}월의 지출액을 입력하세요 (원): ")
+        monthly_expenses[f"{i}월"] = int(month)
+    return monthly_expenses
+
+def plot_monthly_expenses(monthly_expenses):
+    # 월별 지출 데이터에서 월과 총 지출액을 분리하여 리스트로 저장
+    months = list(monthly_expenses.keys())
+    expenses = list(monthly_expenses.values())
+
+    # 선 그래프 그리기
+    plt.figure(figsize=(10, 6))
+    plt.plot(months, expenses, marker='o', color='b', linestyle='-')
+    plt.title('월별 총 지출액')
+    plt.xlabel('월')
+    plt.ylabel('총 지출액 (원)')
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+    # 그래프 표시
+    plt.show()
+
+if __name__ == "__main__":
+    # 월별 지출액 입력받기
+    monthly_expenses = get_monthly_expenses()
+    
+    # 입력받은 월별 지출액 데이터로 그래프 그리기
+    plot_monthly_expenses(monthly_expenses)
