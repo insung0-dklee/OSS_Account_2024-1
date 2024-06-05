@@ -233,7 +233,6 @@ input_day() : 요일 입력 받는 함수
 is_valid_day(day) :  유효한 요일인지 확인하는 함수
 """
 
-
 def atm_withdrawal():
     while True:
         try:
@@ -252,13 +251,23 @@ def atm_withdrawal():
             print("유효한 요일을 입력해야 합니다. 다시 입력하세요.")
         else:
             break
-
+    """
+    심야시간에 인출하는 경우 수수료 부가 기능 추가
+    """
+    commission = 0
     if day_of_week == "월요일":
         try:
             hour = int(input("현재 몇 시인가요? (0~23): "))
-            if hour < 10:
+            if hour < 10: 
                 print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
                 return
+            elif hour > 21: #9시 이후 수수료 부가
+                ask = input ("수수료 1000원이 발생합니다. 계속 수행하시겠습니까? (y or n) ") #서비스 이용 할 것인지
+                if (ask == 'y') : #수수료 추가 
+                    commission = 1000
+                elif (ask == 'n') : #서비스 종료
+                    print("서비스를 종료합니다.")
+                    return
         except ValueError:
             print("숫자를 입력해야 합니다.")
             return
@@ -269,13 +278,41 @@ def atm_withdrawal():
             if hour >= 16:
                 print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
                 return
+            elif hour < 6: #6시 이전의 경우 수수료 부가
+                ask2 = input ("수수료 1000원이 발생합니다. 계속 수행하시겠습니까? (y or n) ") #서비스 이용 할 것인지
+                if (ask2 == 'y') : #수수료 1000원 부가
+                    commission = 1000
+                elif (ask2 == 'n') :#서비스 종료
+                    print("서비스를 종료합니다.")
+                    return
         except ValueError:
             print("숫자를 입력해야 합니다.")
             return
-
+        
     elif day_of_week in ["토요일", "일요일"]:
         print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
         return
+    
+    else :
+        try:
+            hour = int(input("현재 몇 시인가요? (0~23): "))
+            if hour > 21: #9시 이후인 경우 수수료 부가
+                ask = input ("수수료 1000원이 발생합니다. 계속 수행하시겠습니까? (y or n) ") #서비스 이용 여부
+                if (ask == 'y') : #수수료 부가 1000원
+                    commission = 1000
+                elif (ask == 'n') : #서비스 종료
+                    print("서비스를 종료합니다.")
+                    return
+            elif hour < 6: #6시 이전인 경우 수수료 부가
+                ask2 = input ("수수료 1000원이 발생합니다. 계속 수행하시겠습니까? (y or n) ") #서비스 이용 여부
+                if (ask2 == 'y') : #수수료 부가 1000원
+                    commission = 1000
+                elif (ask2 == 'n') : #서비스 종료
+                    print("서비스를 종료합니다.")
+                    return
+        except ValueError:
+            print("숫자를 입력해야 합니다.")
+            return
 
     while True:
         try:
@@ -283,16 +320,21 @@ def atm_withdrawal():
             if omanun_count * 50000 > amount or omanun_count < 0:
                 print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
             else:
-                break
+                omanun_amount = omanun_count * 50000
+                manun_amount = amount - omanun_amount
+                manun_count = manun_amount // 10000
+                print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
+                confirm = input("위의 5만원권과 1만원권의 개수가 맞습니까? (y or n) ")
+                if confirm == 'y':
+                    break
+                elif confirm == 'n':
+                    print("다시 입력해주세요.")
         except ValueError:
             print("숫자를 입력해야 합니다. 다시 입력하세요.")
 
-    omanun_amount = omanun_count * 50000
-    manun_amount = amount - omanun_amount
-    manun_count = manun_amount // 10000
-
     print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
     print(f"총 인출 금액: {amount}원")
+    print(f"수수료: {commission}원")
     print("이용해주셔서 감사합니다.")
 
 community_file = 'community.json'
