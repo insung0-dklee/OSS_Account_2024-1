@@ -1,101 +1,100 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-class EventManager:
-    def __init__(self):
-        self.events = []  # 기념일을 저장할 리스트
+class Expense:
+    def __init__(self, name, amount, completed=False):
+        self.name = name
+        self.amount = amount
+        self.completed = completed
+
+    def __repr__(self):
+        status = "완료" if self.completed else "미완료"
+        return f"{self.name}: {self.amount}원 ({status})"
+
+class Event:
+    def __init__(self, name, date):
+        self.name = name
+        self.date = date
+        self.expenses = []
+
+    def add_expense(self, expense):
+        self.expenses.append(expense)
+
+    def complete_expense(self, expense_name):
+        for expense in self.expenses:
+            if expense.name == expense_name:
+                expense.completed = True
+                break
+
+    def total_cost(self):
+        return sum(expense.amount for expense in self.expenses)
+
+    def __repr__(self):
+        return f"이벤트: {self.name} ({self.date})\n지출 목록:\n" + "\n".join(str(expense) for expense in self.expenses)
+
+class Account_book:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
+        self.events = []
 
     def add_event(self, name, date):
-        event = {
-            'name': name,
-            'date': date
-        }
-        self.events.append(event)  # 기념일을 리스트에 추가
-        print(f"기념일 '{name}'이(가) {date.strftime('%Y-%m-%d')}에 추가되었습니다.")
+        event = Event(name, date)
+        self.events.append(event)
+        print(f"이벤트 '{name}'가 추가되었습니다.")
 
-    def get_upcoming_events(self, days=30):
-        today = datetime.now().date()
-        # 주어진 기간 내의 다가오는 기념일을 반환
-        upcoming_events = [
-            event for event in self.events
-            if today <= event['date'] <= today + timedelta(days=days)
-        ]
-        return upcoming_events
-
-    def delete_event(self, name):
-        initial_count = len(self.events)
-        self.events = [event for event in self.events if event['name'] != name]
-        if len(self.events) < initial_count:
-            print(f"기념일 '{name}'이(가) 삭제되었습니다.")
-        else:
-            print(f"기념일 '{name}'을(를) 찾을 수 없습니다. 잘못 입력하셨습니다.")
-
-    def edit_event(self, old_name, new_name, new_date):
-        for event in self.events:
-            if event['name'] == old_name:
-                event['name'] = new_name
-                event['date'] = new_date
-                print(f"기념일 '{old_name}'이(가) '{new_name}'으로 {new_date.strftime('%Y-%m-%d')}에 수정되었습니다.")
-                return
-        print(f"기념일 '{old_name}'을(를) 찾을 수 없습니다.")
-
-    def list_all_events(self):
+    def view_events(self):
         if not self.events:
-            print("등록된 기념일이 없습니다.")
-            return
-        print("\n기념일 목록:")
-        for event in self.events:
-            print(f"{event['name']} - {event['date']}")
+            print("이벤트가 없습니다.")
+        else:
+            for idx, event in enumerate(self.events, start=1):
+                print(f"{idx}. {event.name} ({event.date})")
+
+    # 다른 기능들을 추가하거나 수정할 수 있습니다.
 
 def main():
-    manager = EventManager()
+    account = Account_book("가계부", 1000000)
 
     while True:
-        print("\n기념일 관리 프로그램")
-        print("1. 기념일 추가")
-        print("2. 다가오는 기념일 보기")
-        print("3. 기념일 삭제")
-        print("4. 기념일 수정")
-        print("5. 기념일 목록 한번에 보기")
+        print("\n1. 이벤트 추가")
+        print("2. 이벤트 조회")
+        print("3. 지출 항목 추가")
+        print("4. 지출 항목 완료 처리")
+        print("5. 총 지출 금액 조회")
         print("6. 종료")
-        choice = input("원하는 작업을 선택하세요: ")
+        
+        choice = input("원하는 작업의 번호를 선택하세요: ")
 
         if choice == '1':
-            name = input("기념일 이름을 입력하세요: ")
-            date_str = input("기념일 날짜를 입력하세요 (YYYY-MM-DD): ")
-            try:
-                date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                manager.add_event(name, date)
-            except ValueError:
-                print("날짜 입력이 올바르지 않습니다. 다시 시도하세요.")
+            name = input("이벤트 이름: ")
+            date = input("이벤트 날짜 (YYYY-MM-DD): ")
+            account.add_event(name, date)
+
         elif choice == '2':
-            days = int(input("며칠 후까지의 기념일을 보시겠습니까?: "))
-            upcoming_events = manager.get_upcoming_events(days)
-            if upcoming_events:
-                print("\n다가오는 기념일:")
-                for event in upcoming_events:
-                    print(f"{event['name']} - {event['date']}")
-            else:
-                print("다가오는 기념일이 없습니다.")
+            account.view_events()
+
         elif choice == '3':
-            name = input("삭제할 기념일 이름을 입력하세요: ")
-            manager.delete_event(name)
+            name = input("지출 항목 이름: ")
+            amount = int(input("지출 금액: "))
+            event_idx = int(input("지출 항목을 추가할 이벤트 번호를 선택하세요: ")) - 1
+            account.events[event_idx].add_expense(Expense(name, amount))
+
         elif choice == '4':
-            old_name = input("수정할 기념일 이름을 입력하세요: ")
-            new_name = input("새 기념일 이름을 입력하세요: ")
-            date_str = input("새 기념일 날짜를 입력하세요 (YYYY-MM-DD): ")
-            try:
-                new_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                manager.edit_event(old_name, new_name, new_date)
-            except ValueError:
-                print("날짜 입력이 올바르지 않습니다. 다시 시도하세요.")
+            event_idx = int(input("지출 항목 완료 처리를 할 이벤트 번호를 선택하세요: ")) - 1
+            expense_name = input("완료 처리할 지출 항목 이름: ")
+            account.events[event_idx].complete_expense(expense_name)
+            print(f"지출 항목 '{expense_name}'가 완료 처리되었습니다.")
 
         elif choice == '5':
-            manager.list_all_events()
+            event_idx = int(input("총 지출 금액을 조회할 이벤트 번호를 선택하세요: ")) - 1
+            total_cost = account.events[event_idx].total_cost()
+            print(f"총 지출 금액: {total_cost}원")
 
         elif choice == '6':
+            print("프로그램을 종료합니다.")
             break
+
         else:
-            print("잘못된 선택입니다. 다시 시도하세요.")
+            print("잘못된 입력입니다. 다시 선택해주세요.")
 
 if __name__ == "__main__":
     main()
