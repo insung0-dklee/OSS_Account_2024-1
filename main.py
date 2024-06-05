@@ -553,7 +553,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
@@ -1013,6 +1013,59 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
+
+
+def play_game():
+    print("--------\n미니 게임에 오신 것을 환영합니다! 다음 게임 중 하나를 선택하여, 승리할 경우 100원이 지급됩니다:")
+    game_choice = input("1. 가위바위보 2. 숫자 맞추기 0. 메인 메뉴로 : ")
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+    if game_choice == "1":
+        user_choice = input("가위, 바위, 보 중 하나를 선택하세요: ").lower()
+        computer_choice = random.choice(["가위", "바위", "보"])
+
+        print(f"컴퓨터: {computer_choice}")
+
+        if user_choice == computer_choice:
+            print("비겼습니다. 메인 메뉴로 돌아갑니다.")
+        elif (user_choice == "가위" and computer_choice == "보") or \
+            (user_choice == "바위" and computer_choice == "가위") or \
+            (user_choice == "보" and computer_choice == "바위"):
+            print("이겼습니다! 100원을 획득하셨습니다.")
+            entry = {
+                    "date": today,
+                    "category": "미니 게임",
+                    "description": "가위 바위 보 우승",
+                    "amount": 100,
+                    "score": 10
+                    }
+            ledger.append(entry)
+        else:
+            print("패배했습니다. 메인 메뉴로 돌아갑니다.")
+
+    elif game_choice == "2":
+        secret_number = random.randint(1,10)
+        user_guess = int(input("1에서 10 사이의 숫자를 맞춰보세요: "))
+
+        if user_guess == secret_number:
+            print(f"컴퓨터 : {secret_number}")
+            print("정답입니다! 100원을 획득하셨습니다.")
+            entry = {
+                    "date": today,
+                    "category": "미니 게임",
+                    "description": "숫자 맞추기 우승",
+                    "amount": 100,
+                    "score": 10
+                    }
+            ledger.append(entry)
+        else:
+            print(f"컴퓨터 : {secret_number}")
+            print("틀렸습니다. 메인 메뉴로 돌아갑니다.")
+
+    elif game_choice == "0":
+        print("메인 메뉴로 돌아갑니다.")
+
 
 
 def backup_ledger():
@@ -2330,6 +2383,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        play_game()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
