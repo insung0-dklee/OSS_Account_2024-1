@@ -112,7 +112,7 @@ def main():
                 income_spending(sel_num, income)
             else:
                 income_spending(sel_num, spending)
-    
+
 
 if __name__ == '__main__':
     main()

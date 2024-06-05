@@ -7,6 +7,7 @@ class AccountRegistry:
     def __init__(self):
         self.accounts = {}
 
+    # 계좌 등록 함수
     def add_account(self, name, account_number):
         if name in self.accounts:
             print(f"이미 등록된 이름입니다: {name}")
@@ -17,9 +18,11 @@ class AccountRegistry:
         self.accounts[name] = Account(name, account_number)
         print(f"{name}의 계좌 ({account_number})가 등록되었습니다.")
 
+    # 계좌 검색 함수
     def find_account(self, name):
         return self.accounts.get(name, None)
 
+    # 계좌 수정 함수
     def edit_account(self, name):
         account = self.find_account(name)
         if not account:
@@ -31,6 +34,7 @@ class AccountRegistry:
         self.accounts[new_name] = Account(new_name, new_account_number)
         print("계좌 정보가 수정되었습니다.")
 
+    # 계좌 삭제 함수
     def delete_account(self, name):
         account = self.find_account(name)
         if not account:

@@ -6,6 +6,7 @@ class PartTimeEmployee:
         self.hourly_wage = hourly_wage
         self.daily_hours = {}
 
+    # 근무 시간 추가 함수
     def add_work_hours(self, date, hours_worked):
         if date in self.daily_hours:
             overwrite = input(f"{date}의 근무 시간은 이미 등록되어 있습니다. 수정하시겠습니까? (y/n): ")
@@ -16,6 +17,7 @@ class PartTimeEmployee:
             self.daily_hours[date] = hours_worked
             print(f"{date}의 근무 시간이 정상적으로 추가되었습니다.")
 
+    # 월급 계산 함수
     def calculate_monthly_salary(self, year, month):
         total_hours = sum(hours for date, hours in self.daily_hours.items() if date.year == year and date.month == month)
         return self.hourly_wage * total_hours

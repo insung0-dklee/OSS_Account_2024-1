@@ -4,6 +4,7 @@ class EventManager:
     def __init__(self):
         self.events = []  # 기념일을 저장할 리스트
 
+    # 기념일 추가 함수
     def add_event(self, name, date):
         event = {
             'name': name,
@@ -12,6 +13,7 @@ class EventManager:
         self.events.append(event)  # 기념일을 리스트에 추가
         print(f"기념일 '{name}'이(가) {date.strftime('%Y-%m-%d')}에 추가되었습니다.")
 
+    # 다가오는 기념일을 반환하는 함수
     def get_upcoming_events(self, days=30):
         today = datetime.now().date()
         # 주어진 기간 내의 다가오는 기념일을 반환
@@ -21,6 +23,7 @@ class EventManager:
         ]
         return upcoming_events
 
+    # 기념일 삭제 함수
     def delete_event(self, name):
         initial_count = len(self.events)
         self.events = [event for event in self.events if event['name'] != name]
@@ -29,6 +32,7 @@ class EventManager:
         else:
             print(f"기념일 '{name}'을(를) 찾을 수 없습니다. 잘못 입력하셨습니다.")
 
+    # 기념일 수정 함수
     def edit_event(self, old_name, new_name, new_date):
         for event in self.events:
             if event['name'] == old_name:
@@ -38,6 +42,7 @@ class EventManager:
                 return
         print(f"기념일 '{old_name}'을(를) 찾을 수 없습니다.")
 
+    # 모든 기념일을 리스트로 출력하는 함수
     def list_all_events(self):
         if not self.events:
             print("등록된 기념일이 없습니다.")

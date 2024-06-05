@@ -7,12 +7,15 @@ class Investment:
         self.purchase_price = purchase_price
         self.current_price = purchase_price
 
+    # 현재 가격 업데이트 함수
     def update_price(self, current_price):
         self.current_price = current_price
 
+    # 투자 가치 계산 함수
     def get_value(self):
         return self.amount * self.current_price
 
+    # 손익 계산 함수
     def get_profit_loss(self):
         return (self.current_price - self.purchase_price) * self.amount
 
@@ -20,11 +23,13 @@ class Portfolio:
     def __init__(self):
         self.investments = []
 
+    # 투자 추가 함수
     def add_investment(self, name, amount, purchase_price):
         investment = Investment(name, amount, purchase_price)
         self.investments.append(investment)
         print(f"Investment in {name} added.")
 
+    # 투자 가격 업데이트 함수
     def update_investment(self, name, current_price):
         for investment in self.investments:
             if investment.name == name:
@@ -33,6 +38,7 @@ class Portfolio:
                 return
         print(f"Investment {name} not found.")
 
+    # 포트폴리오 보기 함수
     def view_portfolio(self):
         if not self.investments:
             print("No investments found.")
@@ -41,12 +47,15 @@ class Portfolio:
         for investment in self.investments:
             print(f"{investment.name} - Amount: {investment.amount}, Purchase Price: {investment.purchase_price}, Current Price: {investment.current_price}, Value: {investment.get_value()}, Profit/Loss: {investment.get_profit_loss()}")
 
+    # 총 투자 가치 계산 함수
     def get_total_value(self):
         return sum(investment.get_value() for investment in self.investments)
 
+    # 총 손익 계산 함수
     def get_total_profit_loss(self):
         return sum(investment.get_profit_loss() for investment in self.investments)
 
+# 포트폴리오 저장 함수
 def save_portfolio(portfolio):
     data = [
         {
@@ -61,6 +70,7 @@ def save_portfolio(portfolio):
         json.dump(data, file, ensure_ascii=False, indent=4)
     print("Portfolio saved.")
 
+# 포트폴리오 로드 함수
 def load_portfolio():
     portfolio = Portfolio()
     try:

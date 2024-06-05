@@ -6,12 +6,14 @@ from datetime import datetime
 # 가계부 데이터 파일 경로
 expenses_file = 'expenses.json'
 
+# 지출 내역 로드 함수
 def load_expenses():
     if os.path.exists(expenses_file):
         with open(expenses_file, 'r', encoding='utf-8') as file:
             return json.load(file)
     return []
 
+# 특정 기간의 지출 내역 시각화 함수
 def visualize_expenses(start_date, end_date):
     expenses = load_expenses()
     if not expenses:
@@ -39,6 +41,7 @@ def visualize_expenses(start_date, end_date):
     plt.grid(True)
     plt.show()
 
+# 지출 내역 카테고리별 시각화 함수
 def visualize_income_expense():
     expenses = load_expenses()
     if not expenses:
@@ -62,6 +65,7 @@ def visualize_income_expense():
     plt.title('Expenses by Category')
     plt.show()
 
+# 예산 대비 실제 지출 시각화 함수
 def visualize_budget():
     expenses = load_expenses()
     if not expenses:

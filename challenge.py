@@ -2,6 +2,7 @@ import random  # 랜덤 모듈을 가져옴
 
 points = 0  # 초기 포인트 값을 0으로 설정
 
+# 랜덤으로 도전 과제를 선택하여 반환하는 함수
 def assign_challenge():
     """
     랜덤으로 도전 과제를 선택하여 반환하는 함수
@@ -14,6 +15,7 @@ def assign_challenge():
     today_challenge = random.choice(challenges)  # 도전 과제를 랜덤으로 선택
     return today_challenge
 
+# 도전 과제를 완료했을 때 포인트를 추가하고 메시지를 출력하는 함수
 def complete_challenge():
     """
     도전 과제를 완료했을 때 포인트를 추가하고 메시지를 출력하는 함수
@@ -23,6 +25,7 @@ def complete_challenge():
     print("도전과제 완료! 티끌 모아 태산~")
     print(f"현재 포인트: {points}점")
 
+# 현재 포인트를 반환하는 함수
 def get_points():
     """
     현재 포인트를 반환하는 함수

@@ -11,11 +11,13 @@ class BudgetSimulation:
         self.target_date = datetime.strptime(target_date, "%Y-%m-%d")  # 목표 날짜
         self.current_savings = 0  # 현재 저축액
 
+    # 저축 금액 추가 함수
     def add_savings(self, amount):
         """저축 금액 추가"""
         self.current_savings += amount
         print(f"{amount}원이 저축되었습니다. 현재 저축액: {self.current_savings}원")
 
+    # 월별 저축액 계산 함수
     def calculate_monthly_savings(self):
         """목표 달성 위해 필요한 월별 저축액 계산"""
         today = datetime.today()
@@ -28,26 +30,28 @@ class BudgetSimulation:
         print(f"매월 저축해야 할 금액: {monthly_savings:.2f}원, 남은 달 수: {months_left}개월")
         return monthly_savings, months_left
 
+    # 미래 지출 시뮬레이션 함수
     def simulate_expenses(self):
         """미래 지출을 시뮬레이션"""
         monthly_savings, months_left = self.calculate_monthly_savings()
         if monthly_savings is None:
             return
-        
+
         today = datetime.today()
         future_expenses = []
-        
+
         for month in range(1, months_left + 1):
             future_date = (today + timedelta(days=month*30)).strftime('%Y-%m')
             future_expenses.append({
                 'date': future_date,
                 'amount': monthly_savings
             })
-        
+
         print("미래 지출 시뮬레이션:")
         for expense in future_expenses:
             print(f"{expense['date']}: {expense['amount']:.2f}원")
 
+    # 시뮬레이션 결과 저장 함수
     def save_simulation(self):
         """시뮬레이션 결과 저장"""
         simulation_result = {

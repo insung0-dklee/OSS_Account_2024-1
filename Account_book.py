@@ -1,5 +1,6 @@
 class Account_book: # 가계부 클래스
 
+  # Class-level variables for storing account details
   bal = 0 #잔액 - 미설정시 0원
   income_total = 0 #수입 총액
   income_list = [] #수입 기록 리스트
