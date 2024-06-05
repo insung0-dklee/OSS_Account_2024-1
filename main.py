@@ -924,6 +924,35 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+from collections import defaultdict
+
+# 예산 설정 기능
+budget = float(input("이번 달 예산을 입력하세요: "))
+
+# 지출 내역 관리 기능
+expenses = defaultdict(list)
+while True:
+    expense_item = input("지출 항목을 입력하세요 (종료하려면 Enter): ")
+    if not expense_item:
+        break
+    expense_amount = float(input("지출 금액을 입력하세요: "))
+    exclude_from_budget = input("이 지출을 예산에서 제외하시겠습니까? (Y/N) ").upper() == "Y"
+    expenses[expense_item].append((expense_amount, exclude_from_budget))
+
+# 예산 계산 기능
+total_expenses = 0
+for expense_list in expenses.values():
+    for expense_amount, exclude_from_budget in expense_list:
+        if not exclude_from_budget:
+            total_expenses += expense_amount
+
+remaining_budget = budget - total_expenses
+
+# 결과 출력
+print(f"이번 달 예산: {budget:.2f}")
+print(f"이번 달 지출: {total_expenses:.2f}")
+print(f"남은 예산: {remaining_budget:.2f}")
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
