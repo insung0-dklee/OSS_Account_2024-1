@@ -2287,6 +2287,23 @@ def check_progress_with_inflation(goal, inflation_rate):
     else:
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
+def format_number():
+    """
+    지출 혹은 수입이 길어 보기 힘들 때 K 또는 M 단위로 포맷합니다.
+
+    num = 정수형을 입력받는다.
+
+    포맷한 실수를 프린트한다.
+    
+    """
+    num = int(input("지출을 입력해주세요 >> "))
+    abs_num = abs(num)
+    if abs_num >= 1000000:
+        print(f"{num / 1000000:.1f}M")
+    elif abs_num >= 1000:
+        print( f"{num / 1000:.1f}K")
+
+
 
 ###########################################################
 
