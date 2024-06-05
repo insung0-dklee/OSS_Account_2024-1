@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -16,6 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+from collections import defaultdict
 
 
 # 약속을 담을 리스트
@@ -553,7 +554,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
@@ -1014,6 +1015,70 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
 
+# Function to convert a date to the start of the week (Sunday to Saturday)
+def get_week_start(date):
+    # Adjust to the start of the week (Sunday)
+    start_date = date - timedelta(days=date.weekday() + 1)
+    if start_date > date:
+        start_date -= timedelta(days=7)
+    return start_date
+
+# Function to summarize weekly spending
+def weekly_summary():
+    date_str = input("년-월-주를 입력하세요 (예: 2024-06-2): ")
+    year, month, week = map(int, date_str.split('-'))
+    start_date = datetime(year, month, 1) + timedelta(weeks=week-1)
+    start_date = get_week_start(start_date)
+    end_date = start_date + timedelta(days=6)
+
+    weekly_expenses = [entry for entry in ledger if start_date <= datetime.strptime(entry["date"], '%Y-%m-%d') <= end_date]
+    
+    if not weekly_expenses:
+        print("해당 주간에 소비 내역이 없습니다.")
+        return
+
+    total_spending = sum(entry["amount"] for entry in weekly_expenses)
+    average_spending = total_spending / 7
+    average_score = sum(entry["score"] for entry in weekly_expenses) / len(weekly_expenses)
+    
+    category_summary = defaultdict(float)
+    daily_expenses = { (start_date + timedelta(days=i)).strftime('%Y-%m-%d'): 0 for i in range(7) }
+    
+    for entry in weekly_expenses:
+        category_summary[entry["category"]] += entry["amount"]
+        daily_expenses[entry["date"]] += entry["amount"]
+    
+    most_spent_category = max(category_summary, key=category_summary.get)
+    most_spent_day = max(daily_expenses, key=daily_expenses.get)
+    least_spent_day = min(daily_expenses, key=daily_expenses.get)
+
+    # 출력
+    print(f"\n{start_date.strftime('%Y-%m-%d')} ~ {end_date.strftime('%Y-%m-%d')} 소비 요약:")
+    print(f"총 지출: {int(total_spending)}")
+    print(f"평균 일별 지출: {average_spending:.2f}")
+    print(f"이번 주의 평균 점수: {average_score:.2f}")
+    print(f"가장 소비가 많았던 카테고리: {most_spent_category}")
+    print(f"가장 소비가 많았던 날: {most_spent_day} ({int(daily_expenses[most_spent_day])})")
+
+    # 가장 소비가 적었던 날(소비가 0원인 날 포함)
+    min_spent_days = [day for day, amount in daily_expenses.items() if amount == daily_expenses[least_spent_day]]
+    print(f"가장 소비가 적었던 날: {', '.join(min_spent_days)} ({int(daily_expenses[least_spent_day])})")
+
+    print("\n카테고리별 지출:")
+    for category, amount in category_summary.items():
+        print(f"  {category}: {int(amount)}")
+
+    print("\n주간 소비 리포트:")
+    for day in (start_date + timedelta(days=i) for i in range(7)):
+        day_str = day.strftime('%Y-%m-%d')
+        print(f"{day_str}:")
+        day_expenses = [entry for entry in weekly_expenses if entry["date"] == day_str]
+        if day_expenses:
+            for entry in day_expenses:
+                print(f"  - 금액: {int(entry['amount'])}, 카테고리: {entry['category']}, 설명: {entry['description']}")
+        else:
+            print("  지출 내역이 없습니다.")
+
 
 def backup_ledger():
     backup_data = {
@@ -1214,6 +1279,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 주별 소비 분석
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2396,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        weekly_summary()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
