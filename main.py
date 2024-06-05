@@ -16,6 +16,8 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import tkinter as tk
+from tkinter import messagebox
 
 
 # 약속을 담을 리스트
@@ -516,48 +518,65 @@ friends = {}
 # 사용자 지출 내역 저장
 expenses = {}  
 
-def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
-    id = input("id 입력: ")  # 회원가입 시의 id 입력
-    name = input("이름 입력: ")  # 회원가입 시의 이름 입력
-    phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
+class User:
+    def __init__(self, name):
+        self.name = name
 
-    # 전화번호 중복 체크
-    # 중복된 전화번호를 입력한 경우 다른 전화번호를 입력하도록 설정
-    while phone in userphones:
-        print("이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
-        print("( 만약 입력한 전화번호로 등록된 id를 찾고 싶은 경우 ?를 입력하시오 )")
-        phone = input("전화번호 입력: ")
-        if phone == '?' : # 전화번호로 등록된 id를 찾고 싶은 경우
-            find_id_by_phone()
-            print("로그인 기능으로 다시 돌아갑니다.")
-            return #로그인 기능으로 다시 돌려줌
+def user_reg_include_name_phone():
+    def register():
+        id = id_entry.get()
+        name = name_entry.get()
+        phone = phone_entry.get()
+        pw = pw_entry.get()
 
-    while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        if phone in userphones:
+            messagebox.showerror("오류", "이미 등록된 전화번호입니다. 다른 전화번호를 입력해주세요.")
+            return
 
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
-            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
-            continue
+            messagebox.showerror("오류", "비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
+            return
 
-        h = hashlib.sha256()  # hashlib 모듈의 sha256 사용
-        h.update(pw.encode())  # sha256으로 암호화
-        pw_data = h.hexdigest()  # 16진수로 변환
+        h = hashlib.sha256()
+        h.update(pw.encode())
+        pw_data = h.hexdigest()
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
-        usernames[name] = id  # 이름과 아이디 매핑
-        userphones[phone] = id  # 전화번호와 아이디 매핑
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends': []}
+        usernames[name] = id
+        userphones[phone] = id
 
-        with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
+        with open('login.txt', 'w', encoding='UTF-8') as fw:
+            for user_id, user_info in userdata2.items():
                 friends_str = ", ".join(user_info["friends"])
-                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
-        break
-    
-    user = User(name)  # User 객체 생성
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')
+        
+        # 회원가입 완료 메시지 표시 후 창 닫기
+        messagebox.showinfo("성공", "회원가입이 완료되었습니다.")
+        User(name)
+        window.after(100, lambda: (window.quit(), window.destroy()))
+
+    window = tk.Tk()
+    window.title("회원가입")
+
+    tk.Label(window, text="ID:").grid(row=0, column=0)
+    id_entry = tk.Entry(window)
+    id_entry.grid(row=0, column=1)
+
+    tk.Label(window, text="이름:").grid(row=1, column=0)
+    name_entry = tk.Entry(window)
+    name_entry.grid(row=1, column=1)
+
+    tk.Label(window, text="전화번호:").grid(row=2, column=0)
+    phone_entry = tk.Entry(window)
+    phone_entry.grid(row=2, column=1)
+
+    tk.Label(window, text="비밀번호:").grid(row=3, column=0)
+    pw_entry = tk.Entry(window, show="*")
+    pw_entry.grid(row=3, column=1)
+
+    tk.Button(window, text="회원가입", command=register).grid(row=4, column=0, columnspan=2)
+
+    window.mainloop()
 
      # 친구 추가
     while True:
