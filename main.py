@@ -1201,6 +1201,41 @@ def todays_fortune():
     
 # 새로운 datetime 객체를 사용하여 필요한 정보를 가져옴
 now = dt.datetime.now()
+
+def calculate_taxi_fare(distance, is_night=False):
+    """택시비를 계산하는 함수
+    Args:
+        distance (float): 이동한 거리 (km 단위)
+        is_night (bool): 야간 할증 여부
+    Returns:
+        float: 총 택시비
+    """
+    base_fare = 3000  # 기본 요금 (예: 3,000원)
+    base_distance = 2  # 기본 요금으로 이동 가능한 거리 (km 단위)
+    additional_fare_per_km = 1000  # 추가 요금 (1km 당 1,000원)
+
+    if distance <= base_distance:
+        fare = base_fare
+    else:
+        additional_distance = distance - base_distance
+        fare = base_fare + (additional_distance * additional_fare_per_km)
+
+    if is_night:
+        fare *= 1.2  # 야간 할증 20%
+
+    return fare
+
+def taxi_fare_interface():
+    """택시비 계산을 위한 인터페이스 함수"""
+    try:
+        distance = float(input("이동한 거리를 입력하세요 (km): "))
+        night_input = input("야간 할증 여부 (yes/no): ").strip().lower()
+        is_night = night_input == 'yes'
+        
+        fare = calculate_taxi_fare(distance, is_night)
+        print(f"총 택시비는 {fare}원 입니다.")
+    except ValueError:
+        print("올바른 숫자를 입력하세요.")
     
 def filter_expenses_by_date(start_date, end_date):
     """
@@ -1238,7 +1273,8 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
-    6: 오늘의 금전운      
+    6: 오늘의 금전운
+    7: 택시비 계산      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2357,6 +2393,8 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6": 
         todays_fortune()
+    elif func == "7":
+        taxi_fare_interface()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
