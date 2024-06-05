@@ -102,6 +102,87 @@ def appointment_management():
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
 
+# 기부 데이터를 저장할 리스트
+donations = []
+regular_donations = []
+
+def add_donation():
+    """
+    기부 내역을 추가하는 함수
+    """
+    date = datetime.strptime(input("기부 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    organization = input("기부 단체: ")
+    amount = float(input("기부 금액: "))
+    donation = {"date": date, "organization": organization, "amount": amount}
+    donations.append(donation)
+    print("기부 내역이 추가되었습니다.")
+
+def view_donations():
+    """
+    모든 기부 내역을 확인하는 함수
+    """
+    if not donations:
+        print("기부 내역이 없습니다.")
+        return
+    for donation in donations:
+        print(f"기부 일자: {donation['date'].strftime('%Y-%m-%d')}, 기부 단체: {donation['organization']}, 기부 금액: {donation['amount']} 원")
+
+def delete_donation():
+    """
+    기부 내역을 삭제하는 함수
+    """
+    date = datetime.strptime(input("삭제할 기부 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    for donation in donations:
+        if donation["date"] == date:
+            donations.remove(donation)
+            print("기부 내역이 삭제되었습니다.")
+            return
+    print("해당 일자의 기부 내역이 존재하지 않습니다.")
+
+def generate_donation_receipt():
+    """
+    연말 정산용 기부금 영수증을 생성하는 함수
+    """
+    if not donations:
+        print("기부 내역이 없습니다.")
+        return
+    total_amount = sum(donation["amount"] for donation in donations)
+    receipt = {
+        "total_donations": len(donations),
+        "total_amount": total_amount,
+        "donations": donations
+    }
+    with open("donation_receipt.json", "w", encoding="utf-8") as file:
+        json.dump(receipt, file, ensure_ascii=False, indent=4, default=str)
+    print("연말 정산용 기부금 영수증이 생성되었습니다. 'donation_receipt.json' 파일을 확인하세요.")
+
+def schedule_regular_donation():
+    """
+    정기 기부를 설정하는 함수
+    """
+    start_date = datetime.strptime(input("정기 기부 시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+    organization = input("기부 단체: ")
+    amount = float(input("기부 금액: "))
+    interval = int(input("기부 간격 (일): "))
+    regular_donation = {"start_date": start_date, "organization": organization, "amount": amount, "interval": interval}
+    regular_donations.append(regular_donation)
+    print("정기 기부가 설정되었습니다.")
+
+def execute_regular_donations():
+    """
+    정기 기부를 실행하는 함수
+    """
+    current_date = datetime.now()
+    for donation in regular_donations:
+        next_donation_date = donation["start_date"]
+        while next_donation_date <= current_date:
+            donations.append({
+                "date": next_donation_date,
+                "organization": donation["organization"],
+                "amount": donation["amount"]
+            })
+            next_donation_date += timedelta(days=donation["interval"])
+    
 # 쿠폰 정보 저장
 coupons = {}
 
