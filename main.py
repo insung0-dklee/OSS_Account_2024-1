@@ -17,7 +17,6 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
-
 # 약속을 담을 리스트
 appointments = []
 
@@ -1925,7 +1924,15 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
-
+def recommand():
+    options = ["배달음식은 최대한 줄이도록 해요!", "외출하실때 사용하지 않는 플러그는 뽑아두시는게 좋아요!", "혹시 충동구매를 계획하고 계시진 않으신가요?", "택시대신 버스를 타보아요", "너무 높은 목표는 오히려 실천력을 떨어뜨릴 수 있어요!"]
+    selected_option = random.choice(options)
+    print("잠깐!", selected_option)
+    print(" ")
+"""
+다섯가지의 팁중 하나를 랜덤으로 골라 로그인창 밑에 나오도록 구현하였습니다.
+"""
+    
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -1944,7 +1951,8 @@ def YU_Account():
 으로 관리할 수 있도록 도와줍니다.
     """
     print(welcome_message)
-
+    recommand()
+    
 def print_Login_help(): #user interface 도움말
     print("""
     1: 회원가입
