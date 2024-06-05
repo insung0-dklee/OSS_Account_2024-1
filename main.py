@@ -552,8 +552,10 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+            for user_id, user_info in userdata2.items(): # 딕셔너리 내에 있는 값을 모두 for문
+                if "friends" not in user_info:
+                    print(f"{user_id} 사용자 데이터에 'friends' 키가 없습니다.")
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
@@ -1203,6 +1205,23 @@ def calculator():
         # 계산 중 오류가 발생하면 예외를 처리하고 오류 메시지를 출력한다.
         print(f"오류 발생: {e}")
 
+
+#계좌 조회
+class ScamAccountChecker:
+    def __init__(self):
+        self.scam_accounts = []
+
+    def add_scam_account(self, bank, account_number):
+        self.scam_accounts.append({"bank": bank, "account_number": account_number})
+        print(f"사기 계좌가 추가되었습니다: {bank} - {account_number}")
+
+    def check_account(self, account_number):
+        for account in self.scam_accounts:
+            if account["account_number"] == account_number:
+                print(f"사기 계좌입니다: {account['bank']} - {account['account_number']}")
+                return
+        print("내역이 없습니다.")
+        
 # 가계부 데이터 저장 변수
 ledger = []
 
@@ -1214,6 +1233,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 사기계좌 조회      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2350,28 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        scam_checker = ScamAccountChecker()
+        while True:
+            print("-----------------------")
+            print("사기 계좌 조회")
+            print("1: 사기 계좌 추가")
+            print("2: 계좌 조회")
+            print("3: 종료")
+            option = input("기능을 선택하세요: ")
+
+            if option == "1":
+                bank = input("은행을 입력하세요: ")
+                account_number = input("계좌번호를 입력하세요: ")
+                scam_checker.add_scam_account(bank, account_number)
+            elif option == "2":
+                account_number = input("계좌번호를 입력하세요: ")
+                scam_checker.check_account(account_number)
+            elif option == "3":
+                print("프로그램을 종료합니다.")
+                break
+            else:
+                print("올바른 기능을 선택하세요.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
