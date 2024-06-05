@@ -1222,6 +1222,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 가격 비교를 위한 도메인 모음
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2296,6 +2297,59 @@ def check_progress_with_inflation(goal, inflation_rate):
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
 
+"""
+물건 가격 비교를 위해 도메인 주소 모음 프로그램
+print_website_address() : 0~5입력 가능
+0입력시 종료
+다른 숫자나 문자 입력시 다시 입력하라는 문구 출력
+하지만 Ctrl+c는 예외로 프로그램 종료 가능
+
+"""
+
+
+
+def print_website_address():
+    print("------------------------------------------------------------------------------")
+    print("물건 가격 비교를 위한 도메인 주소 모음")
+    print("0 입력시 종료")
+    print("1. 쿠팡")
+    print("2. 11번가")
+    print("3. 옥션")
+    print("4. 네이버 쇼핑")
+    print("5. 지마켓")
+    while True:
+        
+        try:
+            user_input = int(input("도메인 사이트의 번호를 입력하세요 (0-5, 0 입력시 종료): "))
+            if user_input == 0:
+                print("프로그램을 종료합니다.")
+                print("------------------------------------------------------------------------------")
+                break
+            elif user_input == 1:
+                print("쿠팡: www.coupang.com")
+            elif user_input == 2:
+                print("11번가: www.11st.co.kr")
+            elif user_input == 3:
+                print("옥션: www.auction.co.kr")
+            elif user_input == 4:
+                print("네이버 쇼핑: shopping.naver.com")
+            elif user_input == 5:
+                print("지마켓: www.gmarket.co.kr")
+            else:
+                print("잘못된 입력입니다. 0부터 5까지의 숫자를 입력하세요.")
+        except ValueError:
+            print("숫자를 입력해주세요.")
+        except KeyboardInterrupt:
+            print("\n프로그램을 종료합니다.")  # Ctrl+C 입력시 종료
+            print("------------------------------------------------------------------------------")
+            break
+
+
+
+
+
+
+
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
@@ -2338,6 +2392,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        print_website_address()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
