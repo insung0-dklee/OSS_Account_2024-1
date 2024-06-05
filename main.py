@@ -517,8 +517,14 @@ friends = {}
 expenses = {}  
 
 def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한 회원가입
+    userdata2 = {}
     id = input("id 입력: ")  # 회원가입 시의 id 입력
-    name = input("이름 입력: ")  # 회원가입 시의 이름 입력
+    while True:
+        name = input("이름 입력(문자로만 입력): ")  # 회원가입 시의 이름 입력
+        if not name.isalpha():
+            print("문자를 입력해 주세요.") #문자만 입력
+        else:
+            break
     phone = input("전화번호 입력: ")  # 회원가입 시의 전화번호 입력
 
     # 전화번호 중복 체크
@@ -550,16 +556,23 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
-
-        with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+        """
+        현재 코드 실행시 friends 값이 존재하지 않아 오류를 일으킴 + join 함수에서 문제를 일으킴
+        """
+        with open('login.txt', 'a', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성 - 이어쓰기 모드
+            friends_list = []
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+                #join 함수는 list를 문자열로 변경해 주는 함수임, 따라서 딕셔너리 값을 넣으면 제대로 작동하지 않음
+                for name in friends.keys():
+                    friends_list.append(friends[name].name)
+                friends_str = ", ".join(friends_list)
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
-        break
+                save_user_acc(user_info["name"]) #user_id file을 생성 - user : user의 가계부 저장하는 파일 
+        break   
     
     user = User(name)  # User 객체 생성
-
-     # 친구 추가
+    
+     # 친구 추가 
     while True:
         add_friend = input("친구를 추가하시겠습니까? (y/n): ")
         if add_friend.lower() == 'y':
@@ -570,7 +583,6 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
             break
         else:
             print("잘못된 입력입니다. 다시 입력해주세요.")
-
     
 def budget_simulation():
     """가상 예산 시뮬레이션 기능"""
@@ -2308,10 +2320,17 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         change_pw_by_phone() #pw 찾기 - id 찾기 함수 변형
     elif interface == "?":
         print_Login_help() #?입력시 Login 도움말 띄우기
+    elif interface == "exit":
+        check_off = input("정말 종료하시겠습니까?(종료하려면 0 입력)")
+        if(check_off =="0"):
+            b_is_exit = 1
+            acc = 1
+            print("-- 쉽고 빠른 가계부는 YU_account --")
+            break
     else:
-        print("프로그램을 종료합니다.")
+        print("프로그램을 종료합니다.(비정상적인 동작 감지)")
         user = interface
-        b_is_exit = 1
+        now_acc = 1
 
 
 # 메인 루프
