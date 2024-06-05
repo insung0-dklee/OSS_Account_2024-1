@@ -501,7 +501,7 @@ def emergency_fund_management():
             break
         else:
             print("올바른 기능을 입력해 주세요.")
-emergency_fund_management()
+
 def get_program_running_time():
     return time.time() - start_time
 
