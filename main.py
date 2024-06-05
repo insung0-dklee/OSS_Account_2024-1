@@ -2371,7 +2371,90 @@ def auto_transfer_loop():
             print("잘못된 입력입니다.")
 
 
+#프로필 리스트를 순회하며 각 프로필의 번호와 아스키 아트를 출력합니다.
+def show_profile_list():
+    profile_list = [
+         """
+         [이미지 1]
+        / \\
+       / _ \\
+      | / \\ |
+      ||   || _______
+      ||   || |\     \\
+      ||   || ||-----|
+      ||___|| ||\\___/
+      |-----| |
+       \\___/ 
+        """,
+          """
+    [이미지 2]
+       /\_/\\
+      / o o \\
+     (   "   )
+      \~(*)~/
+       \ - /
+      /     \\
+     /       \\
+    /_ | | |_\\
+        """,
+     """
+    [이미지 3]
+     /\\_/\\
+    ( o.o )
+     >*< )
+    """
+    ]
+#profile_list에 있는 각 프로필을 순회하면서 프로필의 인덱스와 내용을 함께 출력
+    for idx, profile in enumerate(profile_list, start=1):
+        print(f"[{idx}] {profile}")
+#사용자로부터 프로필 번호를 입력 받고, 해당 번호에 해당하는 프로필을 출력합니다.
+def select_profile():
+    show_profile_list()
+    selected_profile = input("원하는 프로필 번호를 입력하세요: ")
 
+    if selected_profile == "1":
+        print("프로필 1을 선택하셨습니다.")
+        print("""
+         [이미지 1]
+        / \\
+       / _ \\
+      | / \\ |
+      ||   || _______
+      ||   || |\     \\
+      ||   || ||-----|
+      ||___|| ||\\___/
+      |-----| |
+       \\___/ 
+        """)
+        # 프로필 1에 대한 작업 수행
+    elif selected_profile == "2":
+        print("프로필 2를 선택하셨습니다.")
+        print("""
+    [이미지 2]
+       /\_/\\
+      / o o \\
+     (   "   )
+      \~(*)~/
+       \ - /
+      /     \\
+     /       \\
+    /_ | | |_\\
+        """)
+        # 프로필 2에 대한 작업 수행
+    elif selected_profile == "3":
+        print("프로필 3을 선택하셨습니다.")
+        print("""
+    [이미지 3]
+     /\\_/\\
+    ( o.o )
+     >*< )
+    """)
+        # 프로필 3에 대한 작업 수행
+    else:
+        print("올바른 프로필 번호를 입력하세요.")
+
+if __name__ == "__main__":
+    select_profile()
 
 
 
@@ -2426,6 +2509,9 @@ while not b_is_exit:
         analyze_categories()
     elif func == "6":
         auto_transfer_loop()
+    elif func == "7":  
+        select_profile()
+
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
