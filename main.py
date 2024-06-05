@@ -2288,6 +2288,33 @@ def check_progress_with_inflation(goal, inflation_rate):
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
 
+def calculate_fixed_expenses():
+    """
+    사용자로부터 고정비 지출 항목과 금액을 입력받아 총 고정비를 계산하는 함수
+    :return: 총 고정비
+    """
+    expenses = []
+    while True:
+        expense = input("고정비 지출 항목과 금액을 입력하세요 (예: 월세 500000) (종료는 q): ")
+        if expense == 'q':
+            break
+
+        try:
+            item, amount = expense.split()
+            amount = int(amount)
+            expenses.append((item, amount))
+        except ValueError:
+            print("잘못된 입력 형식입니다. 다시 입력해주세요.")
+
+    total_fixed_expenses = sum(amount for _, amount in expenses)
+
+    print("\n고정비 지출 내역:")
+    for item, amount in expenses:
+        print(f"{item}: {amount:,}원")
+
+    print(f"\n총 고정비: {total_fixed_expenses:,}원")
+
+    return total_fixed_expenses
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
