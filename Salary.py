@@ -28,7 +28,8 @@ def main():
         print("2. 근무 시간 추가")
         print("3. 월급 계산")
         print("4. 알바생 정보 삭제")
-        print("5. 종료")
+        print("5. 알바생 목록 출력")
+        print("6. 종료")
 
         choice = input("원하는 작업을 선택하세요: ")
 
@@ -63,6 +64,13 @@ def main():
             else:
                 print("등록된 알바생이 아닙니다.")
         elif choice == '5':
+            if employees:
+                print("\n현재 등록된 알바생 목록:")
+                for name in employees:
+                    print(f"- {name}")
+            else:
+                print("등록된 알바생이 없습니다.")
+        elif choice == '6':
             print("프로그램을 종료합니다.")
             break
         else:
