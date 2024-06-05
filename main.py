@@ -16,6 +16,8 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import pytesseract
+from PIL import Image
 
 
 # 약속을 담을 리스트
@@ -2440,6 +2442,56 @@ if __name__ == "__main__":
         print("Challenge not yet completed.")
         challenge.display_progress()
 
+def scan_receipt(image_path):
+    """
+    영수증 이미지를 스캔하여 지출 내역을 저장하는 함수
+
+    :param image_path: 영수증 이미지 파일 경로
+    """
+    try:
+        # 영수증 이미지를 엽니다.
+        image = Image.open(image_path)
+        
+        # 이미지에서 텍스트를 추출합니다.
+        text = pytesseract.image_to_string(image, lang='kor')
+
+        print("Extracted Text:")
+        print(text)
+
+        # 여기에서 추출된 텍스트에서 날짜, 항목, 금액을 추출하는 로직을 추가해야 합니다.
+        # 예시로 간단히 직접 입력받도록 구현
+        date = input("추출된 날짜를 입력하세요 (예: 2023-06-01): ")
+        item = input("추출된 항목을 입력하세요: ")
+        amount = int(input("추출된 금액을 입력하세요: "))
+
+        # 새 지출 내역을 딕셔너리로 저장합니다.
+        new_entry = {
+            "date": date,
+            "item": item,
+            "amount": amount
+        }
+
+        try:
+            # 지출 내역 파일을 열고 기존 데이터를 로드합니다.
+            with open(expenses_file, 'r+', encoding='utf-8') as file:
+                data = json.load(file)
+                # 새 내역을 기존 데이터에 추가합니다.
+                data.append(new_entry)
+                # 파일 시작 지점으로 이동하여 데이터를 다시 씁니다.
+                file.seek(0)
+                json.dump(data, file, ensure_ascii=False, indent=4)
+        except FileNotFoundError:
+            # 파일이 없으면 새 파일을 생성하고 새 내역을 기록합니다.
+            with open(expenses_file, 'w', encoding='utf-8') as file:
+                json.dump([new_entry], file, ensure_ascii=False, indent=4)
+        except json.JSONDecodeError:
+            # 파일이 있지만 JSON 형식이 잘못되었을 경우 새로 기록합니다.
+            with open(expenses_file, 'w', encoding='utf-8') as file:
+                json.dump([new_entry], file, ensure_ascii=False, indent=4)
+
+    except Exception as e:
+        # 영수증 스캔 중 오류가 발생하면 메시지를 출력합니다.
+        print(f"영수증 스캔 중 오류 발생: {e}")
 
 ###########################################################
 
@@ -2495,6 +2547,9 @@ while not b_is_exit:
         # 지출 내역 검색 기능 추가
         criteria = get_criteria_from_user()
         search_expenses(criteria)
+    elif func == "scan":
+        image_path = input("영수증 이미지 파일 경로를 입력하세요: ")
+        scan_receipt(image_path)
     else:
         
         print("올바른 기능을 입력해 주세요.")
