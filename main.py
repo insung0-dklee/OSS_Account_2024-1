@@ -547,14 +547,16 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        qust, ans_data = pw_reset_QnA() #비밀번호 재설정 문답 함수
+
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'qust': qust, 'ans': ans_data, 'friends': []}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
                 friends_str = ", ".join(user_info["friends"])
-                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {user_info["qust"]} : {user_info["ans"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
     user = User(name)  # User 객체 생성
@@ -571,7 +573,32 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         else:
             print("잘못된 입력입니다. 다시 입력해주세요.")
 
-    
+def pw_reset_QnA(): #비밀번호 재설정 문답 함수
+    print("""비밀번호 재설정 질문 리스트
+
+1. 가보고 싶은 여행지는?
+2. 버킷리스트 1위는?
+3. 가장 선호하는 언어는?
+4. 복권에 당첨된다면 가장 사고싶은 것은?
+5. 다시 태어난다면 되고싶은 것은?
+""")    
+    while True:
+        qust = input("질문을 고르세요: ")
+        if can_convert_to_int(qust) == False:
+            print("1~5 사이 번호를 입력세요.")
+            continue
+        elif int(qust) < 1 or int(qust) > 5:
+            print("1~5 사이 번호를 입력하세요.")
+            continue
+        break
+    ans = input("답변을 입력하세요: ")
+
+    h = hashlib.sha256()
+    h.update(ans.encode())
+    ans_data = h.hexdigest()
+
+    return qust, ans_data
+
 def budget_simulation():
     """가상 예산 시뮬레이션 기능"""
     goal_name = input("목표 이름을 입력하세요: ")
@@ -2066,21 +2093,27 @@ def change_pw_by_phone(): #ID와 전화번호 또는 ID와 이름으로 pw변경
         phone = input("전화번호 입력: ")
 
         if phone in userphones:
-            while(True):#비밀번호를 바꿀때 까지 무한루프
-                P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
-                check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
+            qust, ans_data = pw_reset_QnA() #비밀번호 재설정 문답 함수
 
-                if(check == "1"): #주의 - check는 input으로 받으므로 char 형임
-                    h = hashlib.sha256() #암호 복호화
-                    h.update(P.encode())
-                    P = h.hexdigest()
+            if qust == userdata2[ID]['qust'] and ans_data == userdata2[ID]['ans']:
 
-                    userdata2[ID]['pw'] = P#dic 수정
+                while(True):#비밀번호를 바꿀때 까지 무한루프
+                    P = input("사용하고자 하는 비밀번호를 입력해 주십시오: ")
+                    check = input(f"사용하고자 하는 비밀번호가 {P}가 맞나요?(맞으면 1, 아니면 아무거나 입력): ")
 
-                    with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-                        for user_id, user_info in userdata2.items():
-                            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
-                    break
+                    if(check == "1"): #주의 - check는 input으로 받으므로 char 형임
+                        h = hashlib.sha256() #암호 복호화
+                        h.update(P.encode())
+                        P = h.hexdigest()
+
+                        userdata2[ID]['pw'] = P#dic 수정
+
+                        with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
+                            for user_id, user_info in userdata2.items():
+                                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {user_info["qust"]} : {user_info["ans"]}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                        break
+            else:
+                print("질문 또는 대답이 틀렸습니다.")
 
         else:
             print("해당 전화번호를 가진 사용자가 없습니다. 다시 입력해 주십시오") #전화번호 존재 X
