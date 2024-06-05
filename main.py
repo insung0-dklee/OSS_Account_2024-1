@@ -460,6 +460,13 @@ def set_emergency_fund():
     emergency_fund = float(input("비상금 설정 (원): "))
     print(f"비상금이 {emergency_fund} 원으로 설정되었습니다.")
 
+# 비상금 추가하는 기능
+def add_emergency_fund():
+    global emergency_fund
+    amount=float(input("비상금 추가 (원): "))
+    emergency_fund+=amount
+    print(f"비상금 {amount}원이 추가되었습니다.")
+
 def add_emergency_expense():
     global emergency_fund
     amount = float(input("비상금 지출 금액 (원): "))
@@ -476,12 +483,14 @@ def view_emergency_fund():
 # 비상금 관리 메뉴 추가
 def emergency_fund_management():
     while True:
-        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, exit: 종료): ")
+        choice = input("비상금 관리 (1: 설정, 2: 추가, 3: 지출, 4: 조회, exit: 종료): ")
         if choice == "1":
             set_emergency_fund()
         elif choice == "2":
-            add_emergency_expense()
+            add_emergency_fund()
         elif choice == "3":
+            add_emergency_expense()
+        elif choice == "4":
             view_emergency_fund()
         elif choice == "exit":
             break
@@ -547,7 +556,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone, 'friends': []}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
@@ -1214,6 +1223,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 비상금 관리
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2340,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        emergency_fund_management()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
