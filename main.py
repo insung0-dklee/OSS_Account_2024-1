@@ -16,6 +16,9 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import random
+import datetime as dt
+
 
 
 # 약속을 담을 리스트
@@ -552,8 +555,10 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+            for user_id, user_info in userdata2.items(): # 딕셔너리 내에 있는 값을 모두 for문
+                if "friends" not in user_info:
+                    print(f"{user_id} 사용자 데이터에 'friends' 키가 없습니다.")
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
@@ -1177,7 +1182,26 @@ def open_account_info(user_id):
     except Exception as e:
         print(f"{user_id_clean}의 정보를 불러오는 과정에서 오류가 발생하였습니다. : {e}")
         return None
-
+    
+def todays_fortune():
+    """오늘의 금전운을 출력하는 함수"""
+    fortunes = [
+        "오늘은 재물운이 아주 좋습니다! 예상치 못한 수익이 있을 것입니다.",
+        "재정적인 안정을 유지할 수 있는 하루입니다.",
+        "큰 지출을 피하고, 저축하는 것이 좋습니다.",
+        "작은 금액이라도 절약하는 습관을 들이면 좋습니다.",
+        "금전적인 결정은 신중하게 해야 하는 날입니다.",
+        "예기치 못한 지출이 있을 수 있으니 대비하세요.",
+        "가벼운 마음으로 소비를 즐길 수 있는 하루입니다."
+    ]
+    today = dt.datetime.today()
+    formatted_date = today.strftime("%Y-%m-%d")  # 날짜 형식 지정
+    print(f"오늘 날짜: {formatted_date}")
+    print("오늘의 금전운:", random.choice(fortunes))
+    
+# 새로운 datetime 객체를 사용하여 필요한 정보를 가져옴
+now = dt.datetime.now()
+    
 def filter_expenses_by_date(start_date, end_date):
     """
     특정 기간 동안의 지출 내역을 필터링하여 출력합니다.
@@ -1214,6 +1238,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 오늘의 금전운      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2330,6 +2355,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6": 
+        todays_fortune()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
