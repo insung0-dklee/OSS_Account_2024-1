@@ -1,19 +1,53 @@
 import json
 import os
+import random
 from datetime import datetime
 
 # 가계부 데이터 파일 경로
 expenses_file = 'expenses.json'
 fixed_expenses_file = 'fixed_expenses.json'
+points_file = "points.json"
+expense_limit_file = "daily_limit.json"
 
-# 1. 일일 지출 한도 설정 기능
-# 사용자가 일일 지출 한도를 설정하도록 하는 함수
+# 포인트를 파일에서 불러오거나 초기화
+def load_points():
+    if os.path.exists(points_file):
+        with open(points_file, "r") as file:
+            return json.load(file).get("points", 0)
+    return 0
+
+points = load_points()
+
+def save_points():
+    with open(points_file, "w") as file:
+        json.dump({"points": points}, file)
+
+# 랜덤으로 도전 과제를 선택하여 반환하는 함수
+def assign_challenge():
+    challenges = [
+        ("오늘은 가계부에 3개 이상의 지출을 기록해 볼까요~", 10),
+        ("오늘은 점심시간에 외식을 하지 말고 집에서 저녁을 해결해 보세요!", 15),
+        ("오늘은 필요한 것만 사는 쇼핑을 해보자구요!", 20)
+    ]
+    today_challenge = random.choice(challenges)
+    return today_challenge
+
+# 도전 과제를 완료했을 때 포인트를 추가하고 메시지를 출력하는 함수
+def complete_challenge(points_awarded):
+    global points
+    points += points_awarded
+    save_points()
+    print(f"도전과제 완료! 티끌 모아 태산~ {points_awarded} 포인트를 받았습니다.")
+    print(f"현재 포인트: {points}점")
+
+def get_points():
+    return points
+
+# 일일 지출 한도 설정 기능
 def set_daily_limit():
     try:
-        # 사용자로부터 일일 지출 한도 입력 받기
         limit = float(input("일일 지출 한도를 설정하세요 (원): "))
-        # daily_limit.json 파일에 한도 저장
-        with open('daily_limit.json', 'w') as file:
+        with open(expense_limit_file, 'w') as file:
             json.dump({"limit": limit}, file)
         print(f"일일 지출 한도가 {limit}원으로 설정되었습니다.")
     except ValueError:
@@ -21,8 +55,8 @@ def set_daily_limit():
 
 # daily_limit.json 파일에서 일일 지출 한도를 가져오는 함수
 def get_daily_limit():
-    if os.path.exists('daily_limit.json'):
-        with open('daily_limit.json', 'r') as file:
+    if os.path.exists(expense_limit_file):
+        with open(expense_limit_file, 'r') as file:
             data = json.load(file)
         return data.get("limit", None)
     return None
@@ -36,7 +70,6 @@ def check_daily_limit():
 
     total_spent_today = 0
     today = datetime.today().strftime('%Y-%m-%d')
-    # expenses.json 파일에서 오늘의 지출 내역을 읽어옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for expense in data:
@@ -49,14 +82,12 @@ def check_daily_limit():
     else:
         print(f"남은 한도: {limit - total_spent_today}원")
 
-# 2. 특정 기간 내 지출 분석 기능
-# 사용자가 지정한 기간 내의 지출 내역을 분석하는 함수
+# 특정 기간 내 지출 분석 기능
 def analyze_expenses_in_period():
     start_date = input("시작 날짜를 입력하세요 (예: 2024-05-01): ")
     end_date = input("종료 날짜를 입력하세요 (예: 2024-05-31): ")
 
     try:
-        # 입력받은 날짜 문자열을 datetime 객체로 변환
         start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
         end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
     except ValueError:
@@ -65,12 +96,10 @@ def analyze_expenses_in_period():
 
     total_expense = 0
     category_totals = {}
-    # expenses.json 파일에서 지출 내역을 읽어옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for expense in data:
             expense_date_obj = datetime.strptime(expense['date'], "%Y-%m-%d")
-            # 지출 내역이 지정한 기간 내에 속하는지 확인
             if start_date_obj <= expense_date_obj <= end_date_obj:
                 amount = float(expense['amount'])
                 total_expense += amount
@@ -84,14 +113,12 @@ def analyze_expenses_in_period():
     for category, total in category_totals.items():
         print(f"{category}: {total} 원")
 
-# 3. 지출 패턴 예측 기능
-# 사용자가 지정한 일 수 이후의 예상 지출을 예측하는 함수
+# 지출 패턴 예측 기능
 def predict_future_expenses():
     days = int(input("몇 일 후까지의 지출을 예측하시겠습니까? (예: 30): "))
     total_expense = 0
     days_count = 0
 
-    # expenses.json 파일에서 지출 내역을 읽어옴
     with open(expenses_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for expense in data:
@@ -102,27 +129,21 @@ def predict_future_expenses():
         print("지출 내역이 없습니다.")
         return
 
-    # 일일 평균 지출 계산
     daily_average_expense = total_expense / days_count
-    # 지정한 일 수 동안의 예상 지출 계산
     future_expense = daily_average_expense * days
     print(f"예상 일일 평균 지출: {daily_average_expense:.2f} 원")
     print(f"{days}일 후 예상 총 지출: {future_expense:.2f} 원")
 
-# 4. 고정 지출 관리 기능
-# 고정 지출 추가 함수
+# 고정 지출 관리 기능
 def add_fixed_expense():
     try:
-        # 사용자로부터 고정 지출 항목과 금액 입력 받기
         item = input("고정 지출 항목을 입력하세요: ")
         amount = float(input("고정 지출 금액을 입력하세요 (원): "))
 
-        # 고정 지출 내역을 저장할 파일이 있는지 확인하고, 없으면 생성
         if not os.path.exists(fixed_expenses_file):
             with open(fixed_expenses_file, 'w') as file:
                 json.dump([], file)
 
-        # 고정 지출 내역을 파일에 저장
         with open(fixed_expenses_file, 'r+', encoding='utf-8') as file:
             data = json.load(file)
             data.append({"item": item, "amount": amount})
@@ -133,7 +154,6 @@ def add_fixed_expense():
     except ValueError:
         print("유효한 금액을 입력하세요.")
 
-# 고정 지출 조회 함수
 def view_fixed_expenses():
     if os.path.exists(fixed_expenses_file):
         with open(fixed_expenses_file, 'r', encoding='utf-8') as file:
@@ -147,7 +167,6 @@ def view_fixed_expenses():
     else:
         print("고정 지출 내역이 없습니다.")
 
-# 고정 지출 적용 함수
 def apply_fixed_expenses():
     today = datetime.today().strftime('%Y-%m-%d')
     if os.path.exists(fixed_expenses_file):
@@ -169,3 +188,40 @@ def apply_fixed_expenses():
                 print("적용할 고정 지출 내역이 없습니다.")
     else:
         print("적용할 고정 지출 내역이 없습니다.")
+
+if __name__ == "__main__":
+    # 일일 지출 한도 설정
+    set_daily_limit()
+
+    # 현재 일일 지출 한도 확인
+    limit = get_daily_limit()
+    if limit is not None:
+        print(f"현재 설정된 일일 지출 한도는 {limit}원입니다.")
+    else:
+        print("일일 지출 한도가 설정되지 않았습니다.")
+
+    # 도전 과제 수행
+    today_challenge, points_awarded = assign_challenge()
+    print(today_challenge)
+
+    user_input = input("이 도전과제를 완료했나요? (y/n): ").strip().lower()
+    if user_input == "y":
+        complete_challenge(points_awarded)
+    else:
+        print("도전과제를 완료하지 못했군요. 내일 다시 도전해보세요!")
+
+    print(f"현재 포인트: {get_points()}점")
+
+    # 일일 지출 한도 초과 여부 확인
+    check_daily_limit()
+
+    # 특정 기간 내 지출 분석
+    analyze_expenses_in_period()
+
+    # 지출 패턴 예측
+    predict_future_expenses()
+
+    # 고정 지출 관리
+    add_fixed_expense()
+    view_fixed_expenses()
+    apply_fixed_expenses()
