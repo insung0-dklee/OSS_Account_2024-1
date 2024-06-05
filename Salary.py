@@ -49,12 +49,19 @@ def main():
         elif choice == '3':
             name = input("알바생 이름을 입력하세요: ")
             if name in employees:
-                date_input = input("월급을 계산할 년도와 달을 입력하세요. (예: 2020-05): ")
-                year, month = map(int, date_input.split('-'))
-                salary = employees[name].calculate_monthly_salary(year, month)
-                print(f"{name}님의 {year}년 {month}월 월급은 {salary:.2f}원 입니다.")
+                while True:
+                    try:
+                        date_input = input("월급을 계산할 년도와 달을 입력하세요. (예: 2020-05): ")
+                        year, month = map(int, date_input.split('-'))
+                        salary = employees[name].calculate_monthly_salary(year, month)
+                        print(f"{name}님의 {year}년 {month}월 월급은 {salary:.2f}원 입니다.")
+                        break
+                    except ValueError:
+                        print("년도와 달을 잘못 입력하였습니다. 다시 입력하세요.")
+                        continue
             else:
-                print("등록된 알바생이 아닙니다. 먼저 알바생 정보를 추가하세요.")
+                print("해당 이름의 직원이 없습니다.")
+                
         elif choice == '4':
             name = input("삭제할 알바생 이름을 입력하세요: ")
             if name in employees:
