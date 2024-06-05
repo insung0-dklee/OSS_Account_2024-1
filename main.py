@@ -27,6 +27,7 @@ import csv
 from datetime import datetime
 import Add_function
 import random
+from datetime import datetime, timedelta
 
 
 
@@ -748,6 +749,97 @@ def compare_financial_goal(user1, user2, goal):
         print(f"{user2.name}의 목표 달성률이 더 높습니다.")
     else:
         print("두 사용자의 목표 달성률이 같습니다.")
+
+
+# 사용자 지출 내역 예시 데이터
+user_expenses = [
+    {"date": "2024-06-01", "amount": 50, "category": "식비"},
+    {"date": "2024-06-02", "amount": 20, "category": "교통비"},
+    {"date": "2024-06-03", "amount": 30, "category": "식비"},
+    {"date": "2024-06-04", "amount": 100, "category": "의류"},
+    {"date": "2024-06-05", "amount": 10, "category": "커피"},
+]
+
+# 사용자 월별 소득
+monthly_income = 3000
+
+# 사용자가 설정한 저축 목표
+saving_goal = 500
+
+# 자동 저축 금액 계산
+def calculate_saving_amount(expenses, income, goal):
+    total_expenses = sum(item["amount"] for item in expenses)
+    potential_saving = income - total_expenses
+    if potential_saving >= goal:
+        return goal
+    else:
+        return potential_saving
+
+# 주간 저축 계획 수립
+def create_weekly_saving_plan(saving_amount):
+    weekly_saving_amount = saving_amount / 4
+    saving_plan = []
+    current_date = datetime.now()
+
+    for week in range(4):
+        saving_date = current_date + timedelta(weeks=week)
+        saving_plan.append({"date": saving_date.strftime("%Y-%m-%d"), "amount": weekly_saving_amount})
+
+    return saving_plan
+
+# 지출 카테고리별 분석 및 절약 제안
+def analyze_expenses(expenses):
+    category_totals = {}
+    for expense in expenses:
+        category = expense["category"]
+        if category in category_totals:
+            category_totals[category] += expense["amount"]
+        else:
+            category_totals[category] = expense["amount"]
+    
+    # 예시로 식비와 커피 항목에서 절약 제안을 함
+    saving_tips = []
+    if "식비" in category_totals and category_totals["식비"] > 100:
+        saving_tips.append("식비를 줄여보세요. 예: 주말에는 집에서 요리하기")
+    if "커피" in category_totals and category_totals["커피"] > 20:
+        saving_tips.append("커피 지출을 줄여보세요. 예: 집에서 커피 만들기")
+    
+    return saving_tips
+
+# 저축 목표 달성률 계산
+def calculate_saving_progress(saving_amount, goal):
+    progress = (saving_amount / goal) * 100
+    return progress
+
+# 자동 저축 실행 시뮬레이션
+def execute_automatic_savings(saving_plan):
+    for plan in saving_plan:
+        print(f"{plan['date']}에 {plan['amount']}원을 자동 저축했습니다.")
+
+# 사용자 지출 분석
+saving_tips = analyze_expenses(user_expenses)
+for tip in saving_tips:
+    print(f"절약 제안: {tip}")
+
+# 저축 금액 계산
+saving_amount = calculate_saving_amount(user_expenses, monthly_income, saving_goal)
+
+# 주간 저축 계획 수립
+weekly_saving_plan = create_weekly_saving_plan(saving_amount)
+
+# 저축 계획 출력 및 실행
+print("\n자동 저축 계획:")
+for plan in weekly_saving_plan:
+    print(f"날짜: {plan['date']}, 저축 금액: {plan['amount']}")
+execute_automatic_savings(weekly_saving_plan)
+
+# 저축 목표 달성률 계산 및 알림
+progress = calculate_saving_progress(saving_amount, saving_goal)
+print(f"\n저축 목표 달성률: {progress:.2f}%")
+if progress >= 100:
+    print("축하합니다! 저축 목표를 달성했습니다.")
+else:
+    print("계속해서 저축 목표를 향해 노력하세요!")
 
 # 월별 보고서 생성 함수
 def generate_monthly_report():
