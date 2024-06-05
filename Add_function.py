@@ -169,3 +169,38 @@ def apply_fixed_expenses():
                 print("적용할 고정 지출 내역이 없습니다.")
     else:
         print("적용할 고정 지출 내역이 없습니다.")
+
+        # 5. 월별 지출 예산 확인 기능
+def check_monthly_budget():
+    limit = get_daily_limit()
+    if limit is None:
+        print("설정된 일일 지출 한도가 없습니다.")
+        return
+
+    month = input("확인할 달을 입력하세요 (예: 2024-06): ")
+
+    # 월의 일수 계산
+    year, month = map(int, month.split('-'))
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        days_in_month = 31
+    elif month in [4, 6, 9, 11]:
+        days_in_month = 30
+    else:
+        # 윤년 계산
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            days_in_month = 29
+        else:
+            days_in_month = 28
+
+    monthly_budget = limit * days_in_month
+
+    start_date = f"{year}-{month:02d}-01"
+    end_date = f"{year}-{month:02d}-{days_in_month:02d}"
+    total_expense, _ = analyze_expenses_in_period(start_date, end_date)
+
+    print(f"{year}-{month:02d}의 총 지출: {total_expense}원")
+    print(f"설정된 월별 예산: {monthly_budget}원")
+    if total_expense > monthly_budget:
+        print(f"경고: {year}-{month:02d}의 지출이 예산을 초과했습니다! ({monthly_budget}원 초과)")
+    else:
+        print(f"남은 예산: {monthly_budget - total_expense}원")
