@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -16,10 +16,28 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import threading
 
 
 # 약속을 담을 리스트
 appointments = []
+
+# 약속 알림을 처리할 함수
+def appointment_reminder(appointment, reminder_time):
+    """
+    약속 시작 시간 전에 알림을 보내는 함수.
+
+    :param appointment: 알림을 보낼 약속 정보가 담긴 딕셔너리
+    :param reminder_time: 약속 시작 시간 몇 분 전에 알림을 보낼지 (분 단위)
+    """
+    start_time = appointment["start_date"]
+    alert_time = start_time - timedelta(minutes=reminder_time)
+    now = datetime.now()
+    wait_time = (alert_time - now).total_seconds()
+
+    if wait_time > 0:
+        time.sleep(wait_time)
+        print(f"알림: {appointment['name']} 약속이 {reminder_time}분 후에 시작됩니다.")
 
 def add_appointment():
         """
@@ -29,6 +47,8 @@ def add_appointment():
         start_date = datetime.strptime(input("시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
         end_date = datetime.strptime(input("종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
         budget = float(input("예산: "))
+
+        reminder_time = int(input("약속 시작 시간 몇 분 전에 알려드릴까요?(분): "))
 
         # 새 약속이 기존 약속들과 시간 충돌하는지 체크
         if not is_time_conflict(start_date, end_date):
@@ -41,6 +61,12 @@ def add_appointment():
             }
             appointments.append(appointment)
             print(f"약속 '{name}'이(가) 추가되었습니다.")
+
+             # 약속 알림 스레드 생성 및 시작
+            reminder_thread = threading.Thread(target=appointment_reminder, args=(appointment, reminder_time))
+            reminder_thread.daemon = True  # 프로그램 종료 시 스레드도 종료되도록 설정
+            reminder_thread.start()
+
         else:
             print("약속 간에 시간이 겹칩니다.")
 
