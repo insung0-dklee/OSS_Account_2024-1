@@ -17,6 +17,29 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+import subscribe
+
+
+def sub_menu():
+    """
+    메인 메뉴 함수
+    """
+    while True:
+        print("\n=== 메인 메뉴 ===")
+        print("1: 구독 관리")
+        print("0: 종료")
+
+        choice = input("원하는 작업을 선택하세요: ")
+
+        if choice == '1':
+            subscribe.main()  # 구독 관리 함수 호출
+        elif choice == '0':
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("잘못된 선택입니다. 다시 시도하세요.")
+
+
 
 # 약속을 담을 리스트
 appointments = []
