@@ -2324,6 +2324,44 @@ b_is_exit = 0
 interface = 0 #인터페이스 만들기
 user = 0 #user 이름 저장 변수
 
+"""
+guest_mode : 회원가입/로그인 없이 가계부의 일부 기능을 3분간 체험할 수 있는 guest mode 기능
+"""
+def guest_mode():
+    user = 'guest' 
+    print("-----------------------")
+    print("user:",user) #guest
+
+    while True:
+        current_time = time.time() #현재 시간 측정
+
+        if current_time - start_time >= 180:  # 180초 = 3분
+            print("Guest mode time limit reached. Exiting...")
+            exit(0) #3분이 지나면 종료됨
+            break
+        else:
+            time.sleep(1)
+            #기능을 선택 (3,4 기능 체험 가능)
+            func = input("기능 입력 (? 입력시 도움말) : ")
+            if func == "1":
+                print("수입/지출 항목 추가 (회원가입 시 해당 기능을 사용할 수 있습니다.)")
+            elif func == "2":
+                print("항목 조회 (회원가입 시 해당 기능을 사용할 수 있습니다.)")
+            elif func == "3":
+                generate_monthly_report()
+            elif func == "4":
+                set_budget()
+            elif func == "5":
+                print("지출 카테고리 분석 (회원가입 시 해당 기능을 사용할 수 있습니다.)")
+            elif func == "?":
+                print_help()
+            elif func == "exit" or func == "x" or func =="종료":
+                print("프로그램을 종료합니다.")
+            elif func == "memo":
+                print("메모장 작성 (회원가입 시 해당 기능을 사용할 수 있습니다.)")
+            else:
+                print("올바른 기능을 입력해 주세요.")
+
 while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스 구현(탈출을 원할 시 0)
     interface = input("로그인 기능 입력 (? 입력시 도움말) : ")
 
@@ -2341,9 +2379,11 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
+        
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
+    print(user)
     print("user:",user.name) # 현재 user가 누구인지 출력
     func = input("기능 입력 (? 입력시 도움말) : ")
 
