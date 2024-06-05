@@ -17,6 +17,37 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+# 일주일 소득 예산 차트 사용예시
+income_aa = [500, 600, 550, 700, 650, 800, 750]
+budget_aa = [400, 500, 450, 600, 550, 700, 650]
+
+# 일주일간의 소득과 예산을 입력했을때 막대그래프 형식으로 차트를 만들어주는 함수.
+def print_income_and_budget_chart(income_aa, budget_aa):
+    # 요일 리스트
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    
+    # 데이터가 7개인지 확인
+    if len(income_aa) != 7 or len(budget_aa) != 7:
+        raise ValueError("Income and budget lists must have 7 elements each.")
+    
+    # 최대 길이 설정을 위해 최대 값 찾기
+    max_income = max(income_aa)
+    max_budget = max(budget_aa)
+    max_value = max(max_income, max_budget)
+    
+    # 스케일 설정
+    scale = 50 / max_value
+    
+    # 헤더 프린트
+    print(f"{'Day':<10} | {'Income':<50} | {'Budget'}")
+    print("-" * 75)
+    
+    # 요일별 데이터 프린트
+    for i in range(7):
+        income_bar = int(income_aa[i] * scale) * "#"
+        budget_bar = int(budget_aa[i] * scale) * "#"
+        print(f"{days[i]:<10} | {income_bar:<50} | {budget_bar}")
+
 
 # 약속을 담을 리스트
 appointments = []
