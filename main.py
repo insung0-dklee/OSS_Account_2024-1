@@ -2315,7 +2315,7 @@ def financial_goal_loop(user):
 user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
 user = "Kim"# 임의의 user 값 추가 - 이후 삭제
 
-def calculate_per_person_amount_per_month(goal_amount, num_people, months):
+def calculate_group_goal_per_person_per_month(goal_amount, num_people, months):
     """목표 금액을 달성하기 위해 각 사람이 매달 내야 할 금액을 계산합니다."""
     if num_people <= 0:
         raise ValueError("인원 수는 0보다 커야 합니다.")
@@ -2324,8 +2324,14 @@ def calculate_per_person_amount_per_month(goal_amount, num_people, months):
     total_per_person = goal_amount / num_people
     return total_per_person / months
 
-def gather_meeting_info():
-    """사용자로부터 모임 정보를 입력받아 저장합니다."""
+def calculate_group_expense_per_person(total_expense, num_people):
+    """사용한 총 비용을 인원 수로 나누어 각 사람이 내야 할 금액을 계산합니다."""
+    if num_people <= 0:
+        raise ValueError("인원 수는 0보다 커야 합니다.")
+    return total_expense / num_people
+
+def input_group_goal_info():
+    """사용자로부터 목표 금액 정보(모임 이름, 목표 금액, 인원 수, 기간)를 입력받아 처리합니다."""
     meeting_name = input("모임의 이름을 입력하세요: ")
     goal_amount = float(input("목표 금액을 입력하세요 (원): "))
     num_people = int(input("인원 수를 입력하세요: "))
@@ -2333,7 +2339,7 @@ def gather_meeting_info():
 
     # 각 사람이 매달 내야 할 금액을 계산합니다.
     try:
-        per_person_amount_per_month = calculate_per_person_amount_per_month(goal_amount, num_people, months)
+        per_person_amount_per_month = calculate_group_goal_per_person_per_month(goal_amount, num_people, months)
     except ValueError as e:
         print(f"오류: {e}")
         return
@@ -2346,6 +2352,25 @@ def gather_meeting_info():
     print(f"기간: {months} 개월")
     print(f"매달 인당 내야 할 금액: {per_person_amount_per_month:.2f} 원")
 
+def input_group_settlement_info():
+    """사용자로부터 정산 정보(모임 이름, 사용한 총 비용, 인원 수)를 입력받아 처리합니다."""
+    meeting_name = input("모임의 이름을 입력하세요: ")
+    total_expense = float(input("사용한 총 비용을 입력하세요 (원): "))
+    num_people = int(input("인원 수를 입력하세요: "))
+
+    # 각 사람이 내야 할 금액을 계산합니다.
+    try:
+        per_person_expense = calculate_group_expense_per_person(total_expense, num_people)
+    except ValueError as e:
+        print(f"오류: {e}")
+        return
+
+    # 결과를 출력합니다.
+    print("\n정산 정보:")
+    print(f"모임 이름: {meeting_name}")
+    print(f"사용한 총 비용: {total_expense:.2f} 원")
+    print(f"인원 수: {num_people} 명")
+    print(f"인당 내야 할 금액: {per_person_expense:.2f} 원")
 
 def save_user_acc(user):
     x = []
