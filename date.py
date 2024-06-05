@@ -1,10 +1,39 @@
 from datetime import datetime, timedelta
 
+#기념일 관리 프로그램
+#1. 기념일 추가
+#2. 다가오는 기념일 보기
+#3. 기념일 삭제
+#4. 기념일 수정
+#5. 기념일 목록 한번에 보기
+#6. 종료
+#원하는 작업을 선택하세요: 1
+#기념일 이름을 입력하세요: 생일
+#기념일 날짜를 입력하세요 (YYYY-MM-DD): 2024-06-15
+#기념일 '생일'이(가) 2024-06-15에 추가되었습니다.
+
+#원하는 작업을 선택하세요: 2
+#며칠 후까지의 기념일을 보시겠습니까?: 30
+
+#원하는 작업을 선택하세요: 3
+#삭제할 기념일 이름을 입력하세요: 생일
+#기념일 '생일'이(가) 삭제되었습니다.
+
+#원하는 작업을 선택하세요: 4
+
+
+#원하는 작업을 선택하세요: 5
+#기념일 목록:
+#결혼기념일 - 2024-06-15
+
+#원하는 작업을 선택하세요: 6
+#종료
+
 class EventManager:
     def __init__(self):
         self.events = []  # 기념일을 저장할 리스트
 
-    def add_event(self, name, date):
+    def add_event(self, name, date):#기념일을 정의하고 리스트에 추가함.
         event = {
             'name': name,
             'date': date
@@ -12,8 +41,8 @@ class EventManager:
         self.events.append(event)  # 기념일을 리스트에 추가
         print(f"기념일 '{name}'이(가) {date.strftime('%Y-%m-%d')}에 추가되었습니다.")
 
-    def get_upcoming_events(self, days=30):
-        today = datetime.now().date()
+    def get_upcoming_events(self, days=30):#현재 날짜와 비교하여 기념일반환
+        today = datetime.now().date()#현재날짜
         # 주어진 기간 내의 다가오는 기념일을 반환
         upcoming_events = [
             event for event in self.events
