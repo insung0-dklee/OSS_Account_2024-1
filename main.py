@@ -636,8 +636,10 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
-            for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
+            for user_id, user_info in userdata2.items(): # 딕셔너리 내에 있는 값을 모두 for문
+                if "friends" not in user_info:
+                    print(f"{user_id} 사용자 데이터에 'friends' 키가 없습니다.")
+                friends_str = ", ".join(user_info.get("friends", []))
                 fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
