@@ -16,16 +16,30 @@ def calculate_tax(income):
     else:
         return 14000000 * 0.06 + 36000000 * 0.15 + 38000000 * 0.24 + 62000000 * 0.35 + 150000000 * 0.38 + 200000000 * 0.40 + 500000000 * 0.42 + (income - 1000000000) * 0.45
 
+def get_float_input(prompt):
+    while True:
+        try:
+            return float(input(prompt))
+        except ValueError:
+            print("잘못된 입력입니다. 숫자를 입력하세요.")
+
+def get_int_input(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("잘못된 입력입니다. 정수를 입력하세요.")
+
 def calculate_comprehensive_income_tax():
     print("\n" + "="*40)
     print("       종합소득세 계산")
     print("="*40)
-    business_income = float(input("사업소득을 입력하세요 (원): "))
-    earned_income = float(input("근로소득을 입력하세요 (원): "))
-    interest_income = float(input("이자소득을 입력하세요 (원): "))
-    dividend_income = float(input("배당소득을 입력하세요 (원): "))
-    pension_income = float(input("연금소득을 입력하세요 (원): "))
-    other_income = float(input("기타소득을 입력하세요 (원): "))
+    business_income = get_float_input("사업소득을 입력하세요 (원): ")
+    earned_income = get_float_input("근로소득을 입력하세요 (원): ")
+    interest_income = get_float_input("이자소득을 입력하세요 (원): ")
+    dividend_income = get_float_input("배당소득을 입력하세요 (원): ")
+    pension_income = get_float_input("연금소득을 입력하세요 (원): ")
+    other_income = get_float_input("기타소득을 입력하세요 (원): ")
 
     total_income = business_income + earned_income + interest_income + dividend_income + pension_income + other_income
 
@@ -60,7 +74,7 @@ def calculate_wage_income_tax():
     print("\n" + "="*40)
     print("       근로소득세 계산")
     print("="*40)
-    total_income = float(input("총 소득을 입력하세요 (원): "))
+    total_income = get_float_input("총 소득을 입력하세요 (원): ")
     earned_income_deduction = calculate_earned_income_deduction(total_income)
     taxable_income = total_income - earned_income_deduction
     pre_tax = calculate_tax(taxable_income)
@@ -77,7 +91,7 @@ def calculate_vat():
     print("\n" + "="*40)
     print("       부가가치세 계산")
     print("="*40)
-    price_with_vat = float(input("부가가치세가 포함된 물품의 가격을 입력하세요 (원): "))
+    price_with_vat = get_float_input("부가가치세가 포함된 물품의 가격을 입력하세요 (원): ")
     vat = price_with_vat * 0.1
     price_without_vat = price_with_vat / 1.1
 
@@ -90,7 +104,7 @@ def calculate_insurance():
     print("\n" + "="*40)
     print("        4대 보험 계산")
     print("="*40)
-    total_income = float(input("총 소득을 입력하세요 (원): "))
+    total_income = get_float_input("총 소득을 입력하세요 (원): ")
     health_insurance = total_income * 0.03495
     long_term_care = health_insurance * 0.1227
     national_pension = total_income * 0.045
@@ -112,7 +126,7 @@ def year_end_settlement_simulation():
     print("\n" + "="*40)
     print("     연말정산 시뮬레이션")
     print("="*40)
-    total_income = float(input("총 소득을 입력하세요 (원): "))
+    total_income = get_float_input("총 소득을 입력하세요 (원): ")
     health_insurance = total_income * 0.03495
     long_term_care = health_insurance * 0.1227
     national_pension = total_income * 0.045
@@ -148,7 +162,7 @@ def calculate_inheritance_tax():
     print("\n" + "="*40)
     print("         상속세 계산")
     print("="*40)
-    total_inheritance = float(input("총 상속 재산을 입력하세요 (원): "))
+    total_inheritance = get_float_input("총 상속 재산을 입력하세요 (원): ")
     if total_inheritance <= 100000000:
         tax_rate = 0.1
         deduction = 0
@@ -177,7 +191,7 @@ def calculate_gift_tax():
     print("\n" + "="*40)
     print("         증여세 계산")
     print("="*40)
-    total_gift = float(input("총 증여 재산을 입력하세요 (원): "))
+    total_gift = get_float_input("총 증여 재산을 입력하세요 (원): ")
     if total_gift <= 100000000:
         tax_rate = 0.1
         deduction = 0
@@ -206,10 +220,10 @@ def calculate_real_estate_transfer_tax():
     print("\n" + "="*40)
     print("      부동산 양도소득세 계산")
     print("="*40)
-    purchase_price = float(input("취득가액을 입력하세요 (원): "))
-    selling_price = float(input("양도가액을 입력하세요 (원): "))
-    other_costs = float(input("기타 비용을 입력하세요 (원): "))
-    holding_period = int(input("보유 기간을 입력하세요 (년): "))
+    purchase_price = get_float_input("취득가액을 입력하세요 (원): ")
+    selling_price = get_float_input("양도가액을 입력하세요 (원): ")
+    other_costs = get_float_input("기타 비용을 입력하세요 (원): ")
+    holding_period = get_int_input("보유 기간을 입력하세요 (년): ")
 
     capital_gain = selling_price - purchase_price - other_costs
 
@@ -250,7 +264,7 @@ def calculate_local_income_tax():
     print("\n" + "="*40)
     print("       지방소득세 계산")
     print("="*40)
-    total_income = float(input("총 소득을 입력하세요 (원): "))
+    total_income = get_float_input("총 소득을 입력하세요 (원): ")
     local_income_tax_rate = 0.1  # 지방소득세율 10%
 
     local_income_tax = total_income * local_income_tax_rate
@@ -264,8 +278,8 @@ def calculate_retirement_income_tax():
     print("\n" + "="*40)
     print("        퇴직소득세 계산")
     print("="*40)
-    total_income = float(input("총 퇴직 소득을 입력하세요 (원): "))
-    years_of_service = int(input("근속 연수를 입력하세요 (년): "))
+    total_income = get_float_input("총 퇴직 소득을 입력하세요 (원): ")
+    years_of_service = get_int_input("근속 연수를 입력하세요 (년): ")
 
     average_income_per_year = total_income / years_of_service
 
@@ -299,7 +313,7 @@ def calculate_property_tax():
     print("\n" + "="*40)
     print("         재산세 계산")
     print("="*40)
-    property_value = float(input("재산 가치를 입력하세요 (원): "))
+    property_value = get_float_input("재산 가치를 입력하세요 (원): ")
     property_tax_rate = 0.0025  # 재산세율 0.25%
 
     property_tax = property_value * property_tax_rate
@@ -313,8 +327,8 @@ def calculate_car_tax():
     print("\n" + "="*40)
     print("         자동차세 계산")
     print("="*40)
-    car_value = float(input("자동차 가치를 입력하세요 (원): "))
-    engine_displacement = int(input("배기량(cc)을 입력하세요: "))
+    car_value = get_float_input("자동차 가치를 입력하세요 (원): ")
+    engine_displacement = get_int_input("배기량(cc)을 입력하세요: ")
 
     if engine_displacement <= 1000:
         tax_rate = 0.08  # 1,000cc 이하 세율 0.08%
@@ -376,3 +390,4 @@ def tax_menu():
             break
         else:
             print("올바른 선택이 아닙니다. 다시 시도하세요.")
+
