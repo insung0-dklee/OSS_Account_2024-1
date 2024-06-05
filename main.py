@@ -1,7 +1,7 @@
 import hashlib #hashlib 사용
 import os
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import pickle
 import Account_book
 import random
@@ -1247,6 +1247,15 @@ def get_valid_amount_input():
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
 
+# 고정 지출일 확인 함수
+def check_recurring_expenses():
+    today = datetime.today().strftime('%d')
+    recurring_dates = {entry['date'][-2:] for entry in ledger}
+
+    if today in recurring_dates:
+        expenses_today = [entry['category'] for entry in ledger if entry['date'][-2:] == today]
+        print(f"오늘은 {'와 '.join(expenses_today)} 지출이 있는 날입니다.")
+
 # 수입/지출 항목 추가 함수
 def add_entry():
     date = input("날짜 (YYYY-MM-DD): ")
@@ -1263,6 +1272,9 @@ def add_entry():
     }
     ledger.append(entry)
     print("항목이 추가되었습니다.")
+
+    # 고정 지출일 확인
+    check_recurring_expenses()
 
     category_count = sum(1 for e in ledger if e["category"] == category)
 
@@ -2341,3 +2353,4 @@ while not b_is_exit:
     else:
         
         print("올바른 기능을 입력해 주세요.")
+
