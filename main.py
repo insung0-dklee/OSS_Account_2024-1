@@ -2315,6 +2315,38 @@ def financial_goal_loop(user):
 user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
 user = "Kim"# 임의의 user 값 추가 - 이후 삭제
 
+def calculate_per_person_amount_per_month(goal_amount, num_people, months):
+    """목표 금액을 달성하기 위해 각 사람이 매달 내야 할 금액을 계산합니다."""
+    if num_people <= 0:
+        raise ValueError("인원 수는 0보다 커야 합니다.")
+    if months <= 0:
+        raise ValueError("개월 수는 0보다 커야 합니다.")
+    total_per_person = goal_amount / num_people
+    return total_per_person / months
+
+def gather_meeting_info():
+    """사용자로부터 모임 정보를 입력받아 저장합니다."""
+    meeting_name = input("모임의 이름을 입력하세요: ")
+    goal_amount = float(input("목표 금액을 입력하세요 (원): "))
+    num_people = int(input("인원 수를 입력하세요: "))
+    months = int(input("기간을 입력하세요 (개월): "))
+
+    # 각 사람이 매달 내야 할 금액을 계산합니다.
+    try:
+        per_person_amount_per_month = calculate_per_person_amount_per_month(goal_amount, num_people, months)
+    except ValueError as e:
+        print(f"오류: {e}")
+        return
+
+    # 결과를 출력합니다.
+    print("\n모임 정보:")
+    print(f"모임 이름: {meeting_name}")
+    print(f"목표 금액: {goal_amount:.2f} 원")
+    print(f"인원 수: {num_people} 명")
+    print(f"기간: {months} 개월")
+    print(f"매달 인당 내야 할 금액: {per_person_amount_per_month:.2f} 원")
+
+
 def save_user_acc(user):
     x = []
 
