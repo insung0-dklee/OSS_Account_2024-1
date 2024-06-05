@@ -1214,6 +1214,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 지출 내역 시각화
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2288,6 +2289,74 @@ def check_progress_with_inflation(goal, inflation_rate):
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
 
+def draw_bar_chart(data, title, xlabel, ylabel):
+    max_label_length = max(len(label) for label in data.keys())
+    max_value = max(data.values())
+    bar_width = 50  # 바의 최대 너비
+    scale = bar_width / max_value  # 값을 바의 길이에 맞추기 위한 스케일
+
+    print(f"\n{title}")
+    print(f"{xlabel:>{max_label_length}}  {'Bar':<{bar_width}}  {ylabel}")
+    print('-' * (max_label_length + bar_width + 10))
+
+    for label, value in data.items():
+        bar = '█' * int(value * scale)
+        print(f"{label:>{max_label_length}}  {bar:<{bar_width}}  {value}")
+
+def visualize_monthly_expenses_text(ledger):
+    """
+    월별 지출 현황을 텍스트 기반의 막대 그래프로 보여주는 함수
+    :param ledger: 지출 내역이 저장된 리스트
+    """
+    monthly_expenses = {}
+    
+    for entry in ledger:
+        month = entry["date"][:7]  # 'YYYY-MM' 형식으로 월별 추출
+        amount = float(entry["amount"])
+        if month not in monthly_expenses:
+            monthly_expenses[month] = 0
+        monthly_expenses[month] += amount
+    
+    draw_bar_chart(monthly_expenses, "Monthly Expenses", "Month", "Expenses")
+
+def visualize_category_expenses_text(ledger):
+    """
+    카테고리별 지출 현황을 텍스트 기반의 막대 그래프로 보여주는 함수
+    :param ledger: 지출 내역이 저장된 리스트
+    """
+    category_expenses = {}
+    
+    for entry in ledger:
+        category = entry["category"]
+        amount = float(entry["amount"])
+        if category not in category_expenses:
+            category_expenses[category] = 0
+        category_expenses[category] += amount
+    
+    draw_bar_chart(category_expenses, "Expenses by Category", "Category", "Expenses")
+
+def visualize_expenses_text(ledger):
+    """
+    지출 내역을 텍스트 기반으로 시각화하는 메뉴를 제공하는 함수
+    :param ledger: 지출 내역이 저장된 리스트
+    """
+    while True:
+        print("\n--- 지출 내역 시각화 ---")
+        print("1: 월별 지출 현황 보기")
+        print("2: 카테고리별 지출 현황 보기")
+        print("0: 메인 메뉴로 돌아가기")
+
+        choice = input("기능을 선택하세요: ")
+
+        if choice == "1":
+            visualize_monthly_expenses_text(ledger)
+        elif choice == "2":
+            visualize_category_expenses_text(ledger)
+        elif choice == "0":
+            break
+        else:
+            print("올바른 기능을 선택하세요.")
+
 ###########################################################
 
 # 프로그램 종료 여부를 판단하는 변수
@@ -2330,6 +2399,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        visualize_expenses_text(ledger)  # 텍스트 기반 시각화 기능 추가
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
