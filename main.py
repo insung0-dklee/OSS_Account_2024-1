@@ -1506,6 +1506,33 @@ def classify_spending():
         print("D급 소비입니다.")
     else:
         print("F급 소비입니다.")
+        # 아침, 점심, 저녁의 칼로리 입력 받기
+def calculate_daily_calories():
+    breakfast_calories = int(input("아침 칼로리를 입력하세요: "))
+    lunch_calories = int(input("점심 칼로리를 입력하세요: "))
+    dinner_calories = int(input("저녁 칼로리를 입력하세요: "))
+
+    # 총 칼로리 계산
+    total_calories = breakfast_calories + lunch_calories + dinner_calories
+
+    # 성별에 따른 칼로리 섭취량 판단
+    gender = input("성별을 입력하세요 (남성 또는 여성): ")
+    if gender == "남성":
+        if total_calories > 2800:
+            print("섭취량이 과도합니다.")
+        elif total_calories < 2500:
+            print("섭취량이 부족합니다.")
+        else:
+            print("적절합니다.")
+    elif gender == "여성":
+        if total_calories > 2200:
+            print("섭취량이 과도합니다.")
+        elif total_calories < 2000:
+            print("섭취량이 부족합니다.")
+        else:
+            print("적절합니다.")
+    else:
+        print("성별을 잘못 입력하셨습니다.")
 
 
 
