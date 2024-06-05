@@ -26,39 +26,404 @@ import re
 import csv
 from datetime import datetime
 import Add_function
-import random
 
+# 쿠폰 정보 저장
+coupons = {}
 
+# 쿠폰 추가 함수
+def add_coupon():
+    name = input("쿠폰 이름: ")
+    expiration_date = input("유효기간(YYYY-MM-DD): ")
+    coupons[name] = expiration_date
+    print("쿠폰이 추가되었습니다.")
 
-userdata = {}  # 아이디, 비밀번호 저장해둘 딕셔너리
-userdata2 = {}  # 아이디, 비밀번호, 이름, 전화번호 저장해둘 딕셔너리
-usernames = {}  # 이름과 아이디를 매핑하기 위한 딕셔너리
-userphones = {}  # 전화번호와 아이디를 매핑하기 위한 딕셔너리
+# 쿠폰 정보 출력 함수
+def show_coupon_info():
+    if not coupons:
+        print("등록된 쿠폰이 없습니다.")
+    else:
+        print("현재 보유한 쿠폰 정보:")
+        for name, expiration_date in coupons.items():
+            print(f"- {name}: 유효기간 {expiration_date}")
 
-def user_reg():
-    id = input("id 입력: ")
+class Deposit:
+    def __init__(self, name, principal, rate, term):
+        self.name = name  # 예금 상품 이름
+        self.principal = principal  # 원금
+        self.rate = rate  # 연이자율 (백분율로 입력)
+        self.term = term  # 기간 (년 단위)
+
+    def calculate_interest(self):
+        # 단리 계산: 이자 = 원금 * 이자율 * 기간
+        interest = self.principal * (self.rate / 100) * self.term
+        return interest
+
+# 예금 정보를 입력받아 저장하고 만기 이자를 계산하여 출력하는 함수
+def manage_deposits():
+    deposits = []
+
     while True:
-        pw = input("password 입력: ")  # 회원가입 시의 pw 입력
+        print("\n--- 예금 정보 입력 ---")
+        name = input("예금 상품 이름: ")
+        principal = float(input("원금 (원): "))
+        rate = float(input("연이자율 (%): "))
+        term = int(input("기간 (년): "))
 
-        """
-        비밀번호 생성 시, 하나 이상의 특수문자가 포함되도록 기능을 추가.
-        만약, 특수문자가 포함되지 않는다면 경고문 출력 후 다시 비밀번호 입력을 요구.
-        """
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", pw):
-            print("비밀번호에는 적어도 하나의 특수문자가 포함되어야 합니다.")
-            continue
+        deposit = Deposit(name, principal, rate, term)
+        deposits.append(deposit)
 
-        h = hashlib.sha256()
-        h.update(pw.encode())
-        pw_data = h.hexdigest()
+        another = input("다른 예금을 추가하시겠습니까? (y를 누르시면 추가됩니다.): ")
+        if another.lower() != 'y':
+            break
 
-        userdata[id] = pw_data
+    print("\n--- 예금 정보 및 만기 이자 ---")
+    for deposit in deposits:
+        interest = deposit.calculate_interest()
+        print(f"상품명: {deposit.name}, 만기까지의 이자액: {interest:.2f}원")
 
-        with open('login.txt', 'a', encoding='UTF-8') as fw: #utf-8 변환 후 login.txt에 작성
-            for user_id, user_pw in userdata.items(): #딕셔너리 내에 있는 값을 모두 for문
-                fw.write(f'{user_id} : {user_pw}\n') #key, value값을 차례로 login.txt파일에 저장
-        print("회원가입이 완료되었습니다!")
-        break
+
+"""
+일주일 예산 챌린지 프로그램
+단, 양의 정수만 입력 가능하다.
+get_amount(prompt) : 금액을 입력받아 정수로 반환(음수/문자등은 유효하지 않다고 문구 출력 및 재입력)
+daily_check(day, expected_amount) : 요일들의 사용 금액을 입력받아 각 날의 예산과 비교하여 결과 출력
+day : 요일
+expected_amount : 해당 요일의 에산(사용 예정 금액)
+budget_challenge() : 일주일 예산 챌린지 결과 출력
+"""
+
+
+def get_amount(prompt):
+    while True:
+        try:
+            amount = int(input(prompt))  # int로 변경하여 소수점 입력 금지
+            if amount < 0:
+                print("금액은 음수일 수 없습니다. 다시 입력해주세요.")
+                continue
+            return amount
+        except ValueError:
+            print("양의 정수를 입력하세요.")
+
+def daily_check(day, expected_amount):
+    actual_amount = get_amount(f"{day}에 사용한 금액 : ")
+    if actual_amount < expected_amount:
+        print(f"{expected_amount - actual_amount}원 적게 썼군요. 잘했습니다!")
+    elif actual_amount > expected_amount:
+        print(f"{actual_amount - expected_amount}원 많이 썼군요. 소비를 줄일 필요가 있습니다.")
+    else:
+        print("예산만큼 썼어요.")
+    return actual_amount
+
+def budget_challenge():
+    days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    expected_amounts = []
+    actual_amounts = []
+
+    print("각 요일의 사용 예정 금액을 입력하세요.(소수점 입력 불가)")
+    for day in days:
+        expected_amount = get_amount(f"{day} 사용 예정 금액: ")
+        expected_amounts.append(expected_amount)
+
+    emergency_fund = get_amount("비상금 : ")
+
+    for day, expected_amount in zip(days, expected_amounts):
+        actual_amount = daily_check(day, expected_amount)
+        actual_amounts.append(actual_amount)
+
+    total_expected = sum(expected_amounts) + emergency_fund
+    total_actual = sum(actual_amounts)
+
+    print("\n------- 일주일 예산 챌린지 결과 -------")
+    for day, expected, actual in zip(days, expected_amounts, actual_amounts):
+        difference = actual - expected
+        if difference > 0:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {difference}원 초과")
+        elif difference < 0:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, {-difference}원 절약")
+        else:
+            print(f"{day}: 예산 {expected}원, 사용 {actual}원, 예산에 맞춰 사용")
+
+    print("\n--------------- 총결과 ---------------")
+    if total_actual < total_expected:
+        print(f"{total_expected - total_actual}원 덜 썼습니다. 예산 챌린지 성공!")
+    elif total_actual > total_expected:
+        print(f"{total_actual - total_expected}원 더 썼습니다. 소비를 줄이세요!")
+    else:
+        print("예산만큼 사용했습니다. 예산 챌린지 성공!")
+
+"""
+atm 현금 인출 프로그램
+atm의 현금 인출 가능 시간과 원하는 만원권의 장수, 보유 금액에 따른 현금 인출 프로그램
+input_day() : 요일 입력 받는 함수
+is_valid_day(day) :  유효한 요일인지 확인하는 함수
+"""
+
+
+def atm_withdrawal():
+    while True:
+        try:
+            amount = int(input("인출할 금액을 입력하세요 (만원 단위): "))
+            if amount % 10000 != 0 or amount < 0:
+                print("만원 단위의 양수로 입력해야 합니다. 다시 입력하세요.")
+            else:
+                break
+        except ValueError:
+            print("숫자를 입력해야 합니다. 다시 입력하세요.")
+
+    valid_days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    while True:
+        day_of_week = input("오늘은 무슨 요일인가요? (월요일, 화요일, 수요일, 목요일, 금요일, 토요일, 일요일): ")
+        if day_of_week not in valid_days:
+            print("유효한 요일을 입력해야 합니다. 다시 입력하세요.")
+        else:
+            break
+
+    if day_of_week == "월요일":
+        try:
+            hour = int(input("현재 몇 시인가요? (0~23): "))
+            if hour < 10:
+                print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+                return
+        except ValueError:
+            print("숫자를 입력해야 합니다.")
+            return
+
+    elif day_of_week == "금요일":
+        try:
+            hour = int(input("현재 몇 시인가요? (0~23): "))
+            if hour >= 16:
+                print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+                return
+        except ValueError:
+            print("숫자를 입력해야 합니다.")
+            return
+
+    elif day_of_week in ["토요일", "일요일"]:
+        print("현금 인출이 불가능합니다. 감사합니다. {현금 인출 가능 시간: 월요일 오전 10시 ~ 금요일 오후 4시 이전}")
+        return
+
+    while True:
+        try:
+            omanun_count = int(input("5만원권 몇 장을 인출하시겠습니까? "))
+            if omanun_count * 50000 > amount or omanun_count < 0:
+                print("5만원권 금액이 인출 금액보다 크거나 음수입니다. 다시 입력하세요.")
+            else:
+                break
+        except ValueError:
+            print("숫자를 입력해야 합니다. 다시 입력하세요.")
+
+    omanun_amount = omanun_count * 50000
+    manun_amount = amount - omanun_amount
+    manun_count = manun_amount // 10000
+
+    print(f"5만원권: {omanun_count}장, 1만원권: {manun_count}장")
+    print(f"총 인출 금액: {amount}원")
+    print("이용해주셔서 감사합니다.")
+
+community_file = 'community.json'
+
+# 커뮤니티 메시지를 파일에 저장하는 함수
+def save_message(message):
+    messages = load_community_messages()
+    messages.append(message)
+    with open(community_file, 'w', encoding='utf-8') as file:
+        json.dump(messages, file, ensure_ascii=False, indent=4)
+
+# 커뮤니티 메시지를 파일에서 불러오는 함수
+def load_community_messages():
+    try:
+        with open(community_file, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+# 커뮤니티 메시지 게시 함수
+def post_message():
+    user_name = input("사용자 이름: ")
+    message_content = input("게시할 메시지: ")
+    message = {
+        'user': user_name,
+        'content': message_content,
+        'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    save_message(message)
+    print("메시지가 게시되었습니다.")
+
+# 커뮤니티 메시지 조회 함수
+def view_messages():
+    messages = load_community_messages()
+    if messages:
+        for message in messages:
+            print(f"[{message['date']}] {message['user']}: {message['content']}")
+    else:
+        print("게시된 메시지가 없습니다.")
+
+def calculate_simple_interest():
+    """
+    단리로 예상 금액을 계산하는 함수.
+    param principal: 원금 (초기 금액)
+    param annual_rate: 연이율 (비율)
+    param time_years: 기간 (연 단위)
+    return: 예상 최종 금액
+    """
+    principal = float(input("원금을 입력하세요 (예: 1000000): "))
+    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
+    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
+
+
+    final_amount = principal * (1 + annual_rate * time_years)
+    print(f"단리 예상 금액: {final_amount:.2f} 원")
+
+def calculate_compound_interest():
+    """
+    복리로 예상 금액을 계산하는 함수.
+    param principal: 원금 (초기 금액)
+    param annual_rate: 연이율 (비율)
+    param time_years: 기간 (연 단위)
+    param compounding_frequency: 연간 복리 횟수 (기본값: 1, 즉 연간 1회)
+    return: 예상 최종 금액
+    """
+    principal = float(input("원금을 입력하세요 (예: 1000000): "))
+    annual_rate = float(input("연이율을 입력하세요 (소수점으로, 예: 0.05): "))
+    time_years = float(input("기간을 입력하세요 (연 단위, 예: 3): "))
+    compounding_frequency = int(input("연간 복리 횟수를 입력하세요 (예: 4): "))
+
+
+    final_amount = principal * (1 + annual_rate / compounding_frequency) ** (compounding_frequency * time_years)
+    print(f"복리 예상 금액 (연간 {compounding_frequency}회 복리): {final_amount:.2f} 원")
+
+#교통비 기록 기능
+class TransportationRecorder:
+    def __init__(self):
+        self.expenses = {}  # {month: {"버스": 0, "지하철": 0}}
+
+    def set_current_month(self, month):
+        if month not in self.expenses:
+            self.expenses[month] = {"버스": 0, "지하철": 0}
+        self.current_month = month
+        print(f"현재 월이 {self.current_month}로 설정되었습니다.")
+
+    def record_expense(self, mode, count):
+        if self.current_month is None:
+            print("현재 월을 설정해주세요.")
+            return
+        if mode in self.expenses[self.current_month]:
+            self.expenses[self.current_month][mode] += count * 1500
+            print(f"{mode} {count}회 기록되었습니다.")
+        else:
+            print("잘못된 교통수단입니다. '버스' 또는 '지하철'을 입력하세요.")
+
+
+
+    def get_month_expenses(self, month):
+        if month not in self.expenses:
+            print(f"{month}의 기록이 없습니다.")
+            return 0
+        return sum(self.expenses[month].values())
+
+"""
+Inquiry : 문의 관리 클래스
+@Parm
+    None
+@return
+    None
+"""
+class Inquiry:
+    """
+    __init__ : Inquiry 클래스 초기화 함수
+    @Parm
+        None
+    @return
+        None
+    """
+    def __init__(self):
+        self.inquiries = []
+    """
+    add_inquiry : 문의 추가 함수
+    @Parm
+        user_name : 사용자 이름
+        inquiry : 문의 내용
+    @return
+        None
+    """
+    def add_inquiry(self, user_name, inquiry):
+        self.inquiries.append(f'이름: {user_name}\n문의내용: {inquiry}')
+    """
+    get_inquiries : 저장된 문의 내용을 가져오는 함수
+    @Parm
+        None
+    @return
+        inquiries : 저장된 문의 내용 리스트
+    """
+    def get_inquiries(self):
+        return self.inquiries
+"""
+inquire_manager : 문의 관리 함수
+@Parm
+    None
+@return
+    None
+"""
+def inquire_manager() :
+    inquiry_section = Inquiry()
+    ask = input("개발자에게 문의할 내용이 있으십니까? (y or n) ")
+    if (ask == 'y') :
+        inquire_name = input("이름 : ") #문의 정보를 받아옴
+        inquire_memo = input("내용 : ")
+        inquiry_section.add_inquiry(inquire_name, inquire_memo) #문의내역을 저장함
+        print("위의 내용으로 문의가 접수되었습니다.")
+        for inquiry in inquiry_section.get_inquiries(): #문의내역을 보여줌
+            print(inquiry)
+    elif (ask == 'n') : 
+        return
+
+ # 비상금 관리 기능 추가
+emergency_fund = 0
+
+def set_emergency_fund():
+    global emergency_fund
+    emergency_fund = float(input("비상금 설정 (원): "))
+    print(f"비상금이 {emergency_fund} 원으로 설정되었습니다.")
+
+def add_emergency_expense():
+    global emergency_fund
+    amount = float(input("비상금 지출 금액 (원): "))
+    description = input("비상금 지출 설명: ")
+    if amount <= emergency_fund:
+        emergency_fund -= amount
+        print(f"비상금에서 {amount} 원이 지출되었습니다. 남은 비상금: {emergency_fund} 원")
+    else:
+        print("비상금이 부족합니다.")
+
+def view_emergency_fund():
+    print(f"현재 비상금: {emergency_fund} 원")
+
+# 비상금 관리 메뉴 추가
+def emergency_fund_management():
+    while True:
+        choice = input("비상금 관리 (1: 설정, 2: 지출, 3: 조회, exit: 종료): ")
+        if choice == "1":
+            set_emergency_fund()
+        elif choice == "2":
+            add_emergency_expense()
+        elif choice == "3":
+            view_emergency_fund()
+        elif choice == "exit":
+            break
+        else:
+            print("올바른 기능을 입력해 주세요.")
+
+def get_program_running_time():
+    return time.time() - start_time
+
+start_time = time.time()
+
+# 프로그램 실행 시간을 출력하는 함수
+def print_program_running_time():
+    print("프로그램 실행 시간: {:.2f} 초".format(get_program_running_time()))
+
+userdata = {} #아이디, 비밀번호 저장해둘 딕셔너리
+
 
 class User:
     def __init__(self, name):
@@ -68,6 +433,7 @@ def user_reg_include_name_phone():
     id = input("id 입력: ")
     name = input("이름 입력: ")
     phone = input("전화번호 입력: ")
+
 
 
     # 전화번호 중복 체크
@@ -81,20 +447,6 @@ def user_reg_include_name_phone():
             print("로그인 기능으로 다시 돌아갑니다.")
             return #로그인 기능으로 다시 돌려줌
 
-
-    pw = input("password 입력: ")
-
-    h = hashlib.sha256()
-    h.update(pw.encode())
-    pw_data = h.hexdigest()
-
-    userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}
-    usernames[name] = id
-    userphones[phone] = id
-
-    with open('login.txt', 'w', encoding='UTF-8') as fw:
-        for user_id, user_info in userdata2.items():
-            fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
 def find_id_by_phone():
     phone = input("찾고자 하는 사용자의 전화번호 입력: ")
@@ -147,6 +499,48 @@ def modify_user_info():
             fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]}\n')
 
     print("사용자 정보가 성공적으로 수정되었습니다.")
+
+# 가계부 데이터 저장 리스트
+expense_data = []
+
+# 가계부 데이터 입력 함수
+def add_expense(date, category, item, amount):
+    expense_data.append({
+        "date": date,
+        "category": category,
+        "item": item,
+        "amount": amount
+    })
+
+# 가계부 데이터 필터링 함수
+def filter_expenses(category=None, item=None):
+    filtered_data = expense_data
+    if category:
+        filtered_data = [expense for expense in filtered_data if expense["category"] == category]
+    if item:
+        filtered_data = [expense for expense in filtered_data if expense["item"] == item]
+    return filtered_data
+
+# 가계부 데이터 출력 함수
+def print_expenses(expenses):
+    print("날짜\t카테고리\t항목\t금액")
+    print("-" * 50)
+    for expense in expenses:
+        print(f"{expense['date']}\t{expense['category']}\t{expense['item']}\t{expense['amount']}")
+
+# 사용 예시
+add_expense("2023-05-01", "식비", "식당 식사", 30000)
+add_expense("2023-05-02", "교통비", "지하철 요금", 3000)
+add_expense("2023-05-03", "식비", "편의점 간식", 5000)
+add_expense("2023-05-04", "생활용품", "세제 구매", 10000)
+
+# 카테고리로 필터링
+filtered_expenses = filter_expenses(category="식비")
+print_expenses(filtered_expenses)
+
+# 항목으로 필터링
+filtered_expenses = filter_expenses(item="지하철 요금")
+print_expenses(filtered_expenses)
 
 class Debt:
     def __init__(self, lender, amount, due_date):
@@ -328,8 +722,10 @@ def export_account(account):
     filename = f"{account.name}_export.json"
     account_data = {
         'name': account.name,
-        'balance': account.balance,
-        'history': account.history
+        'balance': account.bal,
+        #account.balance -> account.bal로 수정 - account 객체 내부에는 balance 멤버 변수 존재 X
+        'history': [account.income_total,account.income_list,account.spend_total,account.spend_list]
+        #account.history -> [account.income_total,account.income_list,account.spend_total,account.spend_list]로 수정 -> 위와 마찬가지 이유 + 밑의 함수와 연동 + 직관적으로 보기 위해 수정
     }
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(account_data, file, ensure_ascii=False, indent=4)
@@ -343,8 +739,11 @@ def import_account():
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             account_data = json.load(file)
-        new_account = Account_book(account_data['name'], account_data['balance'])
-        new_account.history = account_data['history']
+        new_account = Account_book.Account_book(account_data['name'], account_data['balance'])
+        new_account.income_total = account_data['history'][0] #단순 history에서 Account_book 안의 멤버 변수들로 교체 ->  new_account 객체의 멤버 변수들에 저장
+        new_account.income_list = account_data['history'][1]
+        new_account.spend_total = account_data['history'][2]
+        new_account.spend_list = account_data['history'][3]
         Account_list.append(new_account)
         print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
     except Exception as e:
@@ -379,6 +778,26 @@ def day_income(hist, income, where="", year=datetime.now().year, month=datetime.
     if f"{dt}" not in hist:     # 해당 일자에 수입지출 내역이 없을 시,
         hist[f"{dt}"] = []      # 새 리스트 생성
     hist[f"{dt}"].append((income, where))
+
+
+def backup_ledger():
+    backup_data = {
+        'ledger': ledger,
+        'accounts': []
+    }
+
+    for account in Account_list:
+        account_data = {
+            'name': account.name,
+            'balance': account.balance,
+            'history': account.history
+        }
+        backup_data['accounts'].append(account_data)
+
+    backup_filename = f'backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+    with open(backup_filename, 'w', encoding='utf-8') as backup_file:
+        json.dump(backup_data, backup_file, ensure_ascii=False, indent=4)
+    print(f"백업이 {backup_filename} 파일에 저장되었습니다.")
 
 """
 add_memo : 파일 입출력을 사용하여 메모장을 추가할 수 있는 기능으로 예상지출내역, 오늘의 목표등을 기록할 수 있다.
@@ -872,7 +1291,16 @@ print_expense_by_category()
 # 예산 설정 및 초과 알림 함수
 def set_budget():
     global budget 
-    budget = float(input("예산 설정 (원): ")) #budget을 전역변수로 변경
+    """
+    만약 예산을 음수로 입력한 경우 다시 입력하도록 기능 구현
+    """
+    while True:
+        budget = float(input("예산 설정 (원): ")) #예산을 받아옴
+        if budget < 0: #만약 입력한 예산이 음수인 경우
+            print("예산은 음수가 될 수 없습니다. 다시 입력해주세요.") #다시 입력받도록 함
+        else: #아닌 경우
+            break #설정됨
+    
     current_total = sum(float(entry["amount"]) for entry in ledger)
     if current_total > budget:
         print(f"경고: 예산 초과! 현재 지출: {current_total} 원")
@@ -1014,6 +1442,32 @@ def delete_expense():
             print("잘못된 번호입니다. 다시 시도하세요.")
     except ValueError:
         print("숫자를 입력하세요.")
+
+def notify_total_expenses_on_last_day():
+    # 오늘의 날짜를 가져옴
+    today = datetime.today()
+    # 현재 연도와 월을 가져옴
+    year = today.year
+    month = today.month
+    # 현재 연도와 월의 마지막 날을 계산
+    last_day = calendar.monthrange(year, month)[1]
+
+    # 오늘의 날짜가 해당 월의 마지막 날과 같은지 확인
+    if today.day == last_day:
+        # 지출 내역 파일을 열고 데이터를 불러옴
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            if data:
+                # 파일에 데이터가 있는 경우, 모든 지출 내역의 금액을 합산
+                total_expenses = sum(expense['amount'] for expense in data)
+                # 총 지출 금액을 출력
+                print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 이번 달 총 지출 금액은 {total_expenses}원입니다.")
+            else:
+                # 파일에 데이터가 없는 경우, 해당 메시지 출력
+                print("저장된 지출 내역이 없습니다.")
+    else:
+        # 오늘이 마지막 날이 아닌 경우, 해당 메시지 출력
+        print(f"오늘은 {today.strftime('%Y-%m-%d')}입니다. 오늘은 총 지출 금액을 알리는 날이 아닙니다.")
 
 monthly_goals = {}
 
@@ -1443,12 +1897,17 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(func):#가계부 선택 함수
-    print("가계부 선택(번호로 입력)")
-    for i in range(0,len(Account_list)):#가계부 리스트 출력
-      print(f"가계부 {i+1}번 : ",Account_list[i].name)
-    choose = input()
-    return choose
+def choose_Account(Account_list):#가계부 선택 함수 - func 자리에 Account_list 추가 - 임의의 리스트 값이 존재하지 않으면 오류 발생
+    if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
+        print("가계부가 존재하지 않습니다.")
+        print("가계부를 생성해 주세요")
+        choose = 0
+    else:
+        print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
+        for i in range(0,len(Account_list)):#가계부 리스트 출력
+            print(f"가계부 {i+1}번 : ",Account_list[i].name)
+        choose =  input() #정수값을 반환하도록 수정
+    return choose #choose account
 
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
     if(num < 0):#오류 검출
@@ -1468,6 +1927,8 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       name = Account_list[num-1].name #원래 저장소에서 이름 가져오기(배열은 0~n-1로 이루어짐)
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
+
+
 
 """
 YU_Account : 프로그램 시작 화면 출력
@@ -1602,6 +2063,23 @@ YU_Account() #프로그램 시작 화면
 version = "1.0.0"  # 프로그램 버전
 print(f"프로그램 버전: {version}")
 
+def mission():
+    # 도전과제 받아오기
+    today_challenge = challenge.assign_challenge()
+    print("오늘의 도전과제:", today_challenge)
+
+    # 도전과제 완료 여부 확인
+    challenge_completed = input("도전과제를 완료하셨나요? (예/아니요): ")
+    if challenge_completed.lower() == "예":
+        # 도전과제를 완료한 경우
+        challenge.complete_challenge()
+    else:
+        # 도전과제를 완료하지 않은 경우
+        print("아쉽네요. 다음 번에 더 잘해봅시다!")
+
+    # 현재 포인트 출력
+    print(f"현재 누적 포인트: {challenge.get_points()}점")
+
 #########################################################
 # 사용자로부터 날짜를 입력받는 함수입니다.
 # 문자열을 datetime 객체로 변환합니다.
@@ -1654,6 +2132,22 @@ class User:
     def __init__(self, name):
         self.name = name
         self.goals = []
+        self.friends = []  # 친구 목록
+
+    def add_friend(self, friend_name):
+        if friend_name not in self.friends:
+            self.friends.append(friend_name)
+
+class Friend:
+    def __init__(self, name):
+        self.name = name
+        self.expenses = []
+
+    def add_expense(self, amount, description):
+        self.expenses.append({"amount": amount, "description": description})
+
+    def total_expense(self):
+        return sum(expense["amount"] for expense in self.expenses)
 
 
     # 목표 리스트에서 특정 인덱스의 목표를 가져오는 메서드입니다.
@@ -1730,8 +2224,71 @@ def financial_goal_loop(user):
         else:
             print("올바른 기능을 선택하세요.")
 
+user_acc_data = {} #'user이름' : 'user의 account이름' 으로 구성됨
+user = "Kim"# 임의의 user 값 추가 - 이후 삭제
 
+def save_user_acc(user):
+    x = []
 
+    for i in Account_list:
+        x.append(i.name)
+        x.append("/") #계좌를 쉽게 구분하기 위해 '/' 추가 - 이후 read_user_acc에서 사용 편하게 하기 위함
+
+    user_acc_data = {f"{user}" : x} #key 값을 지정할 때 user_acc_data[user] = x - 사용 불가능함(리스트 객체)
+
+    with open('user_accdata.txt', 'w', encoding='UTF-8') as fw:
+        fw.write(f'{user} : {user_acc_data[user]}\n')
+
+def read_user_acc():
+    with open("user_accdata.txt",'r',encoding='UTF-8') as f:
+        user_accinfo = []#파일 정보 저장
+    #한줄씩 읽어 온 후 리스트에 저장
+        while True:
+            line = f.readline()
+            if line.startswith(user): #user 값으로 시작하면 True를 반환    
+                line = line.replace('\n','')#필요없는 값 삭제 - space는 삭제 불가능(user_accname 일 수 있음) + 나중에 Acc이름 나누기 위함
+                line = line.replace(',','')
+                line = line.replace("'",'')
+                line = line.replace('[','')
+                line = line.replace(']','')
+                line = line.split(" : ")
+            #파일에서 딕셔너리로 복구 시켜주는 코드
+
+                user_accinfo.append(line)
+                user_name = str(line[0])
+                user_acc = line[1]
+                user_acc = user_acc[:-2] #마지막의 ' /' 제거
+
+                user_accinfo = {f"{user_name}" : user_acc.split(" / ")} 
+                break
+
+    return user_accinfo #이후 유저 어카운트 호출을 위한 return
+
+def calculate_present_value(future_value, inflation_rate, years):
+    """
+    목표 저축액의 현재 가치를 계산하는 함수
+    :param future_value: 목표 저축액 (미래 가치)
+    :param inflation_rate: 연평균 인플레이션율 (백분율)
+    :param years: 목표 달성까지 남은 기간 (년 단위)
+    :return: 현재 가치
+    """
+    present_value = future_value / ((1 + inflation_rate / 100) ** years)
+    return present_value
+
+def check_progress_with_inflation(goal, inflation_rate):
+    """
+    인플레이션율을 고려한 목표 진행 상황 확인 함수
+    :param goal: FinancialGoal 객체
+    :param inflation_rate: 연평균 인플레이션율 (백분율)
+    """
+    years_left = (goal.due_date - datetime.now()).days / 365
+    present_value_target = calculate_present_value(goal.target_amount, inflation_rate, years_left)
+    remaining_amount = present_value_target - goal.saved_amount
+    days_left = (goal.due_date - datetime.now()).days
+    if remaining_amount <= 0:
+        print(f"축하합니다! '{goal.name}' 목표를 달성했습니다! \n 목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n")
+    else:
+        print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
 
 ###########################################################
