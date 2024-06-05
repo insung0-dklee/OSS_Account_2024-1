@@ -2287,6 +2287,85 @@ def check_progress_with_inflation(goal, inflation_rate):
     else:
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
+def search_expenses(criteria):
+    """
+    검색 기준에 맞는 지출 내역을 출력하는 함수
+
+    :param criteria: 검색 기준을 포함하는 딕셔너리
+                     예: {'item': '커피', 'date': (start_date, end_date), 'amount': (min_amount, max_amount)}
+    """
+    try:
+        # 파일을 열어 데이터 불러오기
+        with open(expenses_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            if not data:
+                # 데이터가 비어 있으면 해당 메시지 출력
+                print("저장된 지출 내역이 없습니다.")
+                return
+
+            results = []
+            # 각 지출 내역에 대해 검색 기준을 적용
+            for expense in data:
+                match = True
+                for key, value in criteria.items():
+                    if key == 'date':
+                        # 날짜 범위 검색
+                        start_date, end_date = value
+                        expense_date = datetime.strptime(expense['date'], "%Y-%m-%d")
+                        if not (start_date <= expense_date <= end_date):
+                            match = False
+                            break
+                    elif key == 'amount':
+                        # 금액 범위 검색
+                        min_amount, max_amount = value
+                        if not (min_amount <= expense['amount'] <= max_amount):
+                            match = False
+                            break
+                    else:
+                        # 다른 기준 (예: 항목 이름) 검색
+                        if str(expense.get(key, '')).lower() != str(value).lower():
+                            match = False
+                            break
+                
+                # 검색 기준에 맞는 지출 내역을 결과 리스트에 추가
+                if match:
+                    results.append(expense)
+
+            # 결과 리스트를 출력
+            if results:
+                for idx, expense in enumerate(results, start=1):
+                    print(f"{idx}. {expense['date']} - {expense['item']} : {expense['amount']}원")
+            else:
+                print("검색 조건에 맞는 지출 내역이 없습니다.")
+
+    except FileNotFoundError:
+        # 파일이 존재하지 않는 경우의 예외 처리
+        print(f"{expenses_file} 파일이 존재하지 않습니다.")
+    except json.JSONDecodeError:
+        # JSON 형식이 올바르지 않은 경우의 예외 처리
+        print(f"{expenses_file} 파일의 내용이 올바르지 않습니다.")
+
+def get_criteria_from_user():
+    """
+    사용자로부터 검색 기준을 입력받는 함수
+    """
+    criteria = {}
+    date_range = input("날짜 범위를 입력하세요 (예: 2023-01-01 ~ 2023-12-31): ")
+    if date_range:
+        start_date, end_date = date_range.split('~')
+        criteria['date'] = (datetime.strptime(start_date.strip(), "%Y-%m-%d"), datetime.strptime(end_date.strip(), "%Y-%m-%d"))
+
+    item = input("항목을 입력하세요 (예: 커피): ")
+    if item:
+        criteria['item'] = item.strip()
+
+    amount_range = input("금액 범위를 입력하세요 (예: 1000 ~ 5000): ")
+    if amount_range:
+        min_amount, max_amount = map(int, amount_range.split('~'))
+        criteria['amount'] = (min_amount, max_amount)
+
+    return criteria
+
 
 ###########################################################
 
@@ -2338,6 +2417,10 @@ while not b_is_exit:
     elif func == "memo":
         add_memo()
         memo()
+    elif func == "search":
+        # 지출 내역 검색 기능 추가
+        criteria = get_criteria_from_user()
+        search_expenses(criteria)
     else:
         
         print("올바른 기능을 입력해 주세요.")
