@@ -17,8 +17,33 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+def saving(): #적금 함수
+    money = int(input("한달 적금 납부 금액 입력(원): ")) #한달 납부 금액
+    if money <= 0: #0이하 제외
+        print("0원 이상 입력")
+        return
+    period = int(input("적금 개월 수(개월): ")) #적금 기간
+    if period < 1: #1개월 미만 제외
+        print("1개월 이상 입력")
+        return
+    interest = float(input("연이율(%): ")) #연이율
+    if interest < 0: #0미만 제외
+        print("0% 이상 입력")
+        return
+    
+    #이자와 원금 계산
+    interestsum = 0
+    moneysum = 0
+    for i in range(1,period+1):
+        interestsum += money*(interest/100/12)*i
+        moneysum += money
+    
+    print(period,"개월 원금:",moneysum,"원, 총 이자:",interestsum,"원")
+    print("총 금액:",moneysum+interestsum)
+
+
 def armyfullsaving(): # 군적금 함수
-    save = int(input("한달에 넣는 군적금 금액(원): ")) #한달에 넣는 적금 액수 입력
+    save = int(input("한달에 넣는 적금 금액(원): ")) #한달에 넣는 적금 액수 입력
     if save > 400000: #최대 40만원까지 
         print("최대 40만원까지 입력 가능합니다.")
         return  #입력이 잘못된 경우 함수를 중단
