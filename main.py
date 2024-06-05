@@ -16,6 +16,8 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import tkinter as tk
+from tkcalendar import Calendar
 
 
 # 약속을 담을 리스트
@@ -1246,10 +1248,37 @@ def get_valid_amount_input():
             return float(amount) # 숫자로만 이루어져 있다면 입력값을 float로 변환하여 반환
         else:
             print("숫자만 입력하세요.") # 입력이 숫자가 아닌 경우, 오류 메시지 출력
+"""
+date_selected: tkcalendar 라이브러리를 사용하여 달력위젯으로 날짜 입력하기 기능
+print_selected_date: 달력 위젯에서 확인버튼을 눌렀을때 값을 출력함
+"""
+def date_selected():
+    def print_selected_date(): #선택된 날짜 출력
+        selected_date = cal.get_date() #달력위젯에서 데이터를 가져옴
+        formatted_date = datetime.strptime(selected_date, "%m/%d/%y").strftime("%Y/%m/%d") #YYYY/MM/DD 형식으로 바꿈
+        print(f"선택한 날짜: {selected_date}") #선택한 날짜를 출력함
+        root.destroy() #달력창 닫기
+
+    root = tk.Tk() #window 생성
+    root.title("Date Picker")
+
+    cal = Calendar(root, selectmode='day', year=2024, month=6, day=5) #달력 위젯
+    cal.pack(pady=20)
+
+    btn = tk.Button(root, text="확인", command=print_selected_date)#확인버튼
+    btn.pack(pady=20)
+
+    root.mainloop()
+
+    #달력 위젯에서 선택된 값을 YYYY/MM/DD 형식으로 변환후 값을 반환함
+    selected_date = cal.get_date()
+    formatted_date = datetime.strptime(selected_date, "%m/%d/%y").strftime("%Y/%m/%d")
+
+    return formatted_date #날짜 반환
 
 # 수입/지출 항목 추가 함수
 def add_entry():
-    date = input("날짜 (YYYY-MM-DD): ")
+    date = create_date_picker() #달력위젯으로 날짜를 선택할 수 있도록 수정
     category = input("카테고리: ")
     description = input("설명: ")
     score = day_evaluation()
@@ -2312,8 +2341,6 @@ while user == 0: #유저 입력할때 까지 무한루프 도는 인터페이스
         print("프로그램을 종료합니다.")
         user = interface
         b_is_exit = 1
-
-
 # 메인 루프
 while not b_is_exit:
     print("-----------------------")
