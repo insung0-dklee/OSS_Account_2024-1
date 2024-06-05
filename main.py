@@ -73,6 +73,52 @@ def show_appointments():
         print(f"예산: {appointment['budget']}")
         
 
+def delete_appointment():
+    """
+    약속을 삭제하는 함수
+    """
+    name = input("삭제할 약속 이름: ")
+    for appointment in appointments:
+        if appointment["name"] == name:
+            appointments.remove(appointment)
+            print(f"약속 '{name}'이(가) 삭제되었습니다.")
+            return
+    print(f"약속 '{name}'을(를) 찾을 수 없습니다.")
+
+def edit_appointment():
+    """
+    약속을 수정하는 함수
+    """
+    name = input("수정할 약속 이름: ")
+    for appointment in appointments:
+        if appointment["name"] == name:
+            while True:
+                try:
+                    new_start_date = datetime.strptime(input("새 시작 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+                    break
+                except ValueError:
+                    print("잘못된 날짜 형식입니다. YYYY-MM-DD 형식으로 다시 입력해주세요.")
+
+            while True:
+                try:
+                    new_end_date = datetime.strptime(input("새 종료 일자 (YYYY-MM-DD): "), '%Y-%m-%d')
+                    break
+                except ValueError:
+                    print("잘못된 날짜 형식입니다. YYYY-MM-DD 형식으로 다시 입력해주세요.")
+
+            new_budget = float(input("새 예산: "))
+
+            if not is_time_conflict(new_start_date, new_end_date):
+                appointment["start_date"] = new_start_date
+                appointment["end_date"] = new_end_date
+                appointment["budget"] = new_budget
+                print(f"약속 '{name}'이(가) 수정되었습니다.")
+            else:
+                print("약속 간에 시간이 겹칩니다.")
+            return
+    print(f"약속 '{name}'을(를) 찾을 수 없습니다.")
+       
+
 def appointment_management():
     while True:
         print("\n---- 약속 관리 메뉴----")
@@ -82,12 +128,18 @@ def appointment_management():
             add_appointment()
         elif choice == '2':
             show_appointments()
+        elif choice == '3':
+            delete_appointment()
+        elif choice == '4':
+            edit_appointment()
         elif choice == '0':
             print("메인 메뉴로 돌아갑니다. \n")
             break
         elif choice == '?':
             print("1. 약속 추가")
             print("2. 약속 보기")
+            print("3. 약속 삭제")
+            print("4. 약속 수정")
             print("0. 메인 메뉴로 돌아가기")
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
