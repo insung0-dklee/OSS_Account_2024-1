@@ -17,22 +17,34 @@ class AccountRegistry:
         self.accounts[name] = Account(name, account_number)
         print(f"{name}의 계좌 ({account_number})가 등록되었습니다.")
 
-    def find_account(self, name):
+    def find_account_by_name(self, name):
         return self.accounts.get(name, None)
 
+    def find_account_by_number(self, account_number):
+        for account in self.accounts.values():
+            if account.account_number == account_number:
+                return account
+        return None
+
     def edit_account(self, name):
-        account = self.find_account(name)
+        account = self.find_account_by_name(name)
         if not account:
             print("해당하는 계좌를 찾을 수 없습니다.")
             return
         new_name = input(f"새로운 이름을 입력하세요 (현재 이름: {account.name}): ") or account.name
         new_account_number = input(f"새로운 계좌번호를 입력하세요 (현재 계좌번호: {account.account_number}): ") or account.account_number
+        if new_name != account.name and new_name in self.accounts:
+            print("해당 이름으로 등록된 계좌가 이미 있습니다.")
+            return
+        if new_account_number != account.account_number and new_account_number in [acct.account_number for acct in self.accounts.values()]:
+            print("해당 계좌번호로 등록된 계좌가 이미 있습니다.")
+            return
         self.accounts.pop(account.name)
         self.accounts[new_name] = Account(new_name, new_account_number)
         print("계좌 정보가 수정되었습니다.")
 
     def delete_account(self, name):
-        account = self.find_account(name)
+        account = self.find_account_by_name(name)
         if not account:
             print("해당하는 계좌를 찾을 수 없습니다.")
             return
@@ -45,10 +57,11 @@ def main():
     while True:
         print("\n계좌 관리 프로그램")
         print("1. 계좌 등록")
-        print("2. 계좌 검색")
-        print("3. 계좌 수정")
-        print("4. 계좌 삭제")
-        print("5. 종료")
+        print("2. 계좌 검색 (이름)")
+        print("3. 계좌 검색 (계좌번호)")
+        print("4. 계좌 수정")
+        print("5. 계좌 삭제")
+        print("6. 종료")
         choice = input("원하는 작업을 선택하세요: ")
 
         if choice == '1':
@@ -57,18 +70,25 @@ def main():
             registry.add_account(name, account_number)
         elif choice == '2':
             search_name = input("찾고 싶은 계좌주의 이름을 입력하세요: ")
-            account = registry.find_account(search_name)
+            account = registry.find_account_by_name(search_name)
             if account:
                 print(f"{account.name}의 계좌번호: {account.account_number}")
             else:
                 print("해당하는 계좌를 찾을 수 없습니다.")
         elif choice == '3':
+            search_number = input("찾고 싶은 계좌번호를 입력하세요: ")
+            account = registry.find_account_by_number(search_number)
+            if account:
+                print(f"이름: {account.name}, 계좌번호: {account.account_number}")
+            else:
+                print("해당하는 계좌를 찾을 수 없습니다.")
+        elif choice == '4':
             name = input("수정할 계좌주의 이름을 입력하세요: ")
             registry.edit_account(name)
-        elif choice == '4':
+        elif choice == '5':
             name = input("삭제할 계좌주의 이름을 입력하세요: ")
             registry.delete_account(name)
-        elif choice == '5':
+        elif choice == '6':
             print("프로그램을 종료합니다.")
             break
         else:
