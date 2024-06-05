@@ -10,6 +10,13 @@ carbon_footprint_data = {
     '전기': 0.5,  # kWh 당
 }
 
+# 친환경적인 대안 제안
+sustainable_alternatives = {
+    '소고기': '소고기 소비를 줄이고 식물성 단백질을 시도해 보세요.',
+    '자가용': '대중교통을 이용하거나 자전거를 타거나 걸어보세요.',
+    '전기': '재생 가능 에너지원을 사용하거나 사용량을 줄이세요.'
+}
+
 def get_consumption_data():
     # 사용자로부터 소비 내역을 입력받습니다.
     consumption = {}
@@ -34,6 +41,16 @@ def calculate_carbon_footprint(consumption):
         itemized_footprint[item] = footprint
         total_carbon_footprint += footprint
     return total_carbon_footprint, itemized_footprint
+
+def provide_feedback(total_footprint, itemized_footprint):
+    # 피드백 및 친환경적인 대안을 제공합니다.
+    print(f"\n총 탄소 발자국은 {total_footprint:.2f} kg CO2e 입니다.")
+    print("\n항목별 탄소 발자국:")
+    for item, footprint in itemized_footprint.items():
+        print(f"{item}: {footprint:.2f} kg CO2e")
+        if item in sustainable_alternatives:
+            print(f"제안: {sustainable_alternatives[item]}")
+    print("\n지속 가능한 소비 실천에 감사드립니다!")
 
 
 def main():
