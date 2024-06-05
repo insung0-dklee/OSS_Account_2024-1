@@ -17,6 +17,18 @@ import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
 
+# 현재 예산을 고려하여 맞춤형 조언을 제시하는 함수.
+def asd_budget(budget_bb):
+    if budget_bb < 1000000:
+        message = "소비를 줄이고 저축을 더 할 필요가 있습니다!"
+    elif budget_bb >= 1000000 and budget_bb < 5000000:
+        message = "소비가 적당합니다. 저축을 느슨하게 하지마세요!"
+    else:
+        message = "여유금이 많습니다. 투자를 적극적으로 해보세요!"
+    
+    return message
+
+
 # 기부 내역을 저장할 리스트
 donations = []
 
@@ -1292,6 +1304,7 @@ def print_help():
     5: 지출 카테고리 분석
     6: 일주일간의 예산과 소득 차트
     7: 기부 내역 등록과 차트 출력
+    8: 현재 예산에 따른 맞춤형 경제 조언      
     ?: 도움말 출력
     exit: 종료
     """)
@@ -2413,6 +2426,10 @@ while not b_is_exit:
     elif func == "7":    
         print("\nDonation List:")
         print_donations()
+    elif func == "8":
+        budget_bb = int(input("예산을 입력하세요 (원): "))
+        result = asd_budget(budget_bb)
+        print(result)
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
