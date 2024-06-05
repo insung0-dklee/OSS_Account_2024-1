@@ -547,7 +547,7 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         h.update(pw.encode())  # sha256으로 암호화
         pw_data = h.hexdigest()  # 16진수로 변환
 
-        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
+        userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone ,'friends': [] }  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
 
@@ -2290,6 +2290,100 @@ def check_progress_with_inflation(goal, inflation_rate):
 
 ###########################################################
 
+
+
+# 자동 이체 설정 딕셔너리
+auto_transfers = {}
+
+# 자동 이체 설정 메뉴 출력
+def auto_transfer_menu():
+    print("\n자동 이체 설정 메뉴")
+    print("1. 자동 이체 추가")
+    print("2. 자동 이체 삭제")
+    print("3. 자동 이체 수정")
+    print("4. 전체 목록 보기")
+    print("5. 메인 메뉴로 돌아가기")
+
+#사용자로부터 이체 항목 이름, 금액, 주기를 입력받아 자동 이체를 추가합니다.
+   
+def add_auto_transfer():
+    name = input("이체 항목 이름: ")
+    amount = float(input("이체 금액: "))
+    frequency = input("이체 주기 (ex: 매달, 매주): ")
+    auto_transfers[name] = {'amount': amount, 'frequency': frequency}
+    print("자동 이체가 추가되었습니다.")
+
+# 사용자로부터 삭제할 이체 항목 이름을 입력받아 해당 항목을 삭제합니다.
+def delete_auto_transfer():
+    if auto_transfers:
+        show_all_auto_transfers()  # 전체 이체 항목 목록을 먼저 보여줌
+        name = input("삭제할 이체 항목 이름: ")
+        if name in auto_transfers:
+            del auto_transfers[name]
+            print("자동 이체가 삭제되었습니다.")
+        else:
+            print("해당하는 이체 항목이 없습니다.")
+    else:
+        print("자동 이체 목록이 비어 있습니다.")
+
+#  사용자로부터 수정할 이체 항목 이름을 입력받아 해당 항목의 정보를 수정합니다.
+# 만약 이름 잘못 입력 받으면 해당하는 목록이 없다고 출력
+def edit_auto_transfer():
+    if auto_transfers:
+        show_all_auto_transfers()  # 전체 이체 항목 목록을 먼저 보여줌
+        name = input("수정할 이체 항목 이름: ")
+        if name in auto_transfers:
+            amount = float(input("수정할 이체 금액: "))
+            frequency = input("수정할 이체 주기: ")
+            auto_transfers[name] = {'amount': amount, 'frequency': frequency}
+            print("자동 이체가 수정되었습니다.")
+        else:
+            print("해당하는 이체 항목이 없습니다.")
+    else:
+        print("자동 이체 목록이 비어 있습니다.")
+
+# 전체 자동 이체 목록 표시 함수
+def show_all_auto_transfers():
+    if auto_transfers:
+        print("\n전체 자동 이체 목록")
+        for i, (name, info) in enumerate(auto_transfers.items(), 1):
+            print(f"{i}. {name}: 금액 {info['amount']}, 주기 {info['frequency']}")
+    else:
+        print("자동 이체 목록이 비어 있습니다.")
+# 자동 이체 설정 루프 함수
+def auto_transfer_loop():
+    while True:
+        auto_transfer_menu()# 자동 이체 설정 메뉴 출력
+        #사용자에게 입력받은 작업을 통해 해당 작업 루프문 실행
+        choice = input("원하는 작업을 선택하세요: ")
+        if choice == "1":
+            add_auto_transfer()
+        elif choice == "2":
+            delete_auto_transfer()
+        elif choice == "3":
+            edit_auto_transfer()
+        elif choice == "4":
+            show_all_auto_transfers()
+        elif choice == "5":
+            print("메인 메뉴로 돌아갑니다.")
+            break # 메인 메뉴로 돌아감
+        else: # 잘못된 입력에 대한 예외 처리
+            print("잘못된 입력입니다.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 프로그램 종료 여부를 판단하는 변수
 b_is_exit = 0
 interface = 0 #인터페이스 만들기
@@ -2330,6 +2424,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        auto_transfer_loop()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
