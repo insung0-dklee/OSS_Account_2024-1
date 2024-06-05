@@ -16,6 +16,7 @@ import simulation
 import visualizer
 import points_system  # 포인트 시스템 추가
 import portfolio_management
+import matplotlib.pyplot as plt
 
 
 # 약속을 담을 리스트
@@ -101,6 +102,90 @@ def appointment_management():
             print("0. 메인 메뉴로 돌아가기")
         else:
             print("잘못된 선택입니다. 다시 시도하세요.")
+            
+# 소비 데이터를 저장할 리스트
+general_expenses = []
+
+def add_general_expense():
+    """
+    지출을 추가하기 위한 함수
+    """
+    date = datetime.strptime(input("지출 일자와 시간 (YYYY-MM-DD HH:MM): "), '%Y-%m-%d %H:%M')
+    description = input("지출 설명: ")
+    amount = float(input("지출 금액: "))
+    
+    expense = {"date": date, "description": description, "amount": amount}
+    general_expenses.append(expense)
+    print("지출이 추가되었습니다.")
+
+# 시간별 소비 트렌드 분석 함수
+def analyze_time_spending():
+    """
+    사용자의 소비 습관을 시간대별로 분석하는 함수.
+    특정 시간에 더 많이 소비하는 경향을 파악합니다.
+    """
+    time_spending = [0] * 24  # 24시간 동안의 소비 금액을 저장할 리스트
+
+    for expense in general_expenses:
+        hour = expense["date"].hour
+        time_spending[hour] += expense["amount"]
+
+    # 소비 데이터가 없을 경우 처리
+    if all(amount == 0 for amount in time_spending):
+        print("소비 데이터가 없습니다.")
+        return
+
+    # 시간대별 소비 금액 출력
+    for hour in range(24):
+        print(f"{hour}시: {time_spending[hour]:.2f} 원")
+
+    # 시간대별 소비 금액 시각화
+    plt.figure(figsize=(10, 6))
+    plt.bar(range(24), time_spending, color='skyblue')
+    plt.xlabel('시간')
+    plt.ylabel('소비 금액 (원)')
+    plt.title('시간대별 소비 금액')
+    plt.xticks(range(24))
+    plt.show()
+
+# 계절별 소비 트렌드 분석 함수
+def analyze_seasonal_spending():
+    """
+    사용자의 소비 패턴을 계절별로 분석하는 함수.
+    특정 시즌에 소비가 증가하는 항목을 파악합니다.
+    """
+    seasonal_spending = {"봄": 0, "여름": 0, "가을": 0, "겨울": 0}
+
+    for expense in general_expenses:
+        month = expense["date"].month
+        if month in [3, 4, 5]:
+            seasonal_spending["봄"] += expense["amount"]
+        elif month in [6, 7, 8]:
+            seasonal_spending["여름"] += expense["amount"]
+        elif month in [9, 10, 11]:
+            seasonal_spending["가을"] += expense["amount"]
+        else:
+            seasonal_spending["겨울"] += expense["amount"]
+
+    # 소비 데이터가 없을 경우 처리
+    if all(amount == 0 for amount in seasonal_spending.values()):
+        print("소비 데이터가 없습니다.")
+        return
+
+    # 계절별 소비 금액 출력
+    for season, amount in seasonal_spending.items():
+        print(f"{season}: {amount:.2f} 원")
+
+    # 계절별 소비 금액 시각화
+    seasons = ["봄", "여름", "가을", "겨울"]
+    spending_values = [seasonal_spending[season] for season in seasons]
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(seasons, spending_values, color='lightgreen')
+    plt.xlabel('계절')
+    plt.ylabel('소비 금액 (원)')
+    plt.title('계절별 소비 금액')
+    plt.show()
 
 # 쿠폰 정보 저장
 coupons = {}
