@@ -1214,6 +1214,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 홈 화면에 가계부 정보 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1925,6 +1926,18 @@ def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존�
       Account_list[num-1] = Account_book(name,bal) #새로운 객체 생성 -> 기존 리스트에서 교체
       print(f"가계부 {num}번이 이름: {Account_list[num-1].name}과 잔액: {Account_list[num-1].bal}으로 초기화 되었습니다.")
 
+# 가계부 정보를 홈 화면에 표시하는 위젯을 추가하는 함수
+def display_account_info(account):
+    print(f"가계부 이름: {account.name}")
+    print(f"현재 잔고: {account.bal} 원")
+
+# 홈 화면에 가계부 정보를 출력하는 함수
+def display_home_widget():
+    print("현재 선택된 가계부 정보:")
+    chosen_account = Account_list[int(choose_Account()) - 1]
+    display_account_info(chosen_account)
+
+
 
 
 """
@@ -2330,6 +2343,8 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        display_home_widget()
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
