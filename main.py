@@ -550,26 +550,26 @@ def user_reg_include_name_phone():  # 이름과 전화번호 정보를 포함한
         userdata2[id] = {'pw': pw_data, 'name': name, 'phone': phone}  # key에 id값을, value에 비밀번호와 이름, 전화번호 값
         usernames[name] = id  # 이름과 아이디 매핑
         userphones[phone] = id  # 전화번호와 아이디 매핑
+        user = User(name)  # User 객체 생성
+
+        # 친구 추가
+        while True:
+            add_friend = input("친구를 추가하시겠습니까? (y/n): ")
+            if add_friend.lower() == 'y':
+                friend_name = input("친구 이름을 입력하세요: ")
+                user.add_friend(friend_name)
+                friends[friend_name] = Friend(friend_name)
+            elif add_friend.lower() == 'n':
+                break
+            else:
+                print("잘못된 입력입니다. 다시 입력해주세요.")
 
         with open('login.txt', 'w', encoding='UTF-8') as fw:  # utf-8 변환 후 login.txt에 작성
             for user_id, user_info in userdata2.items():  # 딕셔너리 내에 있는 값을 모두 for문
-                friends_str = ", ".join(user_info["friends"])
-                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {friends_str}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
+                fw.write(f'{user_id} : {user_info["pw"]} : {user_info["name"]} : {user_info["phone"]} : {user.friends}\n')  # 아이디, 비밀번호, 이름, 전화번호 값을 차례로 login.txt파일에 저장
         break
     
-    user = User(name)  # User 객체 생성
 
-     # 친구 추가
-    while True:
-        add_friend = input("친구를 추가하시겠습니까? (y/n): ")
-        if add_friend.lower() == 'y':
-            friend_name = input("친구 이름을 입력하세요: ")
-            user.add_friend(friend_name)
-            friends[friend_name] = Friend(friend_name)
-        elif add_friend.lower() == 'n':
-            break
-        else:
-            print("잘못된 입력입니다. 다시 입력해주세요.")
 
     
 def budget_simulation():
