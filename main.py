@@ -970,19 +970,17 @@ def export_account(account):
     account_data = {
         'name': account.name,
         'balance': account.bal,
-        #account.balance -> account.bal로 수정 - account 객체 내부에는 balance 멤버 변수 존재 X
         'history': [account.income_total,account.income_list,account.spend_total,account.spend_list]
-        #account.history -> [account.income_total,account.income_list,account.spend_total,account.spend_list]로 수정 -> 위와 마찬가지 이유 + 밑의 함수와 연동 + 직관적으로 보기 위해 수정
-    }
+        }
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(account_data, file, ensure_ascii=False, indent=4)
-    print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.")
+    #print(f"{filename} 파일로 가계부 데이터가 저장되었습니다.") - 인터페이스 과정에서 보여지면 안됨
 
-def import_account():
+def import_account(filename): # filename 변수 추가
     """
     JSON 파일로부터 가계부 데이터를 가져와 가계부 리스트에 추가하기.
     """
-    filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ")
+    #filename = input("가져올 가계부 파일명을 입력하세요 (예: my_account_export.json): ") - 삭제: 파일명 따로 전달
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             account_data = json.load(file)
@@ -992,9 +990,10 @@ def import_account():
         new_account.spend_total = account_data['history'][2]
         new_account.spend_list = account_data['history'][3]
         Account_list.append(new_account)
-        print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.")
+        #print(f"{account_data['name']} 가계부가 성공적으로 추가되었습니다.") - 인터페이스 과정에서 보여지면 안됨
     except Exception as e:
-        print(f"파일을 가져오는 중 오류가 발생했습니다: {e}")
+        return 0
+        #print(f"파일을 가져오는 중 오류가 발생했습니다: {e}") - 인터페이스 과정에서 보여지면 안됨
 
 def day_spending(hist, spending, where="", year=datetime.now().year, month=datetime.now().month, day=datetime.now().day, hour=datetime.now().hour):
     """
@@ -1226,6 +1225,7 @@ def print_help():
     3: 월별 보고서 생성
     4: 예산 설정 및 초과 알림
     5: 지출 카테고리 분석
+    6: 현재 계좌 출력
     ?: 도움말 출력
     exit: 종료
     """)
@@ -1906,17 +1906,26 @@ c = Account_book.Account_book("가계부 3",3000000)
 Account_list = [a,b,c] #가계부 리스트
 i=0
 
-def choose_Account(Account_list):#가계부 선택 함수 - func 자리에 Account_list 추가 - 임의의 리스트 값이 존재하지 않으면 오류 발생
-    if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
-        print("가계부가 존재하지 않습니다.")
-        print("가계부를 생성해 주세요")
-        choose = 0
-    else:
-        print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
-        for i in range(0,len(Account_list)):#가계부 리스트 출력
-            print(f"가계부 {i+1}번 : ",Account_list[i].name)
-        choose =  input() #정수값을 반환하도록 수정
-    return choose #choose account
+def choose_Account(Account_list): #가계부 선택 함수 - func 자리에 Account_list(계좌 저장 리스트) 추가
+                                  #임의의 리스트 값이 존재하지 않으면 오류 발생
+    choose = 0
+    
+    while(choose == 0):
+        if(len(Account_list) == 0):#가계부가 없을 경우 0값 반환
+            break
+        else:
+            print("가계부 선택 - 번호(양의 정수)로 입력")#위치 이동
+            for i in range(0,len(Account_list)):#가계부 리스트 출력
+                print(f"가계부 {i+1}번 : ",Account_list[i].name)
+            choose = input()
+            if (choose.isdigit() and int(choose) <= len(Account_list) and choose != "0"): #정수값을 반환하도록 수정
+                choose = int(choose)
+                break
+            else:
+                print("잘못 입력하셨습니다. 다시 입력해 주십시오.")
+                choose = 0
+                
+    return choose #choose(선택한 번호 리턴)
 
 def init_Account_book(num): #가계부 하나의 모든기록 초기화(기존의 이름과 새로 입력받은 잔액으로 초기화), choose_Account와 연동 - 2
     if(num < 0):#오류 검출
@@ -2238,36 +2247,41 @@ user = "Kim"# 임의의 user 값 추가 - 이후 삭제
 
 def save_user_acc(user):
     x = []
-
+    
     for i in Account_list:
         x.append(i.name)
         x.append("/") #계좌를 쉽게 구분하기 위해 '/' 추가 - 이후 read_user_acc에서 사용 편하게 하기 위함
 
     user_acc_data = {f"{user}" : x} #key 값을 지정할 때 user_acc_data[user] = x - 사용 불가능함(리스트 객체)
 
-    with open('user_accdata.txt', 'w', encoding='UTF-8') as fw:
+    with open('user_accdata.txt', 'a', encoding='UTF-8') as fw: #기록 저장가능 - 파일을 되돌리고 싶으면 뒤에서 2번째에 저장된 값 불러오기
+        fw.seek(0,0)                                             #단 파일이 너무 커질경우 user data가 저장된 파일 불러오기 - 해당하는 줄 찾기 - 덮어쓰고 다시 저장 방식을 사용해도 됨
         fw.write(f'{user} : {user_acc_data[user]}\n')
 
-def read_user_acc():
+def read_user_acc(user):
     with open("user_accdata.txt",'r',encoding='UTF-8') as f:
-        user_accinfo = []#파일 정보 저장
-    #한줄씩 읽어 온 후 리스트에 저장
-        while True:
-            line = f.readline()
-            if line.startswith(user): #user 값으로 시작하면 True를 반환    
+        user_accinfo = {}#파일 정보 저장
+
+        #한줄씩 읽어 온 후 리스트에 저장
+        lines = f.readlines()
+        lines = lines[::-1] #리스트를 뒤집어줌 - 가장 최근의 값 찾기 위함
+        for line in lines:
+            n = line.split()
+            if (line.startswith(user) and len(n[0]) == len(user)): #user 값으로 시작하면 True를 반환 
                 line = line.replace('\n','')#필요없는 값 삭제 - space는 삭제 불가능(user_accname 일 수 있음) + 나중에 Acc이름 나누기 위함
                 line = line.replace(',','')
                 line = line.replace("'",'')
                 line = line.replace('[','')
                 line = line.replace(']','')
                 line = line.split(" : ")
-            #파일에서 딕셔너리로 복구 시켜주는 코드
+                #파일에서 딕셔너리로 복구 시켜주는 코드
 
-                user_accinfo.append(line)
+                
+                #user_accinfo.append(line)
                 user_name = str(line[0])
                 user_acc = line[1]
                 user_acc = user_acc[:-2] #마지막의 ' /' 제거
-
+    
                 user_accinfo = {f"{user_name}" : user_acc.split(" / ")} 
                 break
 
@@ -2299,6 +2313,22 @@ def check_progress_with_inflation(goal, inflation_rate):
     else:
         print(f"목표: {goal.name}\n목표 금액(현재 가치 기준): {present_value_target:.2f}원\n현재 저축액: {goal.saved_amount}원\n남은 금액: {remaining_amount:.2f}원\n남은 기간: {days_left}일")
 
+def account_save(user):
+    for i in range(0,len(Account_list)):
+        export_account(Account_list[i]) #리스트 내부의 객체들을 하나씩 파일로 만들어줌
+
+    save_user_acc(user) #user와 가계부 이름을 매칭시켜 저장
+
+def account_save_interface(user):#export_account() 함수와 save_user_acc() 함수를 사용 - 반드시 둘보다 뒤에 있어야 함
+    n = 0
+    n = input("정말 종료하시겠습니까? - 종료하려면 0을 입력하세요: ")
+    
+    if(n == "0"):
+        print("-- 쉽고 빠른 가계부는 YU_Account --")
+    else:
+        return 0
+    
+    account_save(user)
 
 ###########################################################
 
@@ -2349,10 +2379,12 @@ while not b_is_exit:
         set_budget()
     elif func == "5":
         analyze_categories()
+    elif func == "6":
+        print(f"현재 가계부는 {now_acc.name}입니다.")
     elif func == "?":
         print_help()
     elif func == "exit" or func == "x" or func =="종료":
-        print("프로그램을 종료합니다.")
+        account_save_interface(user.name)
         b_is_exit = True
     elif func == "memo":
         add_memo()
