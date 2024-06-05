@@ -1533,6 +1533,28 @@ def calculate_daily_calories():
             print("적절합니다.")
     else:
         print("성별을 잘못 입력하셨습니다.")
+  # 수면 패턴 기록후 평가해주는 함수        
+def calculate_sleep_hours():
+    # 잠자기 시작 시각과 일어난 시각을 입력 받기
+    start_time = input("잠자기 시작한 시각을 입력하세요 (HH:MM 형식): ")
+    wake_up_time = input("일어난 시각을 입력하세요 (HH:MM 형식): ")
+
+    # 잠자는 시간 계산
+    start_hour, start_minute = map(int, start_time.split(":"))
+    wake_up_hour, wake_up_minute = map(int, wake_up_time.split(":"))
+
+    if wake_up_hour < start_hour or (wake_up_hour == start_hour and wake_up_minute < start_minute):
+        sleep_hours = (24 - start_hour + wake_up_hour) + (wake_up_minute - start_minute) / 60
+    else:
+        sleep_hours = (wake_up_hour - start_hour) + (wake_up_minute - start_minute) / 60
+
+    # 수면 패턴 분석
+    if sleep_hours > 9:
+        print("과한 수면은 건강에 좋지 않습니다.")
+    elif sleep_hours < 7:
+        print("수면 시간이 부족합니다.")
+    else:
+        print("적절한 수면을 취했습니다.")
 
 
 
