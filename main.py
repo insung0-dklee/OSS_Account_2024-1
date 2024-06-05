@@ -924,6 +924,54 @@ def debt_management():
         else:
             print("올바른 기능을 입력해 주세요.")
 
+from collections import defaultdict
+
+def get_members():
+    members = []
+    while True:
+        member = input("정산 멤버를 입력하세요 (종료하려면 'q'를 입력): ")
+        if member.lower() == 'q':
+            break
+        members.append(member)
+    return members
+
+def get_expenses(members):
+    expenses = defaultdict(list)
+    for member in members:
+        while True:
+            expense = input(f"{member}의 지출 내역을 입력하세요 (종료하려면 'q'를 입력): ")
+            if expense.lower() == 'q':
+                break
+            expenses[member].append(float(expense))
+    return expenses
+
+def calculate_settlement(expenses):
+    total_expenses = sum(sum(values) for values in expenses.values())
+    equal_share = total_expenses / len(expenses)
+    settlement = defaultdict(float)
+    for member, member_expenses in expenses.items():
+        member_total = sum(member_expenses)
+        if member_total < equal_share:
+            settlement[member] = equal_share - member_total
+        else:
+            settlement[member] = -(member_total - equal_share)
+    return settlement
+
+def main():
+    members = get_members()
+    expenses = get_expenses(members)
+    settlement = calculate_settlement(expenses)
+
+    print("정산 결과:")
+    for member, amount in settlement.items():
+        if amount > 0:
+            print(f"{member}는 {amount:.2f}원을 받아야 합니다.")
+        else:
+            print(f"{member}는 {-amount:.2f}원을 지불해야 합니다.")
+
+if __name__ == "__main__":
+    main()
+
 class JointAccount:    # 공동 계정 정보 관리 (계정 이름, 사용자 목록, 거래 내역, 잔액)
     def __init__(self, account_name):
         self.joint_account = account_name    # 공동 계정 이름
